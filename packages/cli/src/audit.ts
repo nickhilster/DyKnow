@@ -1,10 +1,15 @@
+import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import { appendFile, mkdir } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
+import { promisify } from "node:util";
 
 import { AuditLogEntrySchema } from "@dyknow/core";
 
 export const DEFAULT_AUDIT_LOG_PATH = "docs/dyknow/.state/audit-log.jsonl";
+export const DEFAULT_RUNTIME_AUDIT_LOG_PATH = "dyknow/runtime-audit-log.jsonl";
+
+const execFileAsync = promisify(execFile);
 
 function toPortablePath(path: string): string {
   return path.replaceAll("\\", "/");
@@ -19,6 +24,23 @@ export function formatRelativePath(
 
 export function getAuditActor(): string {
   return process.env.DYKNOW_ACTOR ?? "copilot";
+}
+
+export async function resolveRuntimeAuditPath(rootPath: string) {
+  try {
+    const result = await execFileAsync(
+      "git",
+      ["rev-parse", "--git-path", DEFAULT_RUNTIME_AUDIT_LOG_PATH],
+      {
+        cwd: rootPath,
+        encoding: "utf8",
+      },
+    );
+
+    return resolve(rootPath, result.stdout.trim());
+  } catch {
+    return undefined;
+  }
 }
 
 export async function appendAuditEntries(options: {

@@ -3,6 +3,8 @@ import { relative, resolve } from "node:path";
 
 import { type AuditLogEntry, AuditLogEntrySchema } from "@dyknow/core";
 
+import { resolveRuntimeAuditPath } from "./audit.js";
+
 export const DEFAULT_REVIEW_AUDIT_LOG_PATH =
   "docs/dyknow/.state/audit-log.jsonl";
 
@@ -44,6 +46,46 @@ function parseAuditLine(line: string, lineNumber: number, inputPath: string) {
       `Invalid audit log entry at ${inputPath}:${lineNumber}: ${reason}`,
     );
   }
+}
+
+async function readAuditEntries(options: {
+  inputPath: string;
+  rootPath: string;
+}) {
+  const absolutePath = resolve(options.rootPath, options.inputPath);
+  let inputText: string;
+
+  try {
+    inputText = await readFile(absolutePath, "utf8");
+  } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "ENOENT"
+    ) {
+      return {
+        entries: [] as AuditLogEntry[],
+        inputPath: formatRelativePath(options.rootPath, absolutePath),
+      };
+    }
+
+    throw error;
+  }
+
+  return {
+    entries: inputText
+      .split(/\r?\n/u)
+      .filter((line) => line.trim().length > 0)
+      .map((line, index) =>
+        parseAuditLine(
+          line,
+          index + 1,
+          formatRelativePath(options.rootPath, absolutePath),
+        ),
+      ),
+    inputPath: formatRelativePath(options.rootPath, absolutePath),
+  };
 }
 
 function formatEntry(entry: AuditLogEntry): string {
@@ -110,55 +152,48 @@ export async function createAuditLogReport(options: {
   inputPath: string;
   limit: number;
 }): Promise<AuditLogReport> {
-  const absolutePath = resolve(options.cwd, options.inputPath);
-  let inputText: string;
+  const reports = [
+    await readAuditEntries({
+      inputPath: options.inputPath,
+      rootPath: options.cwd,
+    }),
+  ];
 
-  try {
-    inputText = await readFile(absolutePath, "utf8");
-  } catch (error) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "ENOENT"
-    ) {
-      return {
-        inputPath: formatRelativePath(options.cwd, absolutePath),
-        report: `No audit entries found at ${options.inputPath}.`,
-        shownEntries: 0,
-        totalEntries: 0,
-      };
+  if (options.inputPath === DEFAULT_REVIEW_AUDIT_LOG_PATH) {
+    const runtimeAuditPath = await resolveRuntimeAuditPath(options.cwd);
+
+    if (runtimeAuditPath) {
+      reports.push(
+        await readAuditEntries({
+          inputPath: runtimeAuditPath,
+          rootPath: options.cwd,
+        }),
+      );
     }
-
-    throw error;
   }
 
-  const entries = inputText
-    .split(/\r?\n/u)
-    .filter((line) => line.trim().length > 0)
-    .map((line, index) =>
-      parseAuditLine(
-        line,
-        index + 1,
-        formatRelativePath(options.cwd, absolutePath),
-      ),
-    );
+  const entries = reports.flatMap((report) => report.entries);
 
   if (entries.length === 0) {
     return {
-      inputPath: formatRelativePath(options.cwd, absolutePath),
+      inputPath: options.inputPath,
       report: `No audit entries found at ${options.inputPath}.`,
       shownEntries: 0,
       totalEntries: 0,
     };
   }
 
-  const shownEntries = entries.slice(-options.limit).reverse();
-  const relativeInputPath = formatRelativePath(options.cwd, absolutePath);
-  const header = `Recent audit entries from ${relativeInputPath} (showing ${shownEntries.length} of ${entries.length}):`;
+  const shownEntries = entries
+    .slice()
+    .sort((left, right) => right.timestamp.localeCompare(left.timestamp))
+    .slice(0, options.limit);
+  const sourceLabels = reports
+    .filter((report) => report.entries.length > 0)
+    .map((report) => report.inputPath);
+  const header = `Recent audit entries from ${sourceLabels.join(" and ")} (showing ${shownEntries.length} of ${entries.length}):`;
 
   return {
-    inputPath: relativeInputPath,
+    inputPath: options.inputPath,
     report: [header, ...shownEntries.map((entry) => formatEntry(entry))].join(
       "\n\n",
     ),
