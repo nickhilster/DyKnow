@@ -10,9 +10,12 @@ sources:
   - dyknow.config.json
   - dyknow.config.schema.json
   - docs/dyknow/.state/repo-map.json
+  - docs/dyknow/.state/repo-diff.json
   - packages/core/src/contracts.ts
   - packages/core/src/config.ts
+  - packages/core/src/repo-diff.ts
   - packages/core/src/repo-map.ts
+  - packages/cli/src/diff.ts
   - packages/cli/src/index.ts
   - packages/cli/src/scan.ts
 last_reviewed: 2026-05-23
@@ -23,7 +26,7 @@ confidence: high
 
 This repository is the working concept, documentation hub, and bootstrap implementation workspace for **DyKnow** — a system for maintaining Dynamic Knowledge Pages that stay synchronized with product, code, docs, and websites. It has two surfaces: DyKnow Cloud (hosted) and DyKnow Local (repo-native).
 
-The repo now contains the founding whitepaper, a wiki of source-backed pages, a TypeScript/npm workspace for DyKnow Local shared contracts, and working `dyknow init` plus `dyknow scan` commands that generate the repo-local config and repo-map snapshot.
+The repo now contains the founding whitepaper, a wiki of source-backed pages, a TypeScript/npm workspace for DyKnow Local shared contracts, and working `dyknow init`, `dyknow scan`, and `dyknow diff` commands that generate the repo-local config plus repo-map and repo-diff snapshots.
 
 ## External hubs
 
@@ -81,7 +84,7 @@ Build a knowledge maintenance system that:
         └── dyknow_local_whitepaper.md   Founding raw source.
 ```
 
-  The implemented code surface is still small, but it is real: `packages/core` defines the first shared engine contracts, config validation, and repo-map schema, `packages/cli` implements `dyknow init` and `dyknow scan`, and CI runs lint, tests, and build checks.
+  The implemented code surface is still small, but it is real: `packages/core` defines the first shared engine contracts, config validation, repo-map schema, and repo-diff schema; `packages/cli` implements `dyknow init`, `dyknow scan`, and `dyknow diff`; and CI runs lint, tests, and build checks.
 
 ## Development commands
 
@@ -91,15 +94,16 @@ Build a knowledge maintenance system that:
   - `npm run lint` — run Biome checks across the scaffolded workspace.
   - `node packages/cli/dist/bin.js init --force --project-name DyKnow` — generate the repo-local config and schema after a build.
   - `node packages/cli/dist/bin.js scan` — build the repo map snapshot at `docs/dyknow/.state/repo-map.json` after a build.
+  - `node packages/cli/dist/bin.js diff` — compare the current workspace against the saved repo-map snapshot, map deltas to affected page IDs via configured source patterns, and write `docs/dyknow/.state/repo-diff.json` after a build.
 
   Implemented DyKnow Local CLI commands:
 
   - `dyknow init` — create `dyknow.config.json` and `dyknow.config.schema.json`
   - `dyknow scan` — build repo map at `docs/dyknow/.state/repo-map.json`
+  - `dyknow diff` — compare the current workspace to the saved repo map, identify affected pages, and write `docs/dyknow/.state/repo-diff.json`
 
   Planned DyKnow Local CLI commands remain:
 
-- `dyknow diff` — detect changes since last scan
 - `dyknow update` — draft page updates
 - `dyknow review` — review proposed diffs
 - `dyknow commit` / `dyknow pr` — commit or open PR
@@ -112,6 +116,7 @@ See [docs/setup-guide.md](docs/setup-guide.md).
 - Shared engine contracts live in `packages/core`; CLI-specific wiring lives in `packages/cli`.
 - Biome handles formatting and baseline linting; Vitest covers executable validation.
 - The current scanner honors `allowedSources` and `ignoredSources`, extracts package dependencies, classifies route candidates heuristically, and warns on likely sensitive content without writing file contents into the repo map.
+- The current diff command compares a fresh in-memory scan against the last saved repo-map snapshot, maps changed source paths to affected page IDs via configured page source patterns, and writes a structured repo-diff artifact without overwriting the base snapshot.
 - Favor small vertical slices that keep source evidence, confidence, risk, and review-state data explicit in the design.
 
 ## Documentation conventions

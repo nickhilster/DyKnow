@@ -6,8 +6,11 @@ sources:
   - sources/dyknow_local_whitepaper.md (section 8)
   - ../dyknow.config.json
   - ../dyknow.config.schema.json
+  - dyknow/.state/repo-diff.json
+  - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
   - ../packages/cli/src/scan.ts
+  - ../packages/core/src/repo-diff.ts
   - dyknow/.state/repo-map.json
 last_reviewed: 2026-05-23
 confidence: medium
@@ -15,7 +18,7 @@ confidence: medium
 
 ## Summary
 
-This page describes the DyKnow Local CLI workflow. `dyknow init` and `dyknow scan` are now implemented in this repo; the later review, update, and publish steps remain the target workflow.
+This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`, and `dyknow diff` are now implemented in this repo; the later review, update, and publish steps remain the target workflow.
 
 ## Prerequisites
 
@@ -118,9 +121,17 @@ Output: `docs/dyknow/.state/repo-map.json`.
 dyknow diff
 ```
 
-**Status:** planned. `dyknow diff` is not implemented yet.
+**Status:** implemented.
 
-Compares current repo state against the previous snapshot. Identifies new/removed features, changed APIs, changed routes, changed config, new dependencies, updated setup process, changed terminology, stale documentation, and which DyKnow Pages are affected.
+Compares current repo state against the previous repo-map snapshot without overwriting that snapshot. The current implementation identifies added, removed, and changed files; tracks warning additions and removals; maps those deltas to affected configured pages via page source patterns; and writes a structured diff artifact at `docs/dyknow/.state/repo-diff.json`.
+
+If you are working inside this repo today, the direct invocation is:
+
+```bash
+node packages/cli/dist/bin.js diff
+```
+
+If no repo-map snapshot exists yet, `dyknow diff` exits with a helpful message telling you to run `dyknow scan` first.
 
 ## Step 4 — Draft updates
 
