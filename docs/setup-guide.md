@@ -243,12 +243,12 @@ dyknow log
 
 **Status:** implemented for the first read-only audit-viewer slice.
 
-The current implementation reads the committed `docs/dyknow/.state/audit-log.jsonl` artifact plus the git-local runtime audit file used for confirmed external PR-open events, validates each JSONL line against the shared audit-entry schema, and pretty-prints recent review and publish entries newest first with a per-entry source log label without mutating the committed log artifact.
+The current implementation reads the committed `docs/dyknow/.state/audit-log.jsonl` artifact plus the git-local runtime audit file used for confirmed external PR-open events, validates each JSONL line against the shared audit-entry schema, pretty-prints recent review and publish entries newest first with a per-entry source log label, supports `--source all|committed|runtime`, and does not mutate the committed log artifact.
 
 If you are working inside this repo today, the direct invocation is:
 
 ```bash
-node packages/cli/dist/bin.js log --limit 10
+node packages/cli/dist/bin.js log --limit 10 --source all
 ```
 
 If no audit log exists yet, `dyknow log` exits successfully and tells you that no audit entries were found.

@@ -167,4 +167,64 @@ describe("dyknow log", () => {
     expect(stdout[0]).toContain("  log: docs/dyknow/.state/audit-log.jsonl");
     expect(stdout[0]).toContain("  log: .git/dyknow/runtime-audit-log.jsonl");
   });
+
+  it("can filter the default log view down to runtime entries only", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-log-"));
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+
+    await mkdir(join(root, "docs", "dyknow", ".state"), { recursive: true });
+    await writeFile(join(root, "README.md"), "# Fixture\n", "utf8");
+    await runGit(root, ["init"]);
+    await runGit(root, ["config", "user.name", "DyKnow Test"]);
+    await runGit(root, ["config", "user.email", "dyknow@example.com"]);
+    await writeFile(
+      join(root, "docs", "dyknow", ".state", "audit-log.jsonl"),
+      `${JSON.stringify({
+        action: "publish:pr-prepared",
+        actor: "copilot",
+        sourcesRead: ["README.md"],
+        outputsAffected: ["docs/product-overview.md"],
+        timestamp: "2026-05-23T20:05:00.000Z",
+        hash: "22222222",
+      })}\n`,
+      "utf8",
+    );
+    const runtimeAuditPath = await runGit(root, [
+      "rev-parse",
+      "--git-path",
+      "dyknow/runtime-audit-log.jsonl",
+    ]);
+    await mkdir(dirname(join(root, runtimeAuditPath)), { recursive: true });
+    await writeFile(
+      join(root, runtimeAuditPath),
+      `${JSON.stringify({
+        action: "publish:pr-opened",
+        actor: "copilot",
+        sourcesRead: ["README.md"],
+        outputsAffected: [
+          "github-pr:https://github.com/example/DyKnow/pull/99",
+        ],
+        timestamp: "2026-05-23T20:10:00.000Z",
+        hash: "33333333",
+      })}\n`,
+      "utf8",
+    );
+
+    const exitCode = await runCli(["log", "--source", "runtime"], {
+      cwd: root,
+      stdout: (message) => {
+        stdout.push(message);
+      },
+      stderr: (message) => {
+        stderr.push(message);
+      },
+    });
+
+    expect(exitCode).toBe(0);
+    expect(stderr).toEqual([]);
+    expect(stdout[0]).toContain("publish:pr-opened by copilot");
+    expect(stdout[0]).not.toContain("publish:pr-prepared by copilot");
+    expect(stdout[0]).toContain("  log: .git/dyknow/runtime-audit-log.jsonl");
+  });
 });
