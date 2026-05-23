@@ -149,7 +149,7 @@ function formatHelp(): string {
     "- dyknow scan [--config <path>] [--output <path>]",
     "- dyknow diff [--config <path>] [--snapshot <path>] [--output <path>]",
     "- dyknow update [--config <path>] [--diff <path>] [--output <path>]",
-    "- dyknow review [--input <path>] [--output <path>] [--approve|--reject|--escalate] (--all | --page <id>...)",
+    "- dyknow review [--input <path>] [--output <path>] [--approve|--reject|--escalate|--skip] (--all | --page <id>...)",
     "- dyknow review [--input <path>] [--output <path>] --edit --page <id> --text <value>",
     "- dyknow commit [--input <path>] [--message <text>]",
     "- dyknow pr [--input <path>] [--base <branch>] [--branch <name>] [--message <text>] [--title <text>]",
@@ -296,6 +296,13 @@ async function handleReview(args: readonly string[], context?: CliContext) {
     if (!result.decision) {
       stdout(
         `Loaded ${result.totalDrafts} update proposal(s) from ${result.outputPath}: ${result.summary}.`,
+      );
+      return 0;
+    }
+
+    if (result.decision === "Skipped") {
+      stdout(
+        `Skipped ${result.updatedProposals} update proposal(s) and left ${result.outputPath} unchanged.`,
       );
       return 0;
     }

@@ -11,13 +11,15 @@ import {
 
 const REVIEW_DECISION_STATES = ["Approved", "Rejected", "Escalated"] as const;
 const REVIEW_MUTATION_STATES = [...REVIEW_DECISION_STATES, "Edited"] as const;
+const REVIEW_ACTION_STATES = [...REVIEW_MUTATION_STATES, "Skipped"] as const;
 
 type ReviewDecision = (typeof REVIEW_DECISION_STATES)[number];
 type ReviewMutationState = (typeof REVIEW_MUTATION_STATES)[number];
+type ReviewActionState = (typeof REVIEW_ACTION_STATES)[number];
 
 export type ReviewOptions = {
   all: boolean;
-  decision?: ReviewMutationState;
+  decision?: ReviewActionState;
   editText?: string;
   inputPath: string;
   outputPath: string;
@@ -25,7 +27,7 @@ export type ReviewOptions = {
 };
 
 export type ReviewResult = {
-  decision?: ReviewMutationState;
+  decision?: ReviewActionState;
   outputPath: string;
   summary: string;
   totalDrafts: number;
@@ -85,6 +87,10 @@ function isEditFlag(argument: string): boolean {
   return argument === "--edit";
 }
 
+function isSkipFlag(argument: string): boolean {
+  return argument === "--skip";
+}
+
 function formatSummary(batch: UpdateDraftBatch): string {
   const counts = new Map<ReviewState, number>();
 
@@ -106,7 +112,7 @@ function formatSummary(batch: UpdateDraftBatch): string {
 export function parseReviewOptions(args: readonly string[]): ReviewOptions {
   let inputPath = DEFAULT_UPDATE_OUTPUT_PATH;
   let outputPath = DEFAULT_UPDATE_OUTPUT_PATH;
-  let decision: ReviewMutationState | undefined;
+  let decision: ReviewActionState | undefined;
   let editText: string | undefined;
   let all = false;
   const pageIds: string[] = [];
@@ -173,10 +179,21 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
       continue;
     }
 
+    if (isSkipFlag(argument)) {
+      if (decision) {
+        throw new Error(
+          "Specify only one review action flag: --approve, --reject, --escalate, --edit, or --skip.",
+        );
+      }
+
+      decision = "Skipped";
+      continue;
+    }
+
     if (isEditFlag(argument)) {
       if (decision) {
         throw new Error(
-          "Specify only one review action flag: --approve, --reject, --escalate, or --edit.",
+          "Specify only one review action flag: --approve, --reject, --escalate, --edit, or --skip.",
         );
       }
 
@@ -187,7 +204,7 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
     if (decisionFlag) {
       if (decision) {
         throw new Error(
-          "Specify only one review action flag: --approve, --reject, --escalate, or --edit.",
+          "Specify only one review action flag: --approve, --reject, --escalate, --edit, or --skip.",
         );
       }
 
@@ -200,7 +217,7 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
 
   if (!decision && (all || pageIds.length > 0)) {
     throw new Error(
-      "Review targets require an action flag: --approve, --reject, --escalate, or --edit.",
+      "Review targets require an action flag: --approve, --reject, --escalate, --edit, or --skip.",
     );
   }
 
@@ -226,6 +243,10 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
     }
   }
 
+  if (decision === "Skipped" && editText) {
+    throw new Error("Skipped review actions do not accept --text.");
+  }
+
   return {
     all,
     inputPath,
@@ -239,7 +260,7 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
 export async function createReviewUpdateBatch(options: {
   all: boolean;
   cwd: string;
-  decision?: ReviewMutationState;
+  decision?: ReviewActionState;
   editText?: string;
   inputPath: string;
   outputPath: string;
@@ -293,6 +314,18 @@ export async function createReviewUpdateBatch(options: {
         `Could not find an update proposal for page "${pageId}" in ${formatRelativePath(rootPath, inputPath)}.`,
       );
     }
+  }
+
+  if (options.decision === "Skipped") {
+    return {
+      decision: options.decision,
+      outputPath: formatRelativePath(rootPath, inputPath),
+      summary: formatSummary(updateBatch),
+      totalDrafts: updateBatch.drafts.length,
+      updatedProposals: updateBatch.drafts.filter((draft) =>
+        targetedPageIds.has(draft.proposal.pageId),
+      ).length,
+    };
   }
 
   const nextBatch = UpdateDraftBatchSchema.parse({
