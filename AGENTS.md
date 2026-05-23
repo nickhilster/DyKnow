@@ -94,13 +94,13 @@ Build a knowledge maintenance system that:
   - `npm run lint` — run Biome checks across the scaffolded workspace.
   - `node packages/cli/dist/bin.js init --force --project-name DyKnow` — generate the repo-local config and schema after a build.
   - `node packages/cli/dist/bin.js scan` — build the repo map snapshot at `docs/dyknow/.state/repo-map.json` after a build.
-  - `node packages/cli/dist/bin.js diff` — compare the current workspace against the saved repo-map snapshot and write `docs/dyknow/.state/repo-diff.json` after a build.
+  - `node packages/cli/dist/bin.js diff` — compare the current workspace against the saved repo-map snapshot, map deltas to affected page IDs via configured source patterns, and write `docs/dyknow/.state/repo-diff.json` after a build.
 
   Implemented DyKnow Local CLI commands:
 
   - `dyknow init` — create `dyknow.config.json` and `dyknow.config.schema.json`
   - `dyknow scan` — build repo map at `docs/dyknow/.state/repo-map.json`
-  - `dyknow diff` — compare the current workspace to the saved repo map and write `docs/dyknow/.state/repo-diff.json`
+  - `dyknow diff` — compare the current workspace to the saved repo map, identify affected pages, and write `docs/dyknow/.state/repo-diff.json`
 
   Planned DyKnow Local CLI commands remain:
 
@@ -116,7 +116,7 @@ See [docs/setup-guide.md](docs/setup-guide.md).
 - Shared engine contracts live in `packages/core`; CLI-specific wiring lives in `packages/cli`.
 - Biome handles formatting and baseline linting; Vitest covers executable validation.
 - The current scanner honors `allowedSources` and `ignoredSources`, extracts package dependencies, classifies route candidates heuristically, and warns on likely sensitive content without writing file contents into the repo map.
-- The current diff command compares a fresh in-memory scan against the last saved repo-map snapshot and writes a structured repo-diff artifact without overwriting the base snapshot.
+- The current diff command compares a fresh in-memory scan against the last saved repo-map snapshot, maps changed source paths to affected page IDs via configured page source patterns, and writes a structured repo-diff artifact without overwriting the base snapshot.
 - Favor small vertical slices that keep source evidence, confidence, risk, and review-state data explicit in the design.
 
 ## Documentation conventions

@@ -6,6 +6,7 @@ sources:
   - sources/dyknow_local_whitepaper.md (section 8)
   - ../dyknow.config.json
   - ../dyknow.config.schema.json
+  - dyknow/.state/repo-diff.json
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
   - ../packages/cli/src/scan.ts
@@ -122,7 +123,7 @@ dyknow diff
 
 **Status:** implemented.
 
-Compares current repo state against the previous repo-map snapshot without overwriting that snapshot. The current implementation identifies added, removed, and changed files; tracks warning additions and removals; and writes a structured diff artifact at `docs/dyknow/.state/repo-diff.json`.
+Compares current repo state against the previous repo-map snapshot without overwriting that snapshot. The current implementation identifies added, removed, and changed files; tracks warning additions and removals; maps those deltas to affected configured pages via page source patterns; and writes a structured diff artifact at `docs/dyknow/.state/repo-diff.json`.
 
 If you are working inside this repo today, the direct invocation is:
 

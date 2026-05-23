@@ -20,6 +20,7 @@ sources:
   - ../packages/cli/src/scan.ts
   - ../.github/workflows/ci.yml
   - dyknow/.state/repo-map.json
+  - dyknow/.state/repo-diff.json
 last_reviewed: 2026-05-23
 confidence: medium
 ---
@@ -85,7 +86,7 @@ These items underpin every later phase. Land them once; reuse everywhere.
 - [x] Snapshot store layout under `docs/dyknow/.state/`.
 - [x] Write repo map snapshot.
 - [x] `dyknow diff` command — compute structured delta between snapshots.
-- [ ] Map deltas → affected page IDs via source map.
+- [x] Map deltas → affected page IDs via source map.
 
 ### LLM runner
 - [ ] LLM provider abstraction (interface for local model, BYO key, vendor).

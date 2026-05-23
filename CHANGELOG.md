@@ -27,7 +27,7 @@ Format: each release gets a heading with date and a short list of changes groupe
 - `docs/implementation-roadmap.md` — task-level build checklist phased 0–5 (foundations, Local CLI, VS Code, public demo, Cloud Lite, pilots).
 
 ### Changed
-- `dyknow diff` now works end to end, comparing the current workspace scan to the saved repo-map snapshot and writing a structured repo-diff artifact.
+- `dyknow diff` now works end to end, comparing the current workspace scan to the saved repo-map snapshot, mapping deltas to affected configured pages, and writing a structured repo-diff artifact.
 - `dyknow init` and `dyknow scan` now work end to end for this repo and are dogfooded against the current workspace.
 - The repo now includes a real TypeScript implementation scaffold for DyKnow Local in addition to the documentation wiki.
 - Relocated `dyknow_local_whitepaper.md` from the repo root into `docs/sources/` so all raw inputs live in one place. Updated every cross-reference (README, CLAUDE, AGENTS, all wiki page frontmatter, log).

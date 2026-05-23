@@ -57,3 +57,11 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | docs/implementation-roadmap.md | Marked the dyknow diff task complete.
 2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after implementing dyknow diff.
 2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot after refreshing the repo map snapshot.
+2026-05-23 | update | README.md | Documented that dyknow diff now maps repo deltas to affected configured pages.
+2026-05-23 | update | AGENTS.md | Reflected affected-page mapping in the current dyknow diff command and repo-diff behavior.
+2026-05-23 | update | CHANGELOG.md | Recorded affected-page mapping in the dyknow diff implementation notes.
+2026-05-23 | update | docs/feature-map.md | Documented that dyknow diff maps repo deltas to affected configured pages.
+2026-05-23 | update | docs/setup-guide.md | Updated the diff workflow step to describe affected-page mapping via page source patterns.
+2026-05-23 | update | docs/implementation-roadmap.md | Marked delta-to-page mapping complete for the current dyknow diff slice.
+2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after adding affected-page mapping.
+2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot with affected configured pages.

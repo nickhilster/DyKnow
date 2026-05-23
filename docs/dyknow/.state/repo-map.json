@@ -103,7 +103,7 @@
     {
       "path": "AGENTS.md",
       "kind": "markdown",
-      "size": 7027,
+      "size": 7203,
       "lineCount": 144,
       "signals": [
         "documentation",
@@ -114,7 +114,7 @@
     {
       "path": "CHANGELOG.md",
       "kind": "markdown",
-      "size": 3847,
+      "size": 3893,
       "lineCount": 58,
       "signals": [
         "documentation"
@@ -145,7 +145,7 @@
     {
       "path": "README.md",
       "kind": "markdown",
-      "size": 5239,
+      "size": 5368,
       "lineCount": 82,
       "signals": [
         "documentation"
@@ -175,8 +175,8 @@
     {
       "path": "docs/feature-map.md",
       "kind": "markdown",
-      "size": 5385,
-      "lineCount": 109,
+      "size": 5460,
+      "lineCount": 110,
       "signals": [
         "documentation"
       ],
@@ -195,8 +195,8 @@
     {
       "path": "docs/implementation-roadmap.md",
       "kind": "markdown",
-      "size": 12615,
-      "lineCount": 306,
+      "size": 12648,
+      "lineCount": 307,
       "signals": [
         "documentation"
       ],
@@ -225,8 +225,8 @@
     {
       "path": "docs/log.md",
       "kind": "markdown",
-      "size": 5285,
-      "lineCount": 60,
+      "size": 6264,
+      "lineCount": 68,
       "signals": [
         "documentation"
       ],
@@ -265,8 +265,8 @@
     {
       "path": "docs/setup-guide.md",
       "kind": "markdown",
-      "size": 5378,
-      "lineCount": 207,
+      "size": 5484,
+      "lineCount": 208,
       "signals": [
         "documentation"
       ],
@@ -364,8 +364,8 @@
     {
       "path": "packages/cli/src/diff.ts",
       "kind": "typescript",
-      "size": 3931,
-      "lineCount": 156,
+      "size": 3956,
+      "lineCount": 157,
       "signals": [
         "source-code"
       ],
@@ -394,8 +394,8 @@
     {
       "path": "packages/cli/test/diff.test.ts",
       "kind": "typescript",
-      "size": 2987,
-      "lineCount": 106,
+      "size": 4705,
+      "lineCount": 168,
       "signals": [
         "source-code"
       ],
@@ -493,8 +493,8 @@
     {
       "path": "packages/core/src/repo-diff.ts",
       "kind": "typescript",
-      "size": 6635,
-      "lineCount": 240,
+      "size": 9850,
+      "lineCount": 350,
       "signals": [
         "source-code"
       ],
@@ -545,8 +545,8 @@
     {
       "path": "packages/core/test/repo-diff.test.ts",
       "kind": "typescript",
-      "size": 3086,
-      "lineCount": 115,
+      "size": 4535,
+      "lineCount": 168,
       "signals": [
         "source-code"
       ],
@@ -595,6 +595,6 @@
   ],
   "outputPath": "docs/dyknow/.state/repo-map.json",
   "rootPath": "C:\\DEV\\DyKnow",
-  "scannedAt": "2026-05-23T16:52:40.807Z",
+  "scannedAt": "2026-05-23T16:56:54.276Z",
   "warnings": []
 }

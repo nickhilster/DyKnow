@@ -146,6 +146,7 @@ export async function createRepoDiff(options: {
   const repoDiff = compareRepoMaps(previousRepoMap, currentRepoMap, {
     baseSnapshotPath: formatRelativePath(rootPath, snapshotPath),
     outputPath: formatRelativePath(rootPath, outputPath),
+    pages: config.pages,
   });
 
   await mkdir(dirname(outputPath), { recursive: true });

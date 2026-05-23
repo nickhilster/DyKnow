@@ -31,6 +31,54 @@ describe("dyknow diff", () => {
     );
 
     await runCli(["init", "--project-name", "Fixture"], { cwd: root });
+    await writeFile(
+      join(root, "dyknow.config.json"),
+      `${JSON.stringify(
+        {
+          $schema: "./dyknow.config.schema.json",
+          projectName: "Fixture",
+          mode: "local-only",
+          allowedSources: ["README.md", "docs/**", "package.json"],
+          ignoredSources: [
+            ".env",
+            ".env.*",
+            "secrets/**",
+            "node_modules/**",
+            "dist/**",
+            "coverage/**",
+            "logs/**",
+          ],
+          pages: [
+            {
+              id: "docs-page",
+              title: "Docs Page",
+              outputPath: "docs/docs-page.md",
+              audience: "mixed",
+              sources: ["docs/**"],
+              reviewRules: {
+                approvalRequired: true,
+              },
+            },
+            {
+              id: "package-page",
+              title: "Package Page",
+              outputPath: "docs/package-page.md",
+              audience: "mixed",
+              sources: ["package.json"],
+              reviewRules: {
+                approvalRequired: true,
+              },
+            },
+          ],
+          approvalRequired: true,
+          llmProvider: "local",
+          publishTargets: [],
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
     await runCli(["scan"], { cwd: root });
 
     await rm(join(root, "docs", "old.md"));
@@ -80,6 +128,20 @@ describe("dyknow diff", () => {
       addedWarnings: 0,
       removedWarnings: 0,
     });
+    expect(repoDiff.affectedPages).toEqual([
+      {
+        pageId: "docs-page",
+        outputPath: "docs/docs-page.md",
+        matchedSourcePaths: ["docs/new.md", "docs/old.md"],
+        reasons: ["added-file", "removed-file"],
+      },
+      {
+        pageId: "package-page",
+        outputPath: "docs/package-page.md",
+        matchedSourcePaths: ["package.json"],
+        reasons: ["changed-file"],
+      },
+    ]);
     expect(repoDiff.addedFiles[0]?.path).toBe("docs/new.md");
     expect(repoDiff.removedFiles[0]?.path).toBe("docs/old.md");
     expect(repoDiff.changedFiles[0]?.path).toBe("package.json");

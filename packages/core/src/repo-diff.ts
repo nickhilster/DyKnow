@@ -1,5 +1,8 @@
+import { matchesGlob } from "node:path";
+
 import { z } from "zod";
 
+import { type PageDefinition, PageDefinitionSchema } from "./contracts.js";
 import {
   type DependencyRecord,
   type RepoFileSummary,
@@ -28,6 +31,21 @@ export const RepoFileChangeSchema = z.object({
   after: RepoFileSummarySchema,
 });
 
+export const AffectedPageReasonSchema = z.enum([
+  "added-file",
+  "changed-file",
+  "removed-file",
+  "added-warning",
+  "removed-warning",
+]);
+
+export const AffectedPageSchema = z.object({
+  pageId: PageDefinitionSchema.shape.id,
+  outputPath: PageDefinitionSchema.shape.outputPath,
+  matchedSourcePaths: z.array(z.string().min(1)).min(1),
+  reasons: z.array(AffectedPageReasonSchema).min(1),
+});
+
 export const RepoMapDiffSummarySchema = z.object({
   addedFiles: z.number().int().nonnegative(),
   changedFiles: z.number().int().nonnegative(),
@@ -49,13 +67,24 @@ export const RepoMapDiffSchema = z.object({
   removedFiles: z.array(RepoFileSummarySchema),
   addedWarnings: z.array(RepoMapWarningSchema),
   removedWarnings: z.array(RepoMapWarningSchema),
+  affectedPages: z.array(AffectedPageSchema).default([]),
   summary: RepoMapDiffSummarySchema,
 });
 
+export type AffectedPageReason = z.infer<typeof AffectedPageReasonSchema>;
+export type AffectedPage = z.infer<typeof AffectedPageSchema>;
 export type RepoFileChangeType = z.infer<typeof RepoFileChangeTypeSchema>;
 export type RepoFileChange = z.infer<typeof RepoFileChangeSchema>;
 export type RepoMapDiffSummary = z.infer<typeof RepoMapDiffSummarySchema>;
 export type RepoMapDiff = z.infer<typeof RepoMapDiffSchema>;
+
+const AFFECTED_PAGE_REASON_ORDER: readonly AffectedPageReason[] = [
+  "added-file",
+  "changed-file",
+  "removed-file",
+  "added-warning",
+  "removed-warning",
+];
 
 function sortStrings(values: readonly string[]): string[] {
   return [...values].sort((left, right) => left.localeCompare(right));
@@ -133,12 +162,67 @@ function sortWarnings(warnings: readonly RepoMapWarning[]): RepoMapWarning[] {
   );
 }
 
+function sortAffectedPageReasons(
+  reasons: ReadonlySet<AffectedPageReason>,
+): AffectedPageReason[] {
+  return AFFECTED_PAGE_REASON_ORDER.filter((reason) => reasons.has(reason));
+}
+
+function resolveAffectedPages(
+  pages: readonly PageDefinition[],
+  sourceChanges: readonly {
+    path: string;
+    reason: AffectedPageReason;
+  }[],
+): AffectedPage[] {
+  const affectedPages = new Map<
+    string,
+    {
+      outputPath: string;
+      matchedSourcePaths: Set<string>;
+      reasons: Set<AffectedPageReason>;
+    }
+  >();
+
+  for (const sourceChange of sourceChanges) {
+    for (const page of pages) {
+      if (
+        !page.sources.some((pattern) => matchesGlob(sourceChange.path, pattern))
+      ) {
+        continue;
+      }
+
+      const entry = affectedPages.get(page.id) ?? {
+        outputPath: page.outputPath,
+        matchedSourcePaths: new Set<string>(),
+        reasons: new Set<AffectedPageReason>(),
+      };
+
+      entry.matchedSourcePaths.add(sourceChange.path);
+      entry.reasons.add(sourceChange.reason);
+      affectedPages.set(page.id, entry);
+    }
+  }
+
+  return [...affectedPages.entries()]
+    .sort(([leftId], [rightId]) => leftId.localeCompare(rightId))
+    .map(([pageId, entry]) => ({
+      pageId,
+      outputPath: entry.outputPath,
+      matchedSourcePaths: [...entry.matchedSourcePaths].sort((left, right) =>
+        left.localeCompare(right),
+      ),
+      reasons: sortAffectedPageReasons(entry.reasons),
+    }));
+}
+
 export function compareRepoMaps(
   previous: RepoMap,
   current: RepoMap,
   options?: {
     baseSnapshotPath?: string;
     outputPath?: string;
+    pages?: readonly PageDefinition[];
   },
 ): RepoMapDiff {
   const previousSnapshot = RepoMapSchema.parse(previous);
@@ -214,6 +298,31 @@ export function compareRepoMaps(
       .filter(([key]) => !currentWarnings.has(key))
       .map(([, warning]) => warning),
   );
+  const affectedPages =
+    options?.pages && options.pages.length > 0
+      ? resolveAffectedPages(options.pages, [
+          ...addedFiles.map((file) => ({
+            path: file.path,
+            reason: "added-file" as const,
+          })),
+          ...changedFiles.map((file) => ({
+            path: file.path,
+            reason: "changed-file" as const,
+          })),
+          ...removedFiles.map((file) => ({
+            path: file.path,
+            reason: "removed-file" as const,
+          })),
+          ...addedWarnings.map((warning) => ({
+            path: warning.path,
+            reason: "added-warning" as const,
+          })),
+          ...removedWarnings.map((warning) => ({
+            path: warning.path,
+            reason: "removed-warning" as const,
+          })),
+        ])
+      : undefined;
 
   return RepoMapDiffSchema.parse({
     comparedAt: new Date().toISOString(),
@@ -228,6 +337,7 @@ export function compareRepoMaps(
     removedFiles,
     addedWarnings,
     removedWarnings,
+    affectedPages,
     summary: {
       addedFiles: addedFiles.length,
       changedFiles: changedFiles.length,

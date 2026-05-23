@@ -65,7 +65,7 @@ This pattern follows Karpathy's "LLM wiki" model and DyKnow's own Dynamic Knowle
 The current implementation slice uses:
 
 - **TypeScript + npm workspaces** for shared code across DyKnow Local surfaces.
-- **`packages/core`** for JSON-serializable shared contracts, config validation, repo-map schemas, and repo-diff schemas.
+- **`packages/core`** for JSON-serializable shared contracts, config validation, repo-map schemas, and repo-diff schemas that also map deltas to affected page IDs.
 - **`packages/cli`** for the DyKnow Local CLI package with working `dyknow init`, `dyknow scan`, and `dyknow diff` commands.
 - **Biome + Vitest + GitHub Actions** for formatting, linting, tests, and CI.
 
@@ -78,4 +78,4 @@ The current implementation slice uses:
 - Validating the bootstrap: run `npm test`, `npm run build`, and `npm run lint`.
 - Creating the repo-local DyKnow config: run `node packages/cli/dist/bin.js init --force --project-name DyKnow` after a build.
 - Generating the repo map snapshot: run `node packages/cli/dist/bin.js scan` after a build.
-- Generating the structured repo diff: run `node packages/cli/dist/bin.js diff` after a build and after at least one scan.
+- Generating the structured repo diff: run `node packages/cli/dist/bin.js diff` after a build and after at least one scan. The diff artifact includes affected configured pages based on matched source patterns.
