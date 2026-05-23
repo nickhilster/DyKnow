@@ -5,6 +5,7 @@ import {
   DEFAULT_IGNORED_SOURCE_PATTERNS,
   DEFAULT_REPO_DIFF_OUTPUT_PATH,
   DEFAULT_REPO_MAP_OUTPUT_PATH,
+  DEFAULT_UPDATE_OUTPUT_PATH,
   DYKNOW_CONFIG_FILE_NAME,
   DYKNOW_CONFIG_SCHEMA_FILE_NAME,
   createInitialDyknowConfig,
@@ -15,11 +16,11 @@ import {
 
 import { createRepoDiff, parseDiffOptions } from "./diff.js";
 import { scanWorkspace } from "./scan.js";
+import { createUpdateDraftBatch, parseUpdateOptions } from "./update.js";
 
 export const PLANNED_COMMANDS = [
   "dyknow init",
   "dyknow scan",
-  "dyknow update",
   "dyknow review",
   "dyknow commit",
   "dyknow pr",
@@ -150,6 +151,10 @@ function formatHelp(): string {
     "- dyknow init [--force] [--connected] [--project-name <name>]",
     "- dyknow scan [--config <path>] [--output <path>]",
     "- dyknow diff [--config <path>] [--snapshot <path>] [--output <path>]",
+    "- dyknow update [--config <path>] [--diff <path>] [--output <path>]",
+    "",
+    `Default repo diff output: ${DEFAULT_REPO_DIFF_OUTPUT_PATH}`,
+    `Default update output: ${DEFAULT_UPDATE_OUTPUT_PATH}`,
     "",
     "Default ignored source patterns:",
     ...DEFAULT_IGNORED_SOURCE_PATTERNS.map((pattern) => `- ${pattern}`),
@@ -249,6 +254,28 @@ async function handleDiff(args: readonly string[], context?: CliContext) {
   }
 }
 
+async function handleUpdate(args: readonly string[], context?: CliContext) {
+  const { cwd, stderr, stdout } = getContext(context);
+
+  try {
+    const options = parseUpdateOptions(args);
+    const updateBatch = await createUpdateDraftBatch({
+      cwd,
+      configPath: options.configPath,
+      diffPath: options.diffPath,
+      outputPath: options.outputPath,
+    });
+
+    stdout(
+      `Drafted ${updateBatch.summary.draftedProposals} update proposal(s) from ${updateBatch.summary.affectedPages} affected page(s) and wrote ${updateBatch.outputPath}.`,
+    );
+    return 0;
+  } catch (error) {
+    stderr(error instanceof Error ? error.message : "Unknown update error.");
+    return 1;
+  }
+}
+
 export function formatBootstrapStatus(): string {
   return formatHelp();
 }
@@ -275,6 +302,10 @@ export async function runCli(
 
   if (command === "diff") {
     return handleDiff(commandArgs, context);
+  }
+
+  if (command === "update") {
+    return handleUpdate(commandArgs, context);
   }
 
   if (

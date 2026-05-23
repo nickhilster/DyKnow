@@ -7,7 +7,7 @@ DyKnow keeps a company's most important knowledge pages aligned with the latest 
 - **DyKnow Cloud** — hosted system that monitors approved external/internal sources.
 - **DyKnow Local** — repo-native CLI / VS Code extension that runs inside the customer's environment.
 
-This repository contains the working concept, whitepaper, documentation system, and the initial TypeScript workspace for DyKnow Local's shared engine plus the first implemented `init`, `scan`, and `diff` CLI slices.
+This repository contains the working concept, whitepaper, documentation system, and the initial TypeScript workspace for DyKnow Local's shared engine plus the first implemented `init`, `scan`, `diff`, and `update` CLI slices.
 
 ## Repo layout
 
@@ -65,8 +65,8 @@ This pattern follows Karpathy's "LLM wiki" model and DyKnow's own Dynamic Knowle
 The current implementation slice uses:
 
 - **TypeScript + npm workspaces** for shared code across DyKnow Local surfaces.
-- **`packages/core`** for JSON-serializable shared contracts, config validation, repo-map schemas, and repo-diff schemas that also map deltas to affected page IDs.
-- **`packages/cli`** for the DyKnow Local CLI package with working `dyknow init`, `dyknow scan`, and `dyknow diff` commands.
+- **`packages/core`** for JSON-serializable shared contracts, config validation, repo-map schemas, repo-diff schemas, and provider-backed update drafting.
+- **`packages/cli`** for the DyKnow Local CLI package with working `dyknow init`, `dyknow scan`, `dyknow diff`, and `dyknow update` commands.
 - **Biome + Vitest + GitHub Actions** for formatting, linting, tests, and CI.
 
 ## Quick starts
@@ -79,3 +79,4 @@ The current implementation slice uses:
 - Creating the repo-local DyKnow config: run `node packages/cli/dist/bin.js init --force --project-name DyKnow` after a build.
 - Generating the repo map snapshot: run `node packages/cli/dist/bin.js scan` after a build.
 - Generating the structured repo diff: run `node packages/cli/dist/bin.js diff` after a build and after at least one scan. The diff artifact includes affected configured pages based on matched source patterns.
+- Drafting update proposals from the current repo diff: run `node packages/cli/dist/bin.js update` after a build and after `dyknow diff`. The current implementation writes `docs/dyknow/.state/update-proposals.json` using the local stub update provider and always requires human review.

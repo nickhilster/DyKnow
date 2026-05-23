@@ -65,3 +65,14 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | docs/implementation-roadmap.md | Marked delta-to-page mapping complete for the current dyknow diff slice.
 2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after adding affected-page mapping.
 2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot with affected configured pages.
+2026-05-23 | update | repo bootstrap | Added default update prompt templates and a provider-backed local update runner foundation.
+2026-05-23 | update | AGENTS.md | Reflected the new update templates and local-only update runner foundation.
+2026-05-23 | update | CHANGELOG.md | Recorded the first dyknow update foundation modules and local stub provider behavior.
+2026-05-23 | update | docs/implementation-roadmap.md | Marked prompt templates and the provider abstraction complete for the dyknow update foundation slice.
+2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after adding the dyknow update foundation modules.
+2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot after adding the dyknow update foundation modules.
+2026-05-23 | update | packages/cli/src/update.ts | Implemented the first dyknow update command to draft proposals from the repo diff into a structured state artifact.
+2026-05-23 | update | docs/setup-guide.md | Marked dyknow update implemented for the local stub drafting path and documented the update-proposals artifact.
+2026-05-23 | update | docs/feature-map.md | Marked dyknow update implemented and described the current local stub review requirement.
+2026-05-23 | update | AGENTS.md | Updated agent context to include the dyknow update command and update-proposals artifact.
+2026-05-23 | update | docs/dyknow/.state/update-proposals.json | Generated the first update-proposals artifact from the current repo diff using the local stub provider.

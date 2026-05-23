@@ -6,10 +6,13 @@ sources:
   - sources/dyknow_local_whitepaper.md (sections 4, 6, 7, 8, 13)
   - ../dyknow.config.json
   - dyknow/.state/repo-diff.json
+  - dyknow/.state/update-proposals.json
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
   - ../packages/cli/src/scan.ts
+  - ../packages/cli/src/update.ts
   - ../packages/core/src/repo-diff.ts
+  - ../packages/core/src/update-runner.ts
   - dyknow/.state/repo-map.json
 last_reviewed: 2026-05-23
 confidence: high
@@ -65,7 +68,7 @@ READMEs, `docs/` folders, source route files, API schemas, OpenAPI specs, packag
 | `dyknow init` | Implemented | Create `dyknow.config.json` and `dyknow.config.schema.json` with local-first defaults. |
 | `dyknow scan` | Implemented | Build repo map at `docs/dyknow/.state/repo-map.json` while honoring `allowedSources` / `ignoredSources`, extracting package dependencies, and warning on likely sensitive content. |
 | `dyknow diff` | Implemented | Compare the current workspace scan against the saved repo map snapshot, map deltas to affected configured pages, and write `docs/dyknow/.state/repo-diff.json`. |
-| `dyknow update` | Planned | Draft updates with reasoning, source evidence, confidence. |
+| `dyknow update` | Implemented | Draft update proposals from `docs/dyknow/.state/repo-diff.json`, include reasoning and source evidence, and write `docs/dyknow/.state/update-proposals.json`. The current provider is a local stub and still requires human review. |
 | `dyknow review` | Planned | Inspect proposed diffs. |
 | `dyknow commit` | Planned | Commit approved updates. |
 | `dyknow pr` | Planned | Open a pull request with updates. |
