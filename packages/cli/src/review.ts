@@ -3,15 +3,24 @@ import { dirname, relative, resolve } from "node:path";
 
 import {
   DEFAULT_UPDATE_OUTPUT_PATH,
+  type RepoMapDiff,
+  RepoMapDiffSchema,
   type ReviewState,
   ReviewStateSchema,
   type UpdateDraftBatch,
   UpdateDraftBatchSchema,
+  createLocalStubUpdateProvider,
+  draftUpdateProposal,
+  parseDyknowConfig,
 } from "@dyknow/core";
 
 const REVIEW_DECISION_STATES = ["Approved", "Rejected", "Escalated"] as const;
 const REVIEW_MUTATION_STATES = [...REVIEW_DECISION_STATES, "Edited"] as const;
-const REVIEW_ACTION_STATES = [...REVIEW_MUTATION_STATES, "Skipped"] as const;
+const REVIEW_ACTION_STATES = [
+  ...REVIEW_MUTATION_STATES,
+  "Skipped",
+  "Regenerated",
+] as const;
 
 type ReviewDecision = (typeof REVIEW_DECISION_STATES)[number];
 type ReviewMutationState = (typeof REVIEW_MUTATION_STATES)[number];
@@ -67,6 +76,29 @@ function parseUpdateBatch(
   }
 }
 
+function parseRepoDiffSnapshot(
+  snapshotText: string,
+  snapshotPath: string,
+): RepoMapDiff {
+  let value: unknown;
+
+  try {
+    value = JSON.parse(snapshotText);
+  } catch (error) {
+    const reason =
+      error instanceof Error ? error.message : "Unknown JSON parse error.";
+    throw new Error(`Invalid repo diff JSON at ${snapshotPath}: ${reason}`);
+  }
+
+  try {
+    return RepoMapDiffSchema.parse(value);
+  } catch (error) {
+    const reason =
+      error instanceof Error ? error.message : "Unknown schema error.";
+    throw new Error(`Invalid repo diff at ${snapshotPath}: ${reason}`);
+  }
+}
+
 function parseReviewDecision(argument: string): ReviewDecision | undefined {
   if (argument === "--approve") {
     return "Approved";
@@ -89,6 +121,82 @@ function isEditFlag(argument: string): boolean {
 
 function isSkipFlag(argument: string): boolean {
   return argument === "--skip";
+}
+
+function isRegenerateFlag(argument: string): boolean {
+  return argument === "--regenerate";
+}
+
+async function regenerateDraft(options: {
+  draft: UpdateDraftBatch["drafts"][number];
+  rootPath: string;
+  updateBatch: UpdateDraftBatch;
+}) {
+  const configPath = resolve(options.rootPath, options.updateBatch.configPath);
+  const repoDiffPath = resolve(
+    options.rootPath,
+    options.updateBatch.repoDiffPath,
+  );
+  const configText = await readFile(configPath, "utf8");
+  const config = parseDyknowConfig(configText);
+  const repoDiffText = await readFile(repoDiffPath, "utf8");
+  const repoDiff = parseRepoDiffSnapshot(
+    repoDiffText,
+    formatRelativePath(options.rootPath, repoDiffPath),
+  );
+  const page = config.pages.find(
+    (candidate) => candidate.id === options.draft.proposal.pageId,
+  );
+
+  if (!page) {
+    throw new Error(
+      `Update proposals referenced unknown page "${options.draft.proposal.pageId}". Regenerate dyknow update with the current config.`,
+    );
+  }
+
+  const affectedPage = repoDiff.affectedPages.find(
+    (candidate) => candidate.pageId === options.draft.proposal.pageId,
+  );
+
+  if (!affectedPage) {
+    throw new Error(
+      `Could not find repo diff evidence for page "${options.draft.proposal.pageId}" in ${formatRelativePath(options.rootPath, repoDiffPath)}. Run dyknow diff and dyknow update again.`,
+    );
+  }
+
+  const pagePath = resolve(options.rootPath, page.outputPath);
+  let currentContent = "";
+
+  try {
+    currentContent = await readFile(pagePath, "utf8");
+  } catch (error) {
+    if (
+      !(
+        error &&
+        typeof error === "object" &&
+        "code" in error &&
+        error.code === "ENOENT"
+      )
+    ) {
+      throw error;
+    }
+  }
+
+  const provider = createLocalStubUpdateProvider();
+  const proposal = await draftUpdateProposal({
+    config,
+    provider,
+    request: {
+      page,
+      affectedPage,
+      currentContent,
+    },
+  });
+
+  return {
+    affectedPage,
+    proposal,
+  };
 }
 
 function formatSummary(batch: UpdateDraftBatch): string {
@@ -182,7 +290,7 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
     if (isSkipFlag(argument)) {
       if (decision) {
         throw new Error(
-          "Specify only one review action flag: --approve, --reject, --escalate, --edit, or --skip.",
+          "Specify only one review action flag: --approve, --reject, --escalate, --edit, --skip, or --regenerate.",
         );
       }
 
@@ -190,10 +298,21 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
       continue;
     }
 
+    if (isRegenerateFlag(argument)) {
+      if (decision) {
+        throw new Error(
+          "Specify only one review action flag: --approve, --reject, --escalate, --edit, --skip, or --regenerate.",
+        );
+      }
+
+      decision = "Regenerated";
+      continue;
+    }
+
     if (isEditFlag(argument)) {
       if (decision) {
         throw new Error(
-          "Specify only one review action flag: --approve, --reject, --escalate, --edit, or --skip.",
+          "Specify only one review action flag: --approve, --reject, --escalate, --edit, --skip, or --regenerate.",
         );
       }
 
@@ -204,7 +323,7 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
     if (decisionFlag) {
       if (decision) {
         throw new Error(
-          "Specify only one review action flag: --approve, --reject, --escalate, --edit, or --skip.",
+          "Specify only one review action flag: --approve, --reject, --escalate, --edit, --skip, or --regenerate.",
         );
       }
 
@@ -217,7 +336,7 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
 
   if (!decision && (all || pageIds.length > 0)) {
     throw new Error(
-      "Review targets require an action flag: --approve, --reject, --escalate, --edit, or --skip.",
+      "Review targets require an action flag: --approve, --reject, --escalate, --edit, --skip, or --regenerate.",
     );
   }
 
@@ -243,8 +362,10 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
     }
   }
 
-  if (decision === "Skipped" && editText) {
-    throw new Error("Skipped review actions do not accept --text.");
+  if ((decision === "Skipped" || decision === "Regenerated") && editText) {
+    throw new Error(
+      "Skipped and regenerated review actions do not accept --text.",
+    );
   }
 
   return {
@@ -323,6 +444,49 @@ export async function createReviewUpdateBatch(options: {
       summary: formatSummary(updateBatch),
       totalDrafts: updateBatch.drafts.length,
       updatedProposals: updateBatch.drafts.filter((draft) =>
+        targetedPageIds.has(draft.proposal.pageId),
+      ).length,
+    };
+  }
+
+  if (options.decision === "Regenerated") {
+    const drafts = await Promise.all(
+      updateBatch.drafts.map(async (draft) => {
+        if (!targetedPageIds.has(draft.proposal.pageId)) {
+          return draft;
+        }
+
+        return regenerateDraft({
+          draft,
+          rootPath,
+          updateBatch,
+        });
+      }),
+    );
+    const nextBatch = UpdateDraftBatchSchema.parse({
+      ...updateBatch,
+      draftedAt: new Date().toISOString(),
+      outputPath: formatRelativePath(rootPath, outputPath),
+      drafts,
+      summary: {
+        affectedPages: drafts.length,
+        draftedProposals: drafts.length,
+      },
+    });
+
+    await mkdir(dirname(outputPath), { recursive: true });
+    await writeFile(
+      outputPath,
+      `${JSON.stringify(nextBatch, null, 2)}\n`,
+      "utf8",
+    );
+
+    return {
+      decision: options.decision,
+      outputPath: formatRelativePath(rootPath, outputPath),
+      summary: formatSummary(nextBatch),
+      totalDrafts: nextBatch.drafts.length,
+      updatedProposals: nextBatch.drafts.filter((draft) =>
         targetedPageIds.has(draft.proposal.pageId),
       ).length,
     };

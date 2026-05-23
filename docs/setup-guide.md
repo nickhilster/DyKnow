@@ -175,9 +175,9 @@ The current implementation uses the local stub update provider. It drafts `Needs
 dyknow review
 ```
 
-**Status:** implemented for the first persisted decision, edit, and skip slice.
+**Status:** implemented for the first persisted decision, edit, skip, and regenerate slice.
 
-The current implementation reads `docs/dyknow/.state/update-proposals.json`, can summarize proposal counts by review state, can persist approval, rejection, or escalation decisions, can replace one targeted proposal's `proposedText` while marking it `Edited`, and can explicitly skip targeted proposals without changing the snapshot.
+The current implementation reads `docs/dyknow/.state/update-proposals.json`, can summarize proposal counts by review state, can persist approval, rejection, or escalation decisions, can replace one targeted proposal's `proposedText` while marking it `Edited`, can explicitly skip targeted proposals without changing the snapshot, and can regenerate targeted proposals from the saved repo diff.
 
 If you are working inside this repo today, the direct invocation is:
 
@@ -203,6 +203,12 @@ To skip one proposal for now without changing its current review state:
 node packages/cli/dist/bin.js review --skip --page product-overview
 ```
 
+To regenerate one proposal from the saved repo diff and reset it to a fresh `Needs review` draft:
+
+```bash
+node packages/cli/dist/bin.js review --regenerate --page product-overview
+```
+
 If no update-proposals snapshot exists yet, `dyknow review` exits with a helpful message telling you to run `dyknow update` first.
 
 The full walkthrough remains broader than the current slice. Reviewers will eventually be able to:
@@ -215,7 +221,7 @@ The full walkthrough remains broader than the current slice. Reviewers will even
 - Mark source as irrelevant
 - Update config rules
 
-Today, approve / reject / escalate plus a single edited-proposal text path and explicit skip handling are implemented. Regenerate and editor-driven review remain planned.
+Today, approve / reject / escalate plus a single edited-proposal text path, explicit skip handling, and targeted regenerate handling are implemented. Editor-driven review remains planned.
 
 ## Step 6 — Commit or publish
 
