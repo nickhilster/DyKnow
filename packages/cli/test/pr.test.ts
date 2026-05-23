@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
@@ -17,6 +17,33 @@ import { buildPrBody } from "../src/pr.js";
 const execFileAsync = promisify(execFile);
 const originalPath = process.env.PATH ?? "";
 const originalGhCommand = process.env.DYKNOW_GH_COMMAND;
+
+async function writeFakeGhCommand(tools: string) {
+  if (process.platform === "win32") {
+    const commandPath = join(tools, "gh.cmd");
+
+    await writeFile(
+      commandPath,
+      ["@echo off", "echo https://github.com/example/DyKnow/pull/99"].join(
+        "\r\n",
+      ),
+      "utf8",
+    );
+
+    return commandPath;
+  }
+
+  const commandPath = join(tools, "gh");
+
+  await writeFile(
+    commandPath,
+    ["#!/bin/sh", "echo https://github.com/example/DyKnow/pull/99"].join("\n"),
+    "utf8",
+  );
+  await chmod(commandPath, 0o755);
+
+  return commandPath;
+}
 
 async function runGit(cwd: string, args: readonly string[]) {
   const result = await execFileAsync("git", [...args], {
@@ -99,15 +126,9 @@ describe("dyknow pr", () => {
       )}\n`,
       "utf8",
     );
-    await writeFile(
-      join(tools, "gh.cmd"),
-      ["@echo off", "echo https://github.com/example/DyKnow/pull/99"].join(
-        "\r\n",
-      ),
-      "utf8",
-    );
+    const fakeGhCommand = await writeFakeGhCommand(tools);
     process.env.PATH = `${tools};${originalPath}`;
-    process.env.DYKNOW_GH_COMMAND = join(tools, "gh.cmd");
+    process.env.DYKNOW_GH_COMMAND = fakeGhCommand;
 
     const stdout: string[] = [];
     const stderr: string[] = [];
