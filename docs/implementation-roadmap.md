@@ -113,6 +113,7 @@ These items underpin every later phase. Land them once; reuse everywhere.
 - [ ] Edit-in-editor for proposed text.
 - [x] Persist review decisions to snapshot.
 - [x] Persist one edited proposal text back into the review snapshot.
+- [x] Handle explicit skip actions without mutating the review snapshot.
 
 ### Commit / PR
 - [x] `dyknow commit` — apply approved updates and create a single commit.

@@ -175,9 +175,9 @@ The current implementation uses the local stub update provider. It drafts `Needs
 dyknow review
 ```
 
-**Status:** implemented for the first persisted decision-and-edit slice.
+**Status:** implemented for the first persisted decision, edit, and skip slice.
 
-The current implementation reads `docs/dyknow/.state/update-proposals.json`, can summarize proposal counts by review state, can persist approval, rejection, or escalation decisions, and can replace one targeted proposal's `proposedText` while marking it `Edited`.
+The current implementation reads `docs/dyknow/.state/update-proposals.json`, can summarize proposal counts by review state, can persist approval, rejection, or escalation decisions, can replace one targeted proposal's `proposedText` while marking it `Edited`, and can explicitly skip targeted proposals without changing the snapshot.
 
 If you are working inside this repo today, the direct invocation is:
 
@@ -197,6 +197,12 @@ To replace one proposal's draft text without applying it yet:
 node packages/cli/dist/bin.js review --edit --page product-overview --text "Revised draft text"
 ```
 
+To skip one proposal for now without changing its current review state:
+
+```bash
+node packages/cli/dist/bin.js review --skip --page product-overview
+```
+
 If no update-proposals snapshot exists yet, `dyknow review` exits with a helpful message telling you to run `dyknow update` first.
 
 The full walkthrough remains broader than the current slice. Reviewers will eventually be able to:
@@ -209,7 +215,7 @@ The full walkthrough remains broader than the current slice. Reviewers will even
 - Mark source as irrelevant
 - Update config rules
 
-Today, approve / reject / escalate plus a single edited-proposal text path are implemented. Regenerate, skip, and editor-driven review remain planned.
+Today, approve / reject / escalate plus a single edited-proposal text path and explicit skip handling are implemented. Regenerate and editor-driven review remain planned.
 
 ## Step 6 — Commit or publish
 
