@@ -176,3 +176,9 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | CHANGELOG.md | Recorded confirmed external PR-open runtime audit coverage and merged log viewing.
 2026-05-23 | update | docs/setup-guide.md | Clarified that confirmed external PR-open events now land in the git-local runtime audit file.
 2026-05-23 | update | docs/feature-map.md | Updated the dyknow log and dyknow pr descriptions for confirmed external PR-open runtime events.
+2026-05-23 | update | packages/cli/src/log.ts | Added per-entry source log labels so merged committed and runtime audit output stays traceable.
+2026-05-23 | update | README.md | Documented that dyknow log now labels each rendered entry with its source audit file.
+2026-05-23 | update | AGENTS.md | Updated agent context to note per-entry source labels in dyknow log output.
+2026-05-23 | update | CHANGELOG.md | Recorded per-entry source labels for the merged dyknow log audit view.
+2026-05-23 | update | docs/setup-guide.md | Clarified that dyknow log now shows which audit file each rendered entry came from.
+2026-05-23 | update | docs/feature-map.md | Updated the dyknow log command description to include per-entry source labels.

@@ -98,6 +98,7 @@ describe("dyknow log", () => {
     expect(stdout[0]).toContain(
       "[2026-05-23T20:10:00.000Z] review:regenerate by copilot",
     );
+    expect(stdout[0]).toContain("  log: docs/dyknow/.state/audit-log.jsonl");
     expect(stdout[0]).toContain(
       "[2026-05-23T20:05:00.000Z] review:edit by copilot",
     );
@@ -163,6 +164,7 @@ describe("dyknow log", () => {
     expect(stderr).toEqual([]);
     expect(stdout[0]).toContain("publish:pr-opened by copilot");
     expect(stdout[0]).toContain("publish:pr-prepared by copilot");
-    expect(stdout[0]).toContain(".git/dyknow/runtime-audit-log.jsonl");
+    expect(stdout[0]).toContain("  log: docs/dyknow/.state/audit-log.jsonl");
+    expect(stdout[0]).toContain("  log: .git/dyknow/runtime-audit-log.jsonl");
   });
 });

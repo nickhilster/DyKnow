@@ -20,6 +20,11 @@ export type AuditLogReport = {
   totalEntries: number;
 };
 
+type ReportAuditEntry = {
+  entry: AuditLogEntry;
+  inputPath: string;
+};
+
 function formatRelativePath(rootPath: string, targetPath: string): string {
   return relative(rootPath, targetPath).replaceAll("\\", "/") || targetPath;
 }
@@ -65,7 +70,7 @@ async function readAuditEntries(options: {
       error.code === "ENOENT"
     ) {
       return {
-        entries: [] as AuditLogEntry[],
+        entries: [] as ReportAuditEntry[],
         inputPath: formatRelativePath(options.rootPath, absolutePath),
       };
     }
@@ -77,18 +82,23 @@ async function readAuditEntries(options: {
     entries: inputText
       .split(/\r?\n/u)
       .filter((line) => line.trim().length > 0)
-      .map((line, index) =>
-        parseAuditLine(
-          line,
-          index + 1,
-          formatRelativePath(options.rootPath, absolutePath),
-        ),
+      .map(
+        (line, index) =>
+          ({
+            entry: parseAuditLine(
+              line,
+              index + 1,
+              formatRelativePath(options.rootPath, absolutePath),
+            ),
+            inputPath: formatRelativePath(options.rootPath, absolutePath),
+          }) satisfies ReportAuditEntry,
       ),
     inputPath: formatRelativePath(options.rootPath, absolutePath),
   };
 }
 
-function formatEntry(entry: AuditLogEntry): string {
+function formatEntry(reportEntry: ReportAuditEntry): string {
+  const { entry, inputPath } = reportEntry;
   const sourceList =
     entry.sourcesRead.length > 0 ? entry.sourcesRead.join(", ") : "none";
   const outputList =
@@ -98,6 +108,7 @@ function formatEntry(entry: AuditLogEntry): string {
 
   return [
     `[${entry.timestamp}] ${entry.action} by ${entry.actor}`,
+    `  log: ${inputPath}`,
     `  sources: ${sourceList}`,
     `  outputs: ${outputList}`,
     `  hash: ${entry.hash}`,
@@ -185,7 +196,9 @@ export async function createAuditLogReport(options: {
 
   const shownEntries = entries
     .slice()
-    .sort((left, right) => right.timestamp.localeCompare(left.timestamp))
+    .sort((left, right) =>
+      right.entry.timestamp.localeCompare(left.entry.timestamp),
+    )
     .slice(0, options.limit);
   const sourceLabels = reports
     .filter((report) => report.entries.length > 0)
