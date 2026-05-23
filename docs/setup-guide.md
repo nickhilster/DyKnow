@@ -11,6 +11,7 @@ sources:
   - ../packages/cli/src/commit.ts
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
+  - ../packages/cli/src/pr.ts
   - ../packages/cli/src/review.ts
   - ../packages/cli/src/scan.ts
   - ../packages/cli/src/update.ts
@@ -23,7 +24,7 @@ confidence: medium
 
 ## Summary
 
-This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`, `dyknow diff`, and the first `dyknow update` drafting path are now implemented in this repo; the later review and publish steps remain the target workflow.
+This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow commit`, and the first `dyknow pr` publishing path are now implemented in this repo, while richer review editing and sync flows remain planned.
 
 ## Prerequisites
 
@@ -216,7 +217,7 @@ or
 dyknow pr
 ```
 
-**Status:** `dyknow commit` is implemented for the first apply-and-commit slice. `dyknow pr` and `dyknow sync` are still planned.
+**Status:** `dyknow commit` and `dyknow pr` are implemented for the first apply-and-publish slices. `dyknow sync` is still planned.
 
 The current implementation reads `docs/dyknow/.state/update-proposals.json`, applies only proposals whose `reviewState` is `Approved`, updates those output files, marks the applied proposals `Published`, and creates a single git commit.
 
@@ -230,7 +231,15 @@ If no approved proposals exist yet, `dyknow commit` exits with a helpful message
 
 If the worktree has unrelated changes, `dyknow commit` refuses to proceed so the resulting commit only contains the approved DyKnow updates.
 
-`dyknow pr` will eventually create a branch and pull request containing the documentation updates.
+The current `dyknow pr` implementation must start from the base branch (defaults to `main`), creates a new branch, reuses the approved-proposal apply-and-commit step, pushes the branch to `origin`, and opens a GitHub pull request with a summary table covering updated pages, source evidence, risk, and confidence.
+
+If you are working inside this repo today, the direct invocation is:
+
+```bash
+node packages/cli/dist/bin.js pr --branch dyknow/review-product-updates
+```
+
+If no approved proposals exist yet, `dyknow pr` exits with a helpful message telling you to run `dyknow review --approve` first. If you run it from the wrong starting branch, it tells you to return to the configured base branch or pass `--base` explicitly.
 
 Optionally:
 

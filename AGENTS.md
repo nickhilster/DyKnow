@@ -21,6 +21,7 @@ sources:
   - packages/cli/src/diff.ts
   - packages/cli/src/commit.ts
   - packages/cli/src/index.ts
+  - packages/cli/src/pr.ts
   - packages/cli/src/review.ts
   - packages/cli/src/scan.ts
   - packages/cli/src/update.ts
@@ -32,7 +33,7 @@ confidence: high
 
 This repository is the working concept, documentation hub, and bootstrap implementation workspace for **DyKnow** — a system for maintaining Dynamic Knowledge Pages that stay synchronized with product, code, docs, and websites. It has two surfaces: DyKnow Cloud (hosted) and DyKnow Local (repo-native).
 
-The repo now contains the founding whitepaper, a wiki of source-backed pages, a TypeScript/npm workspace for DyKnow Local shared contracts, and working `dyknow init`, `dyknow scan`, `dyknow diff`, and `dyknow update` commands that generate the repo-local config, repo-map and repo-diff snapshots, and draft update proposals.
+The repo now contains the founding whitepaper, a wiki of source-backed pages, a TypeScript/npm workspace for DyKnow Local shared contracts, and working `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow commit`, and `dyknow pr` commands that generate the repo-local config, repo-map and repo-diff snapshots, draft update proposals, persist review decisions, and publish approved changes into reviewable branches.
 
 ## External hubs
 
@@ -104,6 +105,7 @@ Build a knowledge maintenance system that:
   - `node packages/cli/dist/bin.js update` — read `docs/dyknow/.state/repo-diff.json`, draft proposals for affected pages, and write `docs/dyknow/.state/update-proposals.json` after a build.
   - `node packages/cli/dist/bin.js review --approve --page <page-id>` — persist approval, rejection, or escalation decisions back into `docs/dyknow/.state/update-proposals.json` after a build.
   - `node packages/cli/dist/bin.js commit` — apply approved proposals from `docs/dyknow/.state/update-proposals.json`, mark them published, and create a single git commit.
+  - `node packages/cli/dist/bin.js pr --branch <name>` — create a new branch from `main`, apply approved proposals, push the branch to `origin`, and open a GitHub pull request with a summary table.
 
   Implemented DyKnow Local CLI commands:
 
@@ -113,10 +115,7 @@ Build a knowledge maintenance system that:
   - `dyknow update` — draft update proposals at `docs/dyknow/.state/update-proposals.json`
   - `dyknow review` — persist approval, rejection, or escalation decisions in `docs/dyknow/.state/update-proposals.json`
   - `dyknow commit` — apply approved proposals, mark them published, and create a single git commit
-
-  Planned DyKnow Local CLI commands remain:
-
-- `dyknow pr` — open PR
+  - `dyknow pr` — create a review branch, push it, and open a GitHub pull request for approved proposals
 
 See [docs/setup-guide.md](docs/setup-guide.md).
 
@@ -130,6 +129,7 @@ See [docs/setup-guide.md](docs/setup-guide.md).
 - The current update flow reads affected pages from the repo diff, drafts proposals into `docs/dyknow/.state/update-proposals.json`, uses default templates for the maintained DyKnow pages, and relies on a local stub update provider that always returns needs-review proposals and enforces local-only provider matching.
 - The current review flow reads `docs/dyknow/.state/update-proposals.json`, can list proposal state counts, and persists approval, rejection, or escalation decisions back into that artifact without mutating page files.
 - The current commit flow reads `docs/dyknow/.state/update-proposals.json`, applies only approved proposals to their output files, marks them `Published`, and creates one git commit while refusing unrelated worktree changes.
+- The current PR flow must start from the base branch (default `main`), creates a new review branch, reuses the approved-proposal commit path, pushes to `origin`, and opens a GitHub pull request whose body summarizes pages, source evidence, risk, and confidence.
 - Favor small vertical slices that keep source evidence, confidence, risk, and review-state data explicit in the design.
 
 ## Documentation conventions

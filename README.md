@@ -7,7 +7,7 @@ DyKnow keeps a company's most important knowledge pages aligned with the latest 
 - **DyKnow Cloud** — hosted system that monitors approved external/internal sources.
 - **DyKnow Local** — repo-native CLI / VS Code extension that runs inside the customer's environment.
 
-This repository contains the working concept, whitepaper, documentation system, and the initial TypeScript workspace for DyKnow Local's shared engine plus the first implemented `init`, `scan`, `diff`, and `update` CLI slices.
+This repository contains the working concept, whitepaper, documentation system, and the initial TypeScript workspace for DyKnow Local's shared engine plus the first implemented `init`, `scan`, `diff`, `update`, `review`, `commit`, and `pr` CLI slices.
 
 ## Repo layout
 
@@ -66,7 +66,7 @@ The current implementation slice uses:
 
 - **TypeScript + npm workspaces** for shared code across DyKnow Local surfaces.
 - **`packages/core`** for JSON-serializable shared contracts, config validation, repo-map schemas, repo-diff schemas, and provider-backed update drafting.
-- **`packages/cli`** for the DyKnow Local CLI package with working `dyknow init`, `dyknow scan`, `dyknow diff`, and `dyknow update` commands.
+- **`packages/cli`** for the DyKnow Local CLI package with working `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow commit`, and `dyknow pr` commands.
 - **Biome + Vitest + GitHub Actions** for formatting, linting, tests, and CI.
 
 ## Quick starts
@@ -82,3 +82,4 @@ The current implementation slice uses:
 - Drafting update proposals from the current repo diff: run `node packages/cli/dist/bin.js update` after a build and after `dyknow diff`. The current implementation writes `docs/dyknow/.state/update-proposals.json` using the local stub update provider and always requires human review.
 - Persisting review decisions back into the proposal artifact: run `node packages/cli/dist/bin.js review --approve --page <page-id>` or `node packages/cli/dist/bin.js review --reject --all` after `dyknow update`. The current review slice updates proposal review states in place and does not yet edit page content.
 - Applying approved proposals in one git commit: run `node packages/cli/dist/bin.js commit` after `dyknow review --approve ...`. The current implementation applies only `Approved` proposals, marks them `Published`, updates page files, and creates one git commit when the worktree is otherwise clean.
+- Creating a reviewable pull request for approved proposals: run `node packages/cli/dist/bin.js pr --branch <name>` from `main` after `dyknow review --approve ...`. The current implementation creates a new branch, reuses the approved-proposal apply-and-commit flow, pushes the branch to `origin`, and opens a GitHub pull request with a page/risk/source summary table.
