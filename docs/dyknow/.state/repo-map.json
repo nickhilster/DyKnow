@@ -103,7 +103,7 @@
     {
       "path": "AGENTS.md",
       "kind": "markdown",
-      "size": 10397,
+      "size": 10554,
       "lineCount": 157,
       "signals": [
         "documentation",
@@ -114,7 +114,7 @@
     {
       "path": "CHANGELOG.md",
       "kind": "markdown",
-      "size": 5567,
+      "size": 5636,
       "lineCount": 68,
       "signals": [
         "documentation"
@@ -145,7 +145,7 @@
     {
       "path": "README.md",
       "kind": "markdown",
-      "size": 7204,
+      "size": 7389,
       "lineCount": 86,
       "signals": [
         "documentation"
@@ -175,7 +175,7 @@
     {
       "path": "docs/feature-map.md",
       "kind": "markdown",
-      "size": 6683,
+      "size": 6741,
       "lineCount": 116,
       "signals": [
         "documentation"
@@ -225,8 +225,8 @@
     {
       "path": "docs/log.md",
       "kind": "markdown",
-      "size": 14822,
-      "lineCount": 130,
+      "size": 16256,
+      "lineCount": 140,
       "signals": [
         "documentation"
       ],
@@ -265,8 +265,8 @@
     {
       "path": "docs/setup-guide.md",
       "kind": "markdown",
-      "size": 9410,
-      "lineCount": 280,
+      "size": 9854,
+      "lineCount": 288,
       "signals": [
         "documentation"
       ],
@@ -384,8 +384,8 @@
     {
       "path": "packages/cli/src/index.ts",
       "kind": "typescript",
-      "size": 11785,
-      "lineCount": 428,
+      "size": 11840,
+      "lineCount": 429,
       "signals": [
         "source-code"
       ],
@@ -404,8 +404,8 @@
     {
       "path": "packages/cli/src/review.ts",
       "kind": "typescript",
-      "size": 13374,
-      "lineCount": 533,
+      "size": 16412,
+      "lineCount": 653,
       "signals": [
         "source-code"
       ],
@@ -474,8 +474,8 @@
     {
       "path": "packages/cli/test/review.test.ts",
       "kind": "typescript",
-      "size": 14342,
-      "lineCount": 462,
+      "size": 17899,
+      "lineCount": 581,
       "signals": [
         "source-code"
       ],
@@ -715,6 +715,6 @@
   ],
   "outputPath": "docs/dyknow/.state/repo-map.json",
   "rootPath": "C:\\DEV\\DyKnow",
-  "scannedAt": "2026-05-23T21:03:26.059Z",
+  "scannedAt": "2026-05-23T21:10:19.631Z",
   "warnings": []
 }

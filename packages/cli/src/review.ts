@@ -1,5 +1,9 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { dirname, relative, resolve } from "node:path";
+import { join } from "node:path";
+import { promisify } from "node:util";
 
 import {
   DEFAULT_UPDATE_OUTPUT_PATH,
@@ -26,10 +30,13 @@ type ReviewDecision = (typeof REVIEW_DECISION_STATES)[number];
 type ReviewMutationState = (typeof REVIEW_MUTATION_STATES)[number];
 type ReviewActionState = (typeof REVIEW_ACTION_STATES)[number];
 
+const execFileAsync = promisify(execFile);
+
 export type ReviewOptions = {
   all: boolean;
   decision?: ReviewActionState;
   editText?: string;
+  launchEditor: boolean;
   inputPath: string;
   outputPath: string;
   pageIds: string[];
@@ -125,6 +132,60 @@ function isSkipFlag(argument: string): boolean {
 
 function isRegenerateFlag(argument: string): boolean {
   return argument === "--regenerate";
+}
+
+function isEditorFlag(argument: string): boolean {
+  return argument === "--editor";
+}
+
+function getReviewEditorCommand(): string {
+  return process.env.DYKNOW_EDITOR_COMMAND ?? process.env.EDITOR ?? "";
+}
+
+async function runCommand(
+  command: string,
+  cwd: string,
+  args: readonly string[],
+) {
+  if (/\.(cmd|bat)$/i.test(command)) {
+    await execFileAsync("cmd.exe", ["/c", command, ...args], {
+      cwd,
+      encoding: "utf8",
+    });
+
+    return;
+  }
+
+  await execFileAsync(command, [...args], {
+    cwd,
+    encoding: "utf8",
+  });
+}
+
+async function editProposalTextInEditor(options: {
+  cwd: string;
+  initialText: string;
+}) {
+  const editorCommand = getReviewEditorCommand();
+
+  if (!editorCommand) {
+    throw new Error(
+      "Edited review actions with --editor require DYKNOW_EDITOR_COMMAND or EDITOR to be set.",
+    );
+  }
+
+  const workingDirectory = await mkdtemp(
+    join(tmpdir(), "dyknow-review-editor-"),
+  );
+  const draftPath = join(workingDirectory, "proposal.md");
+
+  try {
+    await writeFile(draftPath, options.initialText, "utf8");
+    await runCommand(editorCommand, options.cwd, [draftPath]);
+    return await readFile(draftPath, "utf8");
+  } finally {
+    await rm(workingDirectory, { force: true, recursive: true });
+  }
 }
 
 async function regenerateDraft(options: {
@@ -223,6 +284,7 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
   let decision: ReviewActionState | undefined;
   let editText: string | undefined;
   let all = false;
+  let launchEditor = false;
   const pageIds: string[] = [];
 
   for (let index = 0; index < args.length; index += 1) {
@@ -279,6 +341,11 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
 
       editText = value;
       index += 1;
+      continue;
+    }
+
+    if (isEditorFlag(argument)) {
+      launchEditor = true;
       continue;
     }
 
@@ -351,13 +418,21 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
   }
 
   if (decision === "Edited") {
-    if (!editText) {
-      throw new Error("Edited review actions require --text <value>.");
+    if (!editText && !launchEditor) {
+      throw new Error(
+        "Edited review actions require --text <value> or --editor.",
+      );
     }
 
     if (all || pageIds.length !== 1) {
       throw new Error(
         "Edited review actions require exactly one --page <id> target.",
+      );
+    }
+
+    if (editText && launchEditor) {
+      throw new Error(
+        "Use either --text <value> or --editor for edited review actions.",
       );
     }
   }
@@ -368,8 +443,13 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
     );
   }
 
+  if (launchEditor && decision !== "Edited") {
+    throw new Error("--editor is only supported together with --edit.");
+  }
+
   return {
     all,
+    launchEditor,
     inputPath,
     outputPath,
     pageIds,
@@ -383,6 +463,7 @@ export async function createReviewUpdateBatch(options: {
   cwd: string;
   decision?: ReviewActionState;
   editText?: string;
+  launchEditor: boolean;
   inputPath: string;
   outputPath: string;
   pageIds: readonly string[];
@@ -492,6 +573,41 @@ export async function createReviewUpdateBatch(options: {
     };
   }
 
+  const editedTextByPageId = new Map<string, string>();
+
+  if (options.decision === "Edited") {
+    const editedPageId = options.pageIds[0];
+
+    if (!editedPageId) {
+      throw new Error(
+        "Edited review actions require exactly one --page <id> target.",
+      );
+    }
+
+    const targetedDraft = updateBatch.drafts.find(
+      (draft) => draft.proposal.pageId === editedPageId,
+    );
+
+    if (!targetedDraft) {
+      throw new Error(
+        `Could not find an update proposal for page "${editedPageId}" in ${formatRelativePath(rootPath, inputPath)}.`,
+      );
+    }
+
+    const editedText = options.launchEditor
+      ? await editProposalTextInEditor({
+          cwd: rootPath,
+          initialText: targetedDraft.proposal.proposedText,
+        })
+      : options.editText;
+
+    if (!editedText) {
+      throw new Error("Edited review actions require non-empty proposal text.");
+    }
+
+    editedTextByPageId.set(editedPageId, editedText);
+  }
+
   const nextBatch = UpdateDraftBatchSchema.parse({
     ...updateBatch,
     outputPath: formatRelativePath(rootPath, outputPath),
@@ -504,8 +620,12 @@ export async function createReviewUpdateBatch(options: {
         ...draft,
         proposal: {
           ...draft.proposal,
-          ...(options.decision === "Edited" && options.editText
-            ? { proposedText: options.editText }
+          ...(options.decision === "Edited"
+            ? {
+                proposedText:
+                  editedTextByPageId.get(draft.proposal.pageId) ??
+                  draft.proposal.proposedText,
+              }
             : {}),
           reviewState: options.decision,
         },

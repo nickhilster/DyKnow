@@ -150,7 +150,7 @@ function formatHelp(): string {
     "- dyknow diff [--config <path>] [--snapshot <path>] [--output <path>]",
     "- dyknow update [--config <path>] [--diff <path>] [--output <path>]",
     "- dyknow review [--input <path>] [--output <path>] [--approve|--reject|--escalate|--skip|--regenerate] (--all | --page <id>...)",
-    "- dyknow review [--input <path>] [--output <path>] --edit --page <id> --text <value>",
+    "- dyknow review [--input <path>] [--output <path>] --edit --page <id> (--text <value> | --editor)",
     "- dyknow commit [--input <path>] [--message <text>]",
     "- dyknow pr [--input <path>] [--base <branch>] [--branch <name>] [--message <text>] [--title <text>]",
     "",
@@ -288,6 +288,7 @@ async function handleReview(args: readonly string[], context?: CliContext) {
       outputPath: options.outputPath,
       pageIds: options.pageIds,
       all: options.all,
+      launchEditor: options.launchEditor,
       ...(options.decision ? { decision: options.decision } : {}),
       ...(options.editText ? { editText: options.editText } : {}),
     };

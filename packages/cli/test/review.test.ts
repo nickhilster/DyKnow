@@ -1,8 +1,8 @@
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import {
   DEFAULT_UPDATE_OUTPUT_PATH,
@@ -10,6 +10,47 @@ import {
 } from "@dyknow/core";
 
 import { runCli } from "../src/index.js";
+
+const originalEditorCommand = process.env.DYKNOW_EDITOR_COMMAND;
+
+async function writeFakeEditorCommand(tools: string) {
+  if (process.platform === "win32") {
+    const commandPath = join(tools, "dyknow-editor.cmd");
+
+    await writeFile(
+      commandPath,
+      [
+        "@echo off",
+        "set FILE=%~1",
+        "(",
+        "echo Edited from fake editor",
+        ') > "%FILE%"',
+      ].join("\r\n"),
+      "utf8",
+    );
+
+    return commandPath;
+  }
+
+  const commandPath = join(tools, "dyknow-editor");
+
+  await writeFile(
+    commandPath,
+    ["#!/bin/sh", "printf 'Edited from fake editor' > \"$1\""].join("\n"),
+    "utf8",
+  );
+  await chmod(commandPath, 0o755);
+
+  return commandPath;
+}
+
+afterEach(() => {
+  if (originalEditorCommand === undefined) {
+    process.env.DYKNOW_EDITOR_COMMAND = undefined;
+  } else {
+    process.env.DYKNOW_EDITOR_COMMAND = originalEditorCommand;
+  }
+});
 
 describe("dyknow review", () => {
   it("persists an approval decision for a targeted page", async () => {
@@ -441,6 +482,84 @@ describe("dyknow review", () => {
     expect(reviewBatch.drafts[1]?.proposal.reviewState).toBe("Approved");
     expect(reviewBatch.drafts[1]?.proposal.proposedText).toBe(
       "Untouched draft text",
+    );
+  });
+
+  it("edits a targeted proposal through an external editor command", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-review-"));
+    const tools = await mkdtemp(join(tmpdir(), "dyknow-review-tools-"));
+
+    await mkdir(join(root, "docs", "dyknow", ".state"), { recursive: true });
+    await writeFile(
+      join(root, DEFAULT_UPDATE_OUTPUT_PATH),
+      `${JSON.stringify(
+        {
+          draftedAt: "2026-05-23T18:00:00.000Z",
+          rootPath: root,
+          configPath: "dyknow.config.json",
+          repoDiffPath: "docs/dyknow/.state/repo-diff.json",
+          outputPath: DEFAULT_UPDATE_OUTPUT_PATH,
+          providerId: "local",
+          drafts: [
+            {
+              affectedPage: {
+                pageId: "product-overview",
+                outputPath: "docs/product-overview.md",
+                matchedSourcePaths: ["README.md"],
+                reasons: ["changed-file"],
+              },
+              proposal: {
+                pageId: "product-overview",
+                summary:
+                  "Review Product Overview for 1 changed source path(s).",
+                why: "Product Overview is affected because DyKnow detected changed file across 1 configured source path(s).",
+                sources: ["README.md"],
+                proposedText: "Draft text",
+                confidence: "low",
+                risk: "medium",
+                reviewState: "Needs review",
+                requiresHumanReview: true,
+              },
+            },
+          ],
+          summary: {
+            affectedPages: 1,
+            draftedProposals: 1,
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    process.env.DYKNOW_EDITOR_COMMAND = await writeFakeEditorCommand(tools);
+
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+    const exitCode = await runCli(
+      ["review", "--edit", "--page", "product-overview", "--editor"],
+      {
+        cwd: root,
+        stdout: (message) => {
+          stdout.push(message);
+        },
+        stderr: (message) => {
+          stderr.push(message);
+        },
+      },
+    );
+    const reviewText = await readFile(
+      join(root, DEFAULT_UPDATE_OUTPUT_PATH),
+      "utf8",
+    );
+    const reviewBatch = UpdateDraftBatchSchema.parse(JSON.parse(reviewText));
+
+    expect(exitCode).toBe(0);
+    expect(stderr).toEqual([]);
+    expect(stdout[0]).toContain("Marked 1 update proposal(s) as Edited");
+    expect(reviewBatch.drafts[0]?.proposal.reviewState).toBe("Edited");
+    expect(reviewBatch.drafts[0]?.proposal.proposedText.trimEnd()).toBe(
+      "Edited from fake editor",
     );
   });
 

@@ -175,9 +175,9 @@ The current implementation uses the local stub update provider. It drafts `Needs
 dyknow review
 ```
 
-**Status:** implemented for the first persisted decision, edit, skip, and regenerate slice.
+**Status:** implemented for the first persisted decision, text edit, editor edit, skip, and regenerate slice.
 
-The current implementation reads `docs/dyknow/.state/update-proposals.json`, can summarize proposal counts by review state, can persist approval, rejection, or escalation decisions, can replace one targeted proposal's `proposedText` while marking it `Edited`, can explicitly skip targeted proposals without changing the snapshot, and can regenerate targeted proposals from the saved repo diff.
+The current implementation reads `docs/dyknow/.state/update-proposals.json`, can summarize proposal counts by review state, can persist approval, rejection, or escalation decisions, can replace one targeted proposal's `proposedText` while marking it `Edited` from either inline text or an external editor command, can explicitly skip targeted proposals without changing the snapshot, and can regenerate targeted proposals from the saved repo diff.
 
 If you are working inside this repo today, the direct invocation is:
 
@@ -196,6 +196,14 @@ To replace one proposal's draft text without applying it yet:
 ```bash
 node packages/cli/dist/bin.js review --edit --page product-overview --text "Revised draft text"
 ```
+
+To edit one proposal in an external editor and persist the result back into the snapshot:
+
+```bash
+DYKNOW_EDITOR_COMMAND=<editor-command> node packages/cli/dist/bin.js review --edit --page product-overview --editor
+```
+
+If `DYKNOW_EDITOR_COMMAND` is unset, the current implementation falls back to `EDITOR`.
 
 To skip one proposal for now without changing its current review state:
 
@@ -221,7 +229,7 @@ The full walkthrough remains broader than the current slice. Reviewers will even
 - Mark source as irrelevant
 - Update config rules
 
-Today, approve / reject / escalate plus a single edited-proposal text path, explicit skip handling, and targeted regenerate handling are implemented. Editor-driven review remains planned.
+Today, approve / reject / escalate plus a single inline edited-proposal text path, a single external-editor edit path, explicit skip handling, and targeted regenerate handling are implemented. Richer in-product review surfaces remain planned.
 
 ## Step 6 — Commit or publish
 

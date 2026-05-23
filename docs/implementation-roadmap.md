@@ -110,7 +110,7 @@ These items underpin every later phase. Land them once; reuse everywhere.
 
 ### Review flow
 - [ ] `dyknow review` — CLI walk-through of pending updates (approve / reject / edit / regenerate / skip).
-- [ ] Edit-in-editor for proposed text.
+- [x] Edit-in-editor for proposed text.
 - [x] Persist review decisions to snapshot.
 - [x] Persist one edited proposal text back into the review snapshot.
 - [x] Handle explicit skip actions without mutating the review snapshot.
