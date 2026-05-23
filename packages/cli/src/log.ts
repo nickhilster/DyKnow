@@ -236,6 +236,21 @@ function formatEmptyAuditReport(options: {
   return `No audit entries found in ${scopeLabel} for source=${options.source} and action=${options.action}.`;
 }
 
+function formatAuditReportHeader(options: {
+  sourceLabels: readonly string[];
+  shownEntries: number;
+  totalEntries: number;
+  source: LogSource;
+  action: LogActionFilter;
+}) {
+  const filterLabel =
+    options.source === "all" && options.action === "all"
+      ? ""
+      : ` for source=${options.source} and action=${options.action}`;
+
+  return `Recent audit entries from ${options.sourceLabels.join(" and ")}${filterLabel} (showing ${options.shownEntries} of ${options.totalEntries}):`;
+}
+
 export async function createAuditLogReport(options: {
   cwd: string;
   inputPath: string;
@@ -305,7 +320,13 @@ export async function createAuditLogReport(options: {
   const sourceLabels = [
     ...new Set(shownEntries.map((entry) => entry.inputPath)),
   ];
-  const header = `Recent audit entries from ${sourceLabels.join(" and ")} (showing ${shownEntries.length} of ${entries.length}):`;
+  const header = formatAuditReportHeader({
+    sourceLabels,
+    shownEntries: shownEntries.length,
+    totalEntries: entries.length,
+    source: options.source,
+    action: options.action,
+  });
 
   return {
     inputPath: options.inputPath,
