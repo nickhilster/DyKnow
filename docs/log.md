@@ -127,3 +127,13 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after implementing the dyknow review regenerate slice.
 2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot after implementing the dyknow review regenerate slice.
 2026-05-23 | update | docs/dyknow/.state/update-proposals.json | Regenerated the update-proposals artifact after implementing the dyknow review regenerate slice.
+2026-05-23 | update | packages/cli/src/review.ts | Implemented the first dyknow review external-editor slice to edit one targeted proposal through DYKNOW_EDITOR_COMMAND or EDITOR.
+2026-05-23 | update | README.md | Documented the first dyknow review external-editor path alongside the existing text edit, skip, and regenerate workflow.
+2026-05-23 | update | AGENTS.md | Updated agent context to include the external-editor review edit path.
+2026-05-23 | update | CHANGELOG.md | Marked dyknow review updated for the first external-editor edit slice.
+2026-05-23 | update | docs/setup-guide.md | Documented the first dyknow review external-editor command and clarified the remaining planned review surfaces.
+2026-05-23 | update | docs/feature-map.md | Marked dyknow review implemented for the first external-editor edit slice.
+2026-05-23 | update | docs/implementation-roadmap.md | Checked off edit-in-editor for proposed text in the review workflow backlog.
+2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after implementing the dyknow review external-editor slice.
+2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot after implementing the dyknow review external-editor slice.
+2026-05-23 | update | docs/dyknow/.state/update-proposals.json | Regenerated the update-proposals artifact after implementing the dyknow review external-editor slice.
