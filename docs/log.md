@@ -163,3 +163,9 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | docs/setup-guide.md | Documented that review, commit, and pr now append to the same local audit trail.
 2026-05-23 | update | docs/feature-map.md | Expanded the audit command descriptions to cover publish audit entries.
 2026-05-23 | update | docs/implementation-roadmap.md | Checked off publish-action audit entries in the audit backlog.
+2026-05-23 | update | packages/cli/src/pr.ts | Renamed the committed PR audit action to publish:pr-prepared so it reflects local prepared state before external PR creation.
+2026-05-23 | update | README.md | Clarified that dyknow pr currently records a prepared local PR publish state, not a confirmed external PR-open audit event.
+2026-05-23 | update | AGENTS.md | Updated agent context to distinguish prepared PR publish audit state from future confirmed external publication events.
+2026-05-23 | update | CHANGELOG.md | Recorded the narrower publish:pr-prepared audit semantics for dyknow pr.
+2026-05-23 | update | docs/setup-guide.md | Clarified that the current PR audit trail records prepared local state before external PR creation.
+2026-05-23 | update | docs/feature-map.md | Updated the dyknow pr command description to reflect publish:pr-prepared audit semantics.

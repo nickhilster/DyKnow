@@ -103,7 +103,7 @@
     {
       "path": "AGENTS.md",
       "kind": "markdown",
-      "size": 11732,
+      "size": 11893,
       "lineCount": 162,
       "signals": [
         "documentation",
@@ -114,7 +114,7 @@
     {
       "path": "CHANGELOG.md",
       "kind": "markdown",
-      "size": 6224,
+      "size": 6261,
       "lineCount": 71,
       "signals": [
         "documentation"
@@ -145,7 +145,7 @@
     {
       "path": "README.md",
       "kind": "markdown",
-      "size": 7893,
+      "size": 7998,
       "lineCount": 87,
       "signals": [
         "documentation"
@@ -175,7 +175,7 @@
     {
       "path": "docs/feature-map.md",
       "kind": "markdown",
-      "size": 7297,
+      "size": 7334,
       "lineCount": 119,
       "signals": [
         "documentation"
@@ -225,8 +225,8 @@
     {
       "path": "docs/log.md",
       "kind": "markdown",
-      "size": 19692,
-      "lineCount": 166,
+      "size": 20571,
+      "lineCount": 172,
       "signals": [
         "documentation"
       ],
@@ -265,7 +265,7 @@
     {
       "path": "docs/setup-guide.md",
       "kind": "markdown",
-      "size": 11017,
+      "size": 11181,
       "lineCount": 310,
       "signals": [
         "documentation"
@@ -414,7 +414,7 @@
     {
       "path": "packages/cli/src/pr.ts",
       "kind": "typescript",
-      "size": 8263,
+      "size": 8272,
       "lineCount": 345,
       "signals": [
         "source-code"
@@ -494,8 +494,8 @@
     {
       "path": "packages/cli/test/pr.test.ts",
       "kind": "typescript",
-      "size": 8296,
-      "lineCount": 259,
+      "size": 12037,
+      "lineCount": 375,
       "signals": [
         "source-code"
       ],
@@ -745,6 +745,6 @@
   ],
   "outputPath": "docs/dyknow/.state/repo-map.json",
   "rootPath": "C:\\DEV\\DyKnow",
-  "scannedAt": "2026-05-23T21:28:06.276Z",
+  "scannedAt": "2026-05-23T21:37:02.311Z",
   "warnings": []
 }
