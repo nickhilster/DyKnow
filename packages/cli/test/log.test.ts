@@ -1,7 +1,7 @@
 import { execFile } from "node:child_process";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { promisify } from "node:util";
 
 import { describe, expect, it } from "vitest";
@@ -133,9 +133,9 @@ describe("dyknow log", () => {
       "--git-path",
       "dyknow/runtime-audit-log.jsonl",
     ]);
-    await mkdir(join(root, ".git", "dyknow"), { recursive: true });
+    await mkdir(dirname(join(root, runtimeAuditPath)), { recursive: true });
     await writeFile(
-      join(root, runtimeAuditPath.replaceAll("/", "\\")),
+      join(root, runtimeAuditPath),
       `${JSON.stringify({
         action: "publish:pr-opened",
         actor: "copilot",
