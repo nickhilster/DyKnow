@@ -16,6 +16,7 @@ import {
 
 import { createCommitResult, parseCommitOptions } from "./commit.js";
 import { createRepoDiff, parseDiffOptions } from "./diff.js";
+import { createAuditLogReport, parseLogOptions } from "./log.js";
 import { createPrResult, parsePrOptions } from "./pr.js";
 import { createReviewUpdateBatch, parseReviewOptions } from "./review.js";
 import { scanWorkspace } from "./scan.js";
@@ -151,6 +152,7 @@ function formatHelp(): string {
     "- dyknow update [--config <path>] [--diff <path>] [--output <path>]",
     "- dyknow review [--input <path>] [--output <path>] [--approve|--reject|--escalate|--skip|--regenerate] (--all | --page <id>...)",
     "- dyknow review [--input <path>] [--output <path>] --edit --page <id> (--text <value> | --editor)",
+    "- dyknow log [--input <path>] [--limit <count>]",
     "- dyknow commit [--input <path>] [--message <text>]",
     "- dyknow pr [--input <path>] [--base <branch>] [--branch <name>] [--message <text>] [--title <text>]",
     "",
@@ -325,6 +327,25 @@ async function handleReview(args: readonly string[], context?: CliContext) {
   }
 }
 
+async function handleLog(args: readonly string[], context?: CliContext) {
+  const { cwd, stderr, stdout } = getContext(context);
+
+  try {
+    const options = parseLogOptions(args);
+    const result = await createAuditLogReport({
+      cwd,
+      inputPath: options.inputPath,
+      limit: options.limit,
+    });
+
+    stdout(result.report);
+    return 0;
+  } catch (error) {
+    stderr(error instanceof Error ? error.message : "Unknown log error.");
+    return 1;
+  }
+}
+
 async function handleCommit(args: readonly string[], context?: CliContext) {
   const { cwd, stderr, stdout } = getContext(context);
 
@@ -404,6 +425,10 @@ export async function runCli(
 
   if (command === "review") {
     return handleReview(commandArgs, context);
+  }
+
+  if (command === "log") {
+    return handleLog(commandArgs, context);
   }
 
   if (command === "commit") {

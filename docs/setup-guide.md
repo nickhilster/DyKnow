@@ -11,6 +11,7 @@ sources:
   - ../packages/cli/src/commit.ts
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
+  - ../packages/cli/src/log.ts
   - ../packages/cli/src/pr.ts
   - ../packages/cli/src/review.ts
   - ../packages/cli/src/scan.ts
@@ -24,7 +25,7 @@ confidence: medium
 
 ## Summary
 
-This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow commit`, and the first `dyknow pr` publishing path are now implemented in this repo, while richer review editing and sync flows remain planned.
+This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow log`, `dyknow commit`, and the first `dyknow pr` publishing path are now implemented in this repo, while richer review editing and sync flows remain planned.
 
 ## Prerequisites
 
@@ -231,9 +232,27 @@ The full walkthrough remains broader than the current slice. Reviewers will even
 
 Today, approve / reject / escalate plus a single inline edited-proposal text path, a single external-editor edit path, explicit skip handling, and targeted regenerate handling are implemented. Richer in-product review surfaces remain planned.
 
-The first audit slice is intentionally narrow: only review actions append entries today, and the planned `dyknow log` reader remains separate work.
+The first audit slice remains intentionally narrow: only review actions append entries today.
 
-## Step 6 — Commit or publish
+## Step 6 — Inspect the audit trail
+
+```bash
+dyknow log
+```
+
+**Status:** implemented for the first read-only audit-viewer slice.
+
+The current implementation reads `docs/dyknow/.state/audit-log.jsonl`, validates each JSONL line against the shared audit-entry schema, and pretty-prints recent entries newest first without mutating the log artifact.
+
+If you are working inside this repo today, the direct invocation is:
+
+```bash
+node packages/cli/dist/bin.js log --limit 10
+```
+
+If no audit log exists yet, `dyknow log` exits successfully and tells you that no audit entries were found.
+
+## Step 7 — Commit or publish
 
 ```bash
 dyknow commit
