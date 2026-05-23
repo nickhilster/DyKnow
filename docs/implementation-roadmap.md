@@ -19,6 +19,7 @@ sources:
   - ../packages/core/src/update-templates.ts
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
+  - ../packages/cli/src/review.ts
   - ../packages/cli/src/scan.ts
   - ../packages/cli/src/update.ts
   - ../.github/workflows/ci.yml
@@ -108,7 +109,7 @@ These items underpin every later phase. Land them once; reuse everywhere.
 ### Review flow
 - [ ] `dyknow review` — CLI walk-through of pending updates (approve / reject / edit / regenerate / skip).
 - [ ] Edit-in-editor for proposed text.
-- [ ] Persist review decisions to snapshot.
+- [x] Persist review decisions to snapshot.
 
 ### Commit / PR
 - [ ] `dyknow commit` — apply approved updates and create a single commit.

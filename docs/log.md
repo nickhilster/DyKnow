@@ -76,3 +76,7 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | docs/feature-map.md | Marked dyknow update implemented and described the current local stub review requirement.
 2026-05-23 | update | AGENTS.md | Updated agent context to include the dyknow update command and update-proposals artifact.
 2026-05-23 | update | docs/dyknow/.state/update-proposals.json | Generated the first update-proposals artifact from the current repo diff using the local stub provider.
+2026-05-23 | update | packages/cli/src/review.ts | Implemented the first dyknow review command slice to persist approval, rejection, and escalation decisions into the update-proposals artifact.
+2026-05-23 | update | docs/setup-guide.md | Documented the first dyknow review decision flow and its current limits.
+2026-05-23 | update | docs/feature-map.md | Marked dyknow review implemented for the first persisted decision slice.
+2026-05-23 | update | AGENTS.md | Updated agent context to include the dyknow review command and persisted review-state behavior.

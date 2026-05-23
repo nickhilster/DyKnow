@@ -80,3 +80,4 @@ The current implementation slice uses:
 - Generating the repo map snapshot: run `node packages/cli/dist/bin.js scan` after a build.
 - Generating the structured repo diff: run `node packages/cli/dist/bin.js diff` after a build and after at least one scan. The diff artifact includes affected configured pages based on matched source patterns.
 - Drafting update proposals from the current repo diff: run `node packages/cli/dist/bin.js update` after a build and after `dyknow diff`. The current implementation writes `docs/dyknow/.state/update-proposals.json` using the local stub update provider and always requires human review.
+- Persisting review decisions back into the proposal artifact: run `node packages/cli/dist/bin.js review --approve --page <page-id>` or `node packages/cli/dist/bin.js review --reject --all` after `dyknow update`. The current review slice updates proposal review states in place and does not yet edit page content.

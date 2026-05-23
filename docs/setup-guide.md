@@ -10,6 +10,7 @@ sources:
   - dyknow/.state/update-proposals.json
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
+  - ../packages/cli/src/review.ts
   - ../packages/cli/src/scan.ts
   - ../packages/cli/src/update.ts
   - ../packages/core/src/repo-diff.ts
@@ -172,9 +173,25 @@ The current implementation uses the local stub update provider. It drafts `Needs
 dyknow review
 ```
 
-**Status:** planned. `dyknow review` is not implemented yet.
+**Status:** implemented for the first persisted decision slice.
 
-Or use the VS Code extension to inspect changes visually. Reviewers can:
+The current implementation reads `docs/dyknow/.state/update-proposals.json`, can summarize proposal counts by review state, and can persist approval, rejection, or escalation decisions back into that artifact.
+
+If you are working inside this repo today, the direct invocation is:
+
+```bash
+node packages/cli/dist/bin.js review --approve --page product-overview
+```
+
+You can also target all proposals at once:
+
+```bash
+node packages/cli/dist/bin.js review --reject --all
+```
+
+If no update-proposals snapshot exists yet, `dyknow review` exits with a helpful message telling you to run `dyknow update` first.
+
+The full walkthrough remains broader than the current slice. Reviewers will eventually be able to:
 
 - Approve
 - Reject
@@ -183,6 +200,8 @@ Or use the VS Code extension to inspect changes visually. Reviewers can:
 - Assign to another reviewer
 - Mark source as irrelevant
 - Update config rules
+
+Today, only approve / reject / escalate decisions are implemented.
 
 ## Step 6 — Commit or publish
 

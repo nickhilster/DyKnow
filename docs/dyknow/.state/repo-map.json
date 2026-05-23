@@ -103,8 +103,8 @@
     {
       "path": "AGENTS.md",
       "kind": "markdown",
-      "size": 8196,
-      "lineCount": 150,
+      "size": 8775,
+      "lineCount": 153,
       "signals": [
         "documentation",
         "agent-context"
@@ -114,8 +114,8 @@
     {
       "path": "CHANGELOG.md",
       "kind": "markdown",
-      "size": 4547,
-      "lineCount": 62,
+      "size": 4871,
+      "lineCount": 64,
       "signals": [
         "documentation"
       ],
@@ -145,8 +145,8 @@
     {
       "path": "README.md",
       "kind": "markdown",
-      "size": 5754,
-      "lineCount": 83,
+      "size": 6069,
+      "lineCount": 84,
       "signals": [
         "documentation"
       ],
@@ -175,8 +175,8 @@
     {
       "path": "docs/feature-map.md",
       "kind": "markdown",
-      "size": 5861,
-      "lineCount": 113,
+      "size": 6101,
+      "lineCount": 114,
       "signals": [
         "documentation"
       ],
@@ -195,8 +195,8 @@
     {
       "path": "docs/implementation-roadmap.md",
       "kind": "markdown",
-      "size": 13206,
-      "lineCount": 311,
+      "size": 13241,
+      "lineCount": 312,
       "signals": [
         "documentation"
       ],
@@ -225,8 +225,8 @@
     {
       "path": "docs/log.md",
       "kind": "markdown",
-      "size": 7727,
-      "lineCount": 78,
+      "size": 8459,
+      "lineCount": 83,
       "signals": [
         "documentation"
       ],
@@ -265,8 +265,8 @@
     {
       "path": "docs/setup-guide.md",
       "kind": "markdown",
-      "size": 6333,
-      "lineCount": 221,
+      "size": 7089,
+      "lineCount": 240,
       "signals": [
         "documentation"
       ],
@@ -374,8 +374,18 @@
     {
       "path": "packages/cli/src/index.ts",
       "kind": "typescript",
-      "size": 8309,
-      "lineCount": 323,
+      "size": 9534,
+      "lineCount": 361,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/cli/src/review.ts",
+      "kind": "typescript",
+      "size": 6857,
+      "lineCount": 288,
       "signals": [
         "source-code"
       ],
@@ -416,6 +426,16 @@
       "kind": "typescript",
       "size": 1865,
       "lineCount": 70,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/cli/test/review.test.ts",
+      "kind": "typescript",
+      "size": 3144,
+      "lineCount": 103,
       "signals": [
         "source-code"
       ],
@@ -655,6 +675,6 @@
   ],
   "outputPath": "docs/dyknow/.state/repo-map.json",
   "rootPath": "C:\\DEV\\DyKnow",
-  "scannedAt": "2026-05-23T18:49:34.070Z",
+  "scannedAt": "2026-05-23T19:23:37.987Z",
   "warnings": []
 }

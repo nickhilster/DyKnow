@@ -15,6 +15,7 @@ import {
 } from "@dyknow/core";
 
 import { createRepoDiff, parseDiffOptions } from "./diff.js";
+import { createReviewUpdateBatch, parseReviewOptions } from "./review.js";
 import { scanWorkspace } from "./scan.js";
 import { createUpdateDraftBatch, parseUpdateOptions } from "./update.js";
 
@@ -152,6 +153,7 @@ function formatHelp(): string {
     "- dyknow scan [--config <path>] [--output <path>]",
     "- dyknow diff [--config <path>] [--snapshot <path>] [--output <path>]",
     "- dyknow update [--config <path>] [--diff <path>] [--output <path>]",
+    "- dyknow review [--input <path>] [--output <path>] [--approve|--reject|--escalate] (--all | --page <id>...)",
     "",
     `Default repo diff output: ${DEFAULT_REPO_DIFF_OUTPUT_PATH}`,
     `Default update output: ${DEFAULT_UPDATE_OUTPUT_PATH}`,
@@ -276,6 +278,38 @@ async function handleUpdate(args: readonly string[], context?: CliContext) {
   }
 }
 
+async function handleReview(args: readonly string[], context?: CliContext) {
+  const { cwd, stderr, stdout } = getContext(context);
+
+  try {
+    const options = parseReviewOptions(args);
+    const reviewBatchOptions = {
+      cwd,
+      inputPath: options.inputPath,
+      outputPath: options.outputPath,
+      pageIds: options.pageIds,
+      all: options.all,
+      ...(options.decision ? { decision: options.decision } : {}),
+    };
+    const result = await createReviewUpdateBatch(reviewBatchOptions);
+
+    if (!result.decision) {
+      stdout(
+        `Loaded ${result.totalDrafts} update proposal(s) from ${result.outputPath}: ${result.summary}.`,
+      );
+      return 0;
+    }
+
+    stdout(
+      `Marked ${result.updatedProposals} update proposal(s) as ${result.decision} and wrote ${result.outputPath}.`,
+    );
+    return 0;
+  } catch (error) {
+    stderr(error instanceof Error ? error.message : "Unknown review error.");
+    return 1;
+  }
+}
+
 export function formatBootstrapStatus(): string {
   return formatHelp();
 }
@@ -306,6 +340,10 @@ export async function runCli(
 
   if (command === "update") {
     return handleUpdate(commandArgs, context);
+  }
+
+  if (command === "review") {
+    return handleReview(commandArgs, context);
   }
 
   if (
