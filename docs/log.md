@@ -182,3 +182,9 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | CHANGELOG.md | Recorded per-entry source labels for the merged dyknow log audit view.
 2026-05-23 | update | docs/setup-guide.md | Clarified that dyknow log now shows which audit file each rendered entry came from.
 2026-05-23 | update | docs/feature-map.md | Updated the dyknow log command description to include per-entry source labels.
+2026-05-23 | update | packages/cli/src/log.ts | Added an all|committed|runtime filter so dyknow log can isolate merged audit sources.
+2026-05-23 | update | README.md | Documented the new dyknow log source filter options.
+2026-05-23 | update | AGENTS.md | Updated agent context to include dyknow log source filtering.
+2026-05-23 | update | CHANGELOG.md | Recorded dyknow log source filtering for committed and runtime audit entries.
+2026-05-23 | update | docs/setup-guide.md | Documented the new dyknow log --source option and current filter values.
+2026-05-23 | update | docs/feature-map.md | Updated the dyknow log command description to include source filtering.

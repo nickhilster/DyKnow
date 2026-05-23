@@ -8,9 +8,14 @@ import { resolveRuntimeAuditPath } from "./audit.js";
 export const DEFAULT_REVIEW_AUDIT_LOG_PATH =
   "docs/dyknow/.state/audit-log.jsonl";
 
+export const LOG_SOURCES = ["all", "committed", "runtime"] as const;
+
+export type LogSource = (typeof LOG_SOURCES)[number];
+
 export type LogOptions = {
   inputPath: string;
   limit: number;
+  source: LogSource;
 };
 
 export type AuditLogReport = {
@@ -23,6 +28,7 @@ export type AuditLogReport = {
 type ReportAuditEntry = {
   entry: AuditLogEntry;
   inputPath: string;
+  source: Exclude<LogSource, "all">;
 };
 
 function formatRelativePath(rootPath: string, targetPath: string): string {
@@ -56,6 +62,7 @@ function parseAuditLine(line: string, lineNumber: number, inputPath: string) {
 async function readAuditEntries(options: {
   inputPath: string;
   rootPath: string;
+  source: Exclude<LogSource, "all">;
 }) {
   const absolutePath = resolve(options.rootPath, options.inputPath);
   let inputText: string;
@@ -91,6 +98,7 @@ async function readAuditEntries(options: {
               formatRelativePath(options.rootPath, absolutePath),
             ),
             inputPath: formatRelativePath(options.rootPath, absolutePath),
+            source: options.source,
           }) satisfies ReportAuditEntry,
       ),
     inputPath: formatRelativePath(options.rootPath, absolutePath),
@@ -118,6 +126,7 @@ function formatEntry(reportEntry: ReportAuditEntry): string {
 export function parseLogOptions(args: readonly string[]): LogOptions {
   let inputPath = DEFAULT_REVIEW_AUDIT_LOG_PATH;
   let limit = 10;
+  let source: LogSource = "all";
 
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
@@ -152,25 +161,46 @@ export function parseLogOptions(args: readonly string[]): LogOptions {
       continue;
     }
 
+    if (argument === "--source") {
+      const value = args[index + 1];
+
+      if (!value) {
+        throw new Error("Missing value for --source.");
+      }
+
+      if (!LOG_SOURCES.includes(value as LogSource)) {
+        throw new Error(`--source must be one of: ${LOG_SOURCES.join(", ")}.`);
+      }
+
+      source = value as LogSource;
+      index += 1;
+      continue;
+    }
+
     throw new Error(`Unknown log option: ${argument}`);
   }
 
-  return { inputPath, limit };
+  return { inputPath, limit, source };
 }
 
 export async function createAuditLogReport(options: {
   cwd: string;
   inputPath: string;
   limit: number;
+  source: LogSource;
 }): Promise<AuditLogReport> {
   const reports = [
     await readAuditEntries({
       inputPath: options.inputPath,
       rootPath: options.cwd,
+      source: "committed",
     }),
   ];
 
-  if (options.inputPath === DEFAULT_REVIEW_AUDIT_LOG_PATH) {
+  if (
+    options.inputPath === DEFAULT_REVIEW_AUDIT_LOG_PATH &&
+    options.source !== "committed"
+  ) {
     const runtimeAuditPath = await resolveRuntimeAuditPath(options.cwd);
 
     if (runtimeAuditPath) {
@@ -178,12 +208,18 @@ export async function createAuditLogReport(options: {
         await readAuditEntries({
           inputPath: runtimeAuditPath,
           rootPath: options.cwd,
+          source: "runtime",
         }),
       );
     }
   }
 
-  const entries = reports.flatMap((report) => report.entries);
+  const entries = reports
+    .flatMap((report) => report.entries)
+    .filter(
+      (reportEntry) =>
+        options.source === "all" || reportEntry.source === options.source,
+    );
 
   if (entries.length === 0) {
     return {
