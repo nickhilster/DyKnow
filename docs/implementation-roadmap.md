@@ -123,6 +123,7 @@ These items underpin every later phase. Land them once; reuse everywhere.
 
 ### Audit
 - [ ] Audit log writer (append-only).
+- [x] Append review-action audit entries to an append-only log artifact.
 - [ ] `dyknow log` — pretty-print recent audit entries.
 
 ### Initial maintained pages

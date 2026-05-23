@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
 import {
+  AuditLogEntrySchema,
   DEFAULT_UPDATE_OUTPUT_PATH,
   UpdateDraftBatchSchema,
 } from "@dyknow/core";
@@ -118,12 +119,28 @@ describe("dyknow review", () => {
       join(root, DEFAULT_UPDATE_OUTPUT_PATH),
       "utf8",
     );
+    const auditText = await readFile(
+      join(root, "docs", "dyknow", ".state", "audit-log.jsonl"),
+      "utf8",
+    );
     const reviewBatch = UpdateDraftBatchSchema.parse(JSON.parse(reviewText));
+    const auditEntries = auditText
+      .trim()
+      .split(/\r?\n/)
+      .map((line) => AuditLogEntrySchema.parse(JSON.parse(line)));
 
     expect(exitCode).toBe(0);
     expect(stderr).toEqual([]);
     expect(stdout[0]).toContain("Marked 1 update proposal(s) as Approved");
     expect(reviewBatch.drafts[0]?.proposal.reviewState).toBe("Approved");
+    expect(auditEntries).toHaveLength(1);
+    expect(auditEntries[0]?.action).toBe("review:approve");
+    expect(auditEntries[0]?.outputsAffected).toContain(
+      "docs/product-overview.md",
+    );
+    expect(auditEntries[0]?.outputsAffected).toContain(
+      DEFAULT_UPDATE_OUTPUT_PATH,
+    );
   });
 
   it("persists an edited proposal for a targeted page", async () => {
