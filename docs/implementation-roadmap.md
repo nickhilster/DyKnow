@@ -20,6 +20,7 @@ sources:
   - ../packages/cli/src/commit.ts
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
+  - ../packages/cli/src/log.ts
   - ../packages/cli/src/pr.ts
   - ../packages/cli/src/review.ts
   - ../packages/cli/src/scan.ts
@@ -122,9 +123,9 @@ These items underpin every later phase. Land them once; reuse everywhere.
 - [x] PR body: summary table of pages updated, source evidence, risk levels.
 
 ### Audit
-- [ ] Audit log writer (append-only).
+- [x] Audit log writer (append-only).
 - [x] Append review-action audit entries to an append-only log artifact.
-- [ ] `dyknow log` — pretty-print recent audit entries.
+- [x] `dyknow log` — pretty-print recent audit entries.
 
 ### Initial maintained pages
 - [ ] Product Overview generator.

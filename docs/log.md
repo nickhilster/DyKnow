@@ -118,6 +118,13 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot after implementing the dyknow review skip slice.
 2026-05-23 | update | docs/dyknow/.state/update-proposals.json | Regenerated the update-proposals artifact after implementing the dyknow review skip slice.
 2026-05-23 | update | packages/cli/src/review.ts | Implemented the first dyknow review regenerate slice to re-draft targeted proposals from the saved repo diff.
+2026-05-23 | update | packages/cli/src/log.ts | Implemented the first dyknow log slice to pretty-print recent review audit entries from the append-only JSONL artifact.
+2026-05-23 | update | README.md | Documented the implemented dyknow log command and its read-only audit-viewer behavior.
+2026-05-23 | update | AGENTS.md | Updated agent context to include the dyknow log command and audit-log reader behavior.
+2026-05-23 | update | CHANGELOG.md | Recorded the first dyknow log read-only audit-viewer slice.
+2026-05-23 | update | docs/setup-guide.md | Added the implemented dyknow log step and clarified the current audit-viewer workflow.
+2026-05-23 | update | docs/feature-map.md | Marked dyknow log implemented and documented its current read-only audit behavior.
+2026-05-23 | update | docs/implementation-roadmap.md | Marked the audit log writer and dyknow log reader tasks complete.
 2026-05-23 | update | README.md | Documented the first dyknow review regenerate path alongside the existing decision, edit, and skip workflow.
 2026-05-23 | update | AGENTS.md | Updated agent context to include targeted dyknow review regenerate handling.
 2026-05-23 | update | CHANGELOG.md | Marked dyknow review updated for the first targeted regenerate slice.
