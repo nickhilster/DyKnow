@@ -91,7 +91,7 @@ Build a knowledge maintenance system that:
         └── dyknow_local_whitepaper.md   Founding raw source.
 ```
 
-  The implemented code surface is still small, but it is real: `packages/core` defines the first shared engine contracts, config validation, repo-map schema, repo-diff schema, default update prompt templates, and a provider-backed update runner; `packages/cli` implements `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, the first persisted `dyknow review` decision slice, and the first `dyknow commit` workflow slice; and CI runs lint, tests, and build checks.
+  The implemented code surface is still small, but it is real: `packages/core` defines the first shared engine contracts, config validation, repo-map schema, repo-diff schema, default update prompt templates, and a provider-backed update runner; `packages/cli` implements `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, the first persisted `dyknow review` decision slice including edited proposal text, and the first `dyknow commit` and `dyknow pr` workflow slices; and CI runs lint, tests, and build checks.
 
 ## Development commands
 
@@ -103,7 +103,7 @@ Build a knowledge maintenance system that:
   - `node packages/cli/dist/bin.js scan` — build the repo map snapshot at `docs/dyknow/.state/repo-map.json` after a build.
   - `node packages/cli/dist/bin.js diff` — compare the current workspace against the saved repo-map snapshot, map deltas to affected page IDs via configured source patterns, and write `docs/dyknow/.state/repo-diff.json` after a build.
   - `node packages/cli/dist/bin.js update` — read `docs/dyknow/.state/repo-diff.json`, draft proposals for affected pages, and write `docs/dyknow/.state/update-proposals.json` after a build.
-  - `node packages/cli/dist/bin.js review --approve --page <page-id>` — persist approval, rejection, or escalation decisions back into `docs/dyknow/.state/update-proposals.json` after a build.
+  - `node packages/cli/dist/bin.js review --approve --page <page-id>` — persist approval, rejection, escalation, or one edited proposal text back into `docs/dyknow/.state/update-proposals.json` after a build.
   - `node packages/cli/dist/bin.js commit` — apply approved proposals from `docs/dyknow/.state/update-proposals.json`, mark them published, and create a single git commit.
   - `node packages/cli/dist/bin.js pr --branch <name>` — create a new branch from `main`, apply approved proposals, push the branch to `origin`, and open a GitHub pull request with a summary table.
 
@@ -113,7 +113,7 @@ Build a knowledge maintenance system that:
   - `dyknow scan` — build repo map at `docs/dyknow/.state/repo-map.json`
   - `dyknow diff` — compare the current workspace to the saved repo map, identify affected pages, and write `docs/dyknow/.state/repo-diff.json`
   - `dyknow update` — draft update proposals at `docs/dyknow/.state/update-proposals.json`
-  - `dyknow review` — persist approval, rejection, or escalation decisions in `docs/dyknow/.state/update-proposals.json`
+  - `dyknow review` — persist approval, rejection, escalation, or one edited proposal text in `docs/dyknow/.state/update-proposals.json`
   - `dyknow commit` — apply approved proposals, mark them published, and create a single git commit
   - `dyknow pr` — create a review branch, push it, and open a GitHub pull request for approved proposals
 
@@ -127,7 +127,7 @@ See [docs/setup-guide.md](docs/setup-guide.md).
 - The current scanner honors `allowedSources` and `ignoredSources`, extracts package dependencies, classifies route candidates heuristically, and warns on likely sensitive content without writing file contents into the repo map.
 - The current diff command compares a fresh in-memory scan against the last saved repo-map snapshot, maps changed source paths to affected page IDs via configured page source patterns, and writes a structured repo-diff artifact without overwriting the base snapshot.
 - The current update flow reads affected pages from the repo diff, drafts proposals into `docs/dyknow/.state/update-proposals.json`, uses default templates for the maintained DyKnow pages, and relies on a local stub update provider that always returns needs-review proposals and enforces local-only provider matching.
-- The current review flow reads `docs/dyknow/.state/update-proposals.json`, can list proposal state counts, and persists approval, rejection, or escalation decisions back into that artifact without mutating page files.
+- The current review flow reads `docs/dyknow/.state/update-proposals.json`, can list proposal state counts, persists approval, rejection, or escalation decisions, and can mark one targeted proposal `Edited` while replacing its proposed text inside that artifact without mutating page files.
 - The current commit flow reads `docs/dyknow/.state/update-proposals.json`, applies only approved proposals to their output files, marks them `Published`, and creates one git commit while refusing unrelated worktree changes.
 - The current PR flow must start from the base branch (default `main`), creates a new review branch, reuses the approved-proposal commit path, pushes to `origin`, and opens a GitHub pull request whose body summarizes pages, source evidence, risk, and confidence.
 - Favor small vertical slices that keep source evidence, confidence, risk, and review-state data explicit in the design.

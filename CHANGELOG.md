@@ -35,7 +35,7 @@ Format: each release gets a heading with date and a short list of changes groupe
 ### Changed
 - `dyknow diff` now works end to end, comparing the current workspace scan to the saved repo-map snapshot, mapping deltas to affected configured pages, and writing a structured repo-diff artifact.
 - `dyknow update` now works end to end for the local stub path, reading `docs/dyknow/.state/repo-diff.json`, drafting proposals for affected configured pages, and writing `docs/dyknow/.state/update-proposals.json` without mutating page files.
-- `dyknow review` now works for the first persisted decision slice, reading `docs/dyknow/.state/update-proposals.json`, applying approval, rejection, or escalation decisions, and writing the updated proposal artifact back without mutating page files.
+- `dyknow review` now works for the first persisted edit slice, reading `docs/dyknow/.state/update-proposals.json`, applying approval, rejection, escalation, or one edited proposal text change, and writing the updated proposal artifact back without mutating page files.
 - `dyknow commit` now works for the first apply-and-commit slice, reading approved proposals from `docs/dyknow/.state/update-proposals.json`, updating page files, marking those proposals `Published`, and creating a single git commit.
 - `dyknow pr` now works for the first branch-and-PR slice, starting from the base branch, applying approved proposals into a fresh branch, pushing it to `origin`, and opening a GitHub pull request with a page/risk/source summary table.
 - `dyknow init` and `dyknow scan` now work end to end for this repo and are dogfooded against the current workspace.

@@ -175,9 +175,9 @@ The current implementation uses the local stub update provider. It drafts `Needs
 dyknow review
 ```
 
-**Status:** implemented for the first persisted decision slice.
+**Status:** implemented for the first persisted decision-and-edit slice.
 
-The current implementation reads `docs/dyknow/.state/update-proposals.json`, can summarize proposal counts by review state, and can persist approval, rejection, or escalation decisions back into that artifact.
+The current implementation reads `docs/dyknow/.state/update-proposals.json`, can summarize proposal counts by review state, can persist approval, rejection, or escalation decisions, and can replace one targeted proposal's `proposedText` while marking it `Edited`.
 
 If you are working inside this repo today, the direct invocation is:
 
@@ -189,6 +189,12 @@ You can also target all proposals at once:
 
 ```bash
 node packages/cli/dist/bin.js review --reject --all
+```
+
+To replace one proposal's draft text without applying it yet:
+
+```bash
+node packages/cli/dist/bin.js review --edit --page product-overview --text "Revised draft text"
 ```
 
 If no update-proposals snapshot exists yet, `dyknow review` exits with a helpful message telling you to run `dyknow update` first.
@@ -203,7 +209,7 @@ The full walkthrough remains broader than the current slice. Reviewers will even
 - Mark source as irrelevant
 - Update config rules
 
-Today, only approve / reject / escalate decisions are implemented.
+Today, approve / reject / escalate plus a single edited-proposal text path are implemented. Regenerate, skip, and editor-driven review remain planned.
 
 ## Step 6 — Commit or publish
 

@@ -97,3 +97,13 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after implementing the dyknow pr slice.
 2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot after implementing the dyknow pr slice.
 2026-05-23 | update | docs/dyknow/.state/update-proposals.json | Regenerated the update-proposals artifact after implementing the dyknow pr slice.
+2026-05-23 | update | packages/cli/src/review.ts | Implemented the first dyknow review edit slice to replace one proposal text and mark it Edited inside the snapshot.
+2026-05-23 | update | README.md | Documented the first dyknow review edit path alongside the existing decision workflow.
+2026-05-23 | update | AGENTS.md | Updated agent context to include the dyknow review Edited-proposal behavior.
+2026-05-23 | update | CHANGELOG.md | Marked dyknow review updated for the first persisted proposal-edit slice.
+2026-05-23 | update | docs/setup-guide.md | Documented the first dyknow review edit command and clarified the remaining planned review actions.
+2026-05-23 | update | docs/feature-map.md | Marked dyknow review implemented for the first persisted proposal-edit slice.
+2026-05-23 | update | docs/implementation-roadmap.md | Checked off the first persisted proposal-edit slice in the review workflow backlog.
+2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after implementing the dyknow review edit slice.
+2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot after implementing the dyknow review edit slice.
+2026-05-23 | update | docs/dyknow/.state/update-proposals.json | Regenerated the update-proposals artifact after implementing the dyknow review edit slice.
