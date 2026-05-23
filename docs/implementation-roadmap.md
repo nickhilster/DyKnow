@@ -17,6 +17,7 @@ sources:
   - ../packages/core/src/repo-map.ts
   - ../packages/core/src/update-runner.ts
   - ../packages/core/src/update-templates.ts
+  - ../packages/cli/src/audit.ts
   - ../packages/cli/src/commit.ts
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
@@ -125,6 +126,7 @@ These items underpin every later phase. Land them once; reuse everywhere.
 ### Audit
 - [x] Audit log writer (append-only).
 - [x] Append review-action audit entries to an append-only log artifact.
+- [x] Append publish-action audit entries for `dyknow commit` and `dyknow pr` to the same log artifact.
 - [x] `dyknow log` — pretty-print recent audit entries.
 
 ### Initial maintained pages

@@ -7,6 +7,7 @@ import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import {
+  AuditLogEntrySchema,
   DEFAULT_UPDATE_OUTPUT_PATH,
   UpdateDraftBatchSchema,
 } from "@dyknow/core";
@@ -101,7 +102,15 @@ describe("dyknow commit", () => {
       join(root, DEFAULT_UPDATE_OUTPUT_PATH),
       "utf8",
     );
+    const auditText = await readFile(
+      join(root, "docs", "dyknow", ".state", "audit-log.jsonl"),
+      "utf8",
+    );
     const batch = UpdateDraftBatchSchema.parse(JSON.parse(batchText));
+    const auditEntries = auditText
+      .trim()
+      .split(/\r?\n/u)
+      .map((line) => AuditLogEntrySchema.parse(JSON.parse(line)));
     const commitSubject = await runGit(root, ["log", "-1", "--pretty=%s"]);
     const status = await runGit(root, ["status", "--short"]);
 
@@ -110,6 +119,14 @@ describe("dyknow commit", () => {
     expect(stdout[0]).toContain("Applied 1 approved update proposal(s)");
     expect(pageText).toContain("Approved content.");
     expect(batch.drafts[0]?.proposal.reviewState).toBe("Published");
+    expect(auditEntries).toHaveLength(1);
+    expect(auditEntries[0]?.action).toBe("publish:commit");
+    expect(auditEntries[0]?.outputsAffected).toContain(
+      "docs/product-overview.md",
+    );
+    expect(auditEntries[0]?.outputsAffected).toContain(
+      DEFAULT_UPDATE_OUTPUT_PATH,
+    );
     expect(commitSubject).toBe("docs: apply approved dyknow updates");
     expect(status).toBe("");
   });

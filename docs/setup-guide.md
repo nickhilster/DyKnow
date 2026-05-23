@@ -8,6 +8,7 @@ sources:
   - ../dyknow.config.schema.json
   - dyknow/.state/repo-diff.json
   - dyknow/.state/update-proposals.json
+  - ../packages/cli/src/audit.ts
   - ../packages/cli/src/commit.ts
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
@@ -232,7 +233,7 @@ The full walkthrough remains broader than the current slice. Reviewers will even
 
 Today, approve / reject / escalate plus a single inline edited-proposal text path, a single external-editor edit path, explicit skip handling, and targeted regenerate handling are implemented. Richer in-product review surfaces remain planned.
 
-The first audit slice remains intentionally narrow: only review actions append entries today.
+The current audit slice still stays local and append-only, but it is no longer limited to review actions: `dyknow review`, `dyknow commit`, and `dyknow pr` all append audit entries to the same JSONL artifact.
 
 ## Step 6 — Inspect the audit trail
 
@@ -242,7 +243,7 @@ dyknow log
 
 **Status:** implemented for the first read-only audit-viewer slice.
 
-The current implementation reads `docs/dyknow/.state/audit-log.jsonl`, validates each JSONL line against the shared audit-entry schema, and pretty-prints recent entries newest first without mutating the log artifact.
+The current implementation reads `docs/dyknow/.state/audit-log.jsonl`, validates each JSONL line against the shared audit-entry schema, and pretty-prints recent review and publish entries newest first without mutating the log artifact.
 
 If you are working inside this repo today, the direct invocation is:
 
@@ -266,7 +267,7 @@ dyknow pr
 
 **Status:** `dyknow commit` and `dyknow pr` are implemented for the first apply-and-publish slices. `dyknow sync` is still planned.
 
-The current implementation reads `docs/dyknow/.state/update-proposals.json`, applies only proposals whose `reviewState` is `Approved`, updates those output files, marks the applied proposals `Published`, and creates a single git commit.
+The current implementation reads `docs/dyknow/.state/update-proposals.json`, applies only proposals whose `reviewState` is `Approved`, updates those output files, marks the applied proposals `Published`, appends publish audit entries to `docs/dyknow/.state/audit-log.jsonl`, and creates a single git commit.
 
 If you are working inside this repo today, the direct invocation is:
 
@@ -278,7 +279,7 @@ If no approved proposals exist yet, `dyknow commit` exits with a helpful message
 
 If the worktree has unrelated changes, `dyknow commit` refuses to proceed so the resulting commit only contains the approved DyKnow updates.
 
-The current `dyknow pr` implementation must start from the base branch (defaults to `main`), creates a new branch, reuses the approved-proposal apply-and-commit step, pushes the branch to `origin`, and opens a GitHub pull request with a summary table covering updated pages, source evidence, risk, and confidence.
+The current `dyknow pr` implementation must start from the base branch (defaults to `main`), creates a new branch, reuses the approved-proposal apply-and-commit step, carries the corresponding publish audit entry in that committed flow, pushes the branch to `origin`, and opens a GitHub pull request with a summary table covering updated pages, source evidence, risk, and confidence.
 
 If you are working inside this repo today, the direct invocation is:
 
