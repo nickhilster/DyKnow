@@ -16,15 +16,12 @@ import {
 
 import { createCommitResult, parseCommitOptions } from "./commit.js";
 import { createRepoDiff, parseDiffOptions } from "./diff.js";
+import { createPrResult, parsePrOptions } from "./pr.js";
 import { createReviewUpdateBatch, parseReviewOptions } from "./review.js";
 import { scanWorkspace } from "./scan.js";
 import { createUpdateDraftBatch, parseUpdateOptions } from "./update.js";
 
-export const PLANNED_COMMANDS = [
-  "dyknow init",
-  "dyknow scan",
-  "dyknow pr",
-] as const;
+export const PLANNED_COMMANDS = ["dyknow init", "dyknow scan"] as const;
 
 type CliWriter = (message: string) => void;
 
@@ -154,6 +151,7 @@ function formatHelp(): string {
     "- dyknow update [--config <path>] [--diff <path>] [--output <path>]",
     "- dyknow review [--input <path>] [--output <path>] [--approve|--reject|--escalate] (--all | --page <id>...)",
     "- dyknow commit [--input <path>] [--message <text>]",
+    "- dyknow pr [--input <path>] [--base <branch>] [--branch <name>] [--message <text>] [--title <text>]",
     "",
     `Default repo diff output: ${DEFAULT_REPO_DIFF_OUTPUT_PATH}`,
     `Default update output: ${DEFAULT_UPDATE_OUTPUT_PATH}`,
@@ -331,6 +329,30 @@ async function handleCommit(args: readonly string[], context?: CliContext) {
   }
 }
 
+async function handlePr(args: readonly string[], context?: CliContext) {
+  const { cwd, stderr, stdout } = getContext(context);
+
+  try {
+    const options = parsePrOptions(args);
+    const result = await createPrResult({
+      cwd,
+      base: options.base,
+      inputPath: options.inputPath,
+      message: options.message,
+      title: options.title,
+      ...(options.branch ? { branch: options.branch } : {}),
+    });
+
+    stdout(
+      `Applied ${result.publishedProposals} approved update proposal(s), pushed branch ${result.branch}, and opened PR ${result.url}.`,
+    );
+    return 0;
+  } catch (error) {
+    stderr(error instanceof Error ? error.message : "Unknown pr error.");
+    return 1;
+  }
+}
+
 export function formatBootstrapStatus(): string {
   return formatHelp();
 }
@@ -369,6 +391,10 @@ export async function runCli(
 
   if (command === "commit") {
     return handleCommit(commandArgs, context);
+  }
+
+  if (command === "pr") {
+    return handlePr(commandArgs, context);
   }
 
   if (

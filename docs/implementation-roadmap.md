@@ -17,8 +17,10 @@ sources:
   - ../packages/core/src/repo-map.ts
   - ../packages/core/src/update-runner.ts
   - ../packages/core/src/update-templates.ts
+  - ../packages/cli/src/commit.ts
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
+  - ../packages/cli/src/pr.ts
   - ../packages/cli/src/review.ts
   - ../packages/cli/src/scan.ts
   - ../packages/cli/src/update.ts
@@ -113,8 +115,8 @@ These items underpin every later phase. Land them once; reuse everywhere.
 
 ### Commit / PR
 - [x] `dyknow commit` — apply approved updates and create a single commit.
-- [ ] `dyknow pr` — create a branch + open a PR via `gh` / `glab`.
-- [ ] PR body: summary table of pages updated, source evidence, risk levels.
+- [x] `dyknow pr` — create a branch + open a PR via `gh` / `glab`.
+- [x] PR body: summary table of pages updated, source evidence, risk levels.
 
 ### Audit
 - [ ] Audit log writer (append-only).

@@ -87,3 +87,13 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after implementing the dyknow commit slice.
 2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot after implementing the dyknow commit slice.
 2026-05-23 | update | docs/dyknow/.state/update-proposals.json | Regenerated the update-proposals artifact after implementing the dyknow commit slice.
+2026-05-23 | update | packages/cli/src/pr.ts | Implemented the first dyknow pr command slice to branch, push, and open a GitHub pull request for approved proposals.
+2026-05-23 | update | README.md | Documented the first dyknow pr workflow alongside the existing review and commit slices.
+2026-05-23 | update | AGENTS.md | Updated agent context to include the dyknow pr command and its branch-and-PR behavior.
+2026-05-23 | update | CHANGELOG.md | Marked dyknow pr implemented for the first review-branch and pull-request slice.
+2026-05-23 | update | docs/setup-guide.md | Documented the first dyknow pr workflow, including its base-branch guard and GitHub PR output.
+2026-05-23 | update | docs/feature-map.md | Marked dyknow pr implemented for the first branch-and-PR slice.
+2026-05-23 | update | docs/implementation-roadmap.md | Checked off the dyknow pr and PR-body roadmap items after implementing the first GitHub-backed slice.
+2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after implementing the dyknow pr slice.
+2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot after implementing the dyknow pr slice.
+2026-05-23 | update | docs/dyknow/.state/update-proposals.json | Regenerated the update-proposals artifact after implementing the dyknow pr slice.

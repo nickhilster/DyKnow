@@ -17,6 +17,7 @@ Format: each release gets a heading with date and a short list of changes groupe
 - `packages/core/src/repo-diff.ts` — structured repo-diff schema and snapshot comparison logic.
 - `packages/core/src/update-templates.ts` and `packages/core/src/update-runner.ts` — default page prompt templates, update batch schemas, and a provider-backed update runner.
 - `packages/cli/src/commit.ts` and CLI integration tests for `commit`.
+- `packages/cli/src/pr.ts` and CLI integration tests for `pr`.
 - `packages/cli/src/review.ts` and CLI integration tests for `review`.
 - `packages/cli/src/scan.ts` and CLI integration tests for `init` and `scan`.
 - `packages/cli/src/diff.ts` and CLI integration tests for `diff`.
@@ -36,6 +37,7 @@ Format: each release gets a heading with date and a short list of changes groupe
 - `dyknow update` now works end to end for the local stub path, reading `docs/dyknow/.state/repo-diff.json`, drafting proposals for affected configured pages, and writing `docs/dyknow/.state/update-proposals.json` without mutating page files.
 - `dyknow review` now works for the first persisted decision slice, reading `docs/dyknow/.state/update-proposals.json`, applying approval, rejection, or escalation decisions, and writing the updated proposal artifact back without mutating page files.
 - `dyknow commit` now works for the first apply-and-commit slice, reading approved proposals from `docs/dyknow/.state/update-proposals.json`, updating page files, marking those proposals `Published`, and creating a single git commit.
+- `dyknow pr` now works for the first branch-and-PR slice, starting from the base branch, applying approved proposals into a fresh branch, pushing it to `origin`, and opening a GitHub pull request with a page/risk/source summary table.
 - `dyknow init` and `dyknow scan` now work end to end for this repo and are dogfooded against the current workspace.
 - The repo now includes a real TypeScript implementation scaffold for DyKnow Local in addition to the documentation wiki.
 - Relocated `dyknow_local_whitepaper.md` from the repo root into `docs/sources/` so all raw inputs live in one place. Updated every cross-reference (README, CLAUDE, AGENTS, all wiki page frontmatter, log).
