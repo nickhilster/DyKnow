@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, relative, resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { promisify } from "node:util";
 
 import {
@@ -8,6 +8,12 @@ import {
   type UpdateDraftBatch,
   UpdateDraftBatchSchema,
 } from "@dyknow/core";
+
+import {
+  DEFAULT_AUDIT_LOG_PATH,
+  appendAuditEntries,
+  formatRelativePath,
+} from "./audit.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -24,13 +30,13 @@ export type CommitResult = {
   publishedProposals: number;
 };
 
-function toPortablePath(path: string): string {
-  return path.replaceAll("\\", "/");
-}
-
-function formatRelativePath(rootPath: string, targetPath: string): string {
-  return toPortablePath(relative(rootPath, targetPath) || targetPath);
-}
+type PendingAuditEntry = {
+  action: string;
+  entries: readonly {
+    outputsAffected: readonly string[];
+    sourcesRead: readonly string[];
+  }[];
+};
 
 function parseUpdateBatch(
   snapshotText: string,
@@ -74,7 +80,7 @@ function parseStatusPaths(status: string): string[] {
     .map((path) => {
       const renamedPath = path.split(" -> ").at(-1) ?? path;
 
-      return toPortablePath(renamedPath.trim());
+      return renamedPath.trim().replaceAll("\\", "/");
     });
 }
 
@@ -140,6 +146,7 @@ export function parseCommitOptions(args: readonly string[]): CommitOptions {
 }
 
 export async function createCommitResult(options: {
+  additionalAuditEntries?: readonly PendingAuditEntry[];
   cwd: string;
   inputPath: string;
   message: string;
@@ -206,9 +213,27 @@ export async function createCommitResult(options: {
 
   await writeFile(inputPath, `${JSON.stringify(nextBatch, null, 2)}\n`, "utf8");
 
+  await appendAuditEntries({
+    action: "publish:commit",
+    entries: approvedDrafts.map((draft) => ({
+      outputsAffected: [draft.affectedPage.outputPath, inputPathRelative],
+      sourcesRead: draft.proposal.sources,
+    })),
+    rootPath,
+  });
+
+  for (const pendingEntry of options.additionalAuditEntries ?? []) {
+    await appendAuditEntries({
+      action: pendingEntry.action,
+      entries: pendingEntry.entries,
+      rootPath,
+    });
+  }
+
   const filesToAdd = [
     ...approvedDrafts.map((draft) => draft.affectedPage.outputPath),
     inputPathRelative,
+    DEFAULT_AUDIT_LOG_PATH,
   ];
 
   await runGit(rootPath, ["add", ...filesToAdd]);

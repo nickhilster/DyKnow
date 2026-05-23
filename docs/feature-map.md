@@ -7,6 +7,7 @@ sources:
   - ../dyknow.config.json
   - dyknow/.state/repo-diff.json
   - dyknow/.state/update-proposals.json
+  - ../packages/cli/src/audit.ts
   - ../packages/cli/src/commit.ts
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
@@ -74,9 +75,9 @@ READMEs, `docs/` folders, source route files, API schemas, OpenAPI specs, packag
 | `dyknow diff` | Implemented | Compare the current workspace scan against the saved repo map snapshot, map deltas to affected configured pages, and write `docs/dyknow/.state/repo-diff.json`. |
 | `dyknow update` | Implemented | Draft update proposals from `docs/dyknow/.state/repo-diff.json`, include reasoning and source evidence, and write `docs/dyknow/.state/update-proposals.json`. The current provider is a local stub and still requires human review. |
 | `dyknow review` | Implemented (first slice) | Read `docs/dyknow/.state/update-proposals.json`, list proposal state counts, persist `Approved`, `Rejected`, or `Escalated` decisions, replace one targeted proposal text while marking it `Edited` from inline text or an external editor command, explicitly skip targeted proposals without mutating the snapshot, regenerate targeted proposals from the saved repo diff, and append one audit entry per targeted review action to `docs/dyknow/.state/audit-log.jsonl`. Richer in-product review flows remain planned. |
-| `dyknow log` | Implemented (first slice) | Read `docs/dyknow/.state/audit-log.jsonl`, validate each JSONL entry against the shared audit-entry schema, and pretty-print recent review-action audit entries newest first without mutating the log artifact. |
-| `dyknow commit` | Implemented (first slice) | Apply `Approved` proposals from `docs/dyknow/.state/update-proposals.json`, update the affected output files, mark those proposals `Published`, and create one git commit. It currently refuses unrelated worktree changes. |
-| `dyknow pr` | Implemented (first slice) | Starting from the base branch, create a review branch, apply `Approved` proposals, push to `origin`, and open a GitHub pull request with a page/risk/source summary table. |
+| `dyknow log` | Implemented (first slice) | Read `docs/dyknow/.state/audit-log.jsonl`, validate each JSONL entry against the shared audit-entry schema, and pretty-print recent review and publish audit entries newest first without mutating the log artifact. |
+| `dyknow commit` | Implemented (first slice) | Apply `Approved` proposals from `docs/dyknow/.state/update-proposals.json`, update the affected output files, mark those proposals `Published`, append publish audit entries to `docs/dyknow/.state/audit-log.jsonl`, and create one git commit. It currently refuses unrelated worktree changes. |
+| `dyknow pr` | Implemented (first slice) | Starting from the base branch, create a review branch, apply `Approved` proposals, carry the corresponding publish audit entry in that committed flow, push to `origin`, and open a GitHub pull request with a page/risk/source summary table. |
 | `dyknow sync` | Planned | (Optional) push approved outputs to Cloud, CMS, Notion, Confluence. |
 
 Full workflow detail: [Setup Guide](setup-guide.md).

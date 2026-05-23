@@ -154,3 +154,12 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after implementing the review-action audit-log slice.
 2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot after implementing the review-action audit-log slice.
 2026-05-23 | update | docs/dyknow/.state/update-proposals.json | Regenerated the update-proposals artifact after implementing the review-action audit-log slice.
+2026-05-23 | update | packages/cli/src/audit.ts | Added a shared append-only audit helper for publish and review flows.
+2026-05-23 | update | packages/cli/src/commit.ts | Appended publish audit entries during dyknow commit so published outputs and snapshot changes are recorded in the committed audit trail.
+2026-05-23 | update | packages/cli/src/pr.ts | Added dyknow pr publish audit coverage in the same committed audit flow used for approved proposal publication.
+2026-05-23 | update | README.md | Documented publish-action audit coverage for dyknow commit, dyknow pr, and the dyknow log viewer.
+2026-05-23 | update | AGENTS.md | Updated agent context to include shared publish audit helpers and commit/pr audit behavior.
+2026-05-23 | update | CHANGELOG.md | Recorded the first publish-action audit coverage for dyknow commit and dyknow pr.
+2026-05-23 | update | docs/setup-guide.md | Documented that review, commit, and pr now append to the same local audit trail.
+2026-05-23 | update | docs/feature-map.md | Expanded the audit command descriptions to cover publish audit entries.
+2026-05-23 | update | docs/implementation-roadmap.md | Checked off publish-action audit entries in the audit backlog.
