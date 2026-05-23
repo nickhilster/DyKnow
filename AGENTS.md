@@ -93,7 +93,7 @@ Build a knowledge maintenance system that:
         └── dyknow_local_whitepaper.md   Founding raw source.
 ```
 
-  The implemented code surface is still small, but it is real: `packages/core` defines the first shared engine contracts, config validation, repo-map schema, repo-diff schema, default update prompt templates, and a provider-backed update runner; `packages/cli` implements `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, the first persisted `dyknow review` decision slice including edited proposal text, external-editor handling, skip handling, targeted regenerate handling, and review-action audit logging, a read-only `dyknow log` audit viewer, and the first `dyknow commit` and `dyknow pr` workflow slices with publish-action audit logging; and CI runs lint, tests, and build checks.
+  The implemented code surface is still small, but it is real: `packages/core` defines the first shared engine contracts, config validation, repo-map schema, repo-diff schema, default update prompt templates, and a provider-backed update runner; `packages/cli` implements `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, the first persisted `dyknow review` decision slice including edited proposal text, external-editor handling, skip handling, targeted regenerate handling, and review-action audit logging, a read-only `dyknow log` audit viewer, and the first `dyknow commit` and `dyknow pr` workflow slices with publish-action audit logging where PR publication is currently recorded as a prepared local state before the external PR-open call; and CI runs lint, tests, and build checks.
 
 ## Development commands
 
@@ -108,7 +108,7 @@ Build a knowledge maintenance system that:
   - `node packages/cli/dist/bin.js review --approve --page <page-id>` — persist approval, rejection, escalation, one edited proposal text, one editor-driven edited proposal text, an explicit skip, or a targeted regenerate back into `docs/dyknow/.state/update-proposals.json` after a build while appending review-action audit entries to `docs/dyknow/.state/audit-log.jsonl`.
   - `node packages/cli/dist/bin.js log --limit 10` — pretty-print recent entries from `docs/dyknow/.state/audit-log.jsonl` after a build.
   - `node packages/cli/dist/bin.js commit` — apply approved proposals from `docs/dyknow/.state/update-proposals.json`, mark them published, append publish audit entries, and create a single git commit.
-  - `node packages/cli/dist/bin.js pr --branch <name>` — create a new branch from `main`, apply approved proposals, append the corresponding publish audit entries, push the branch to `origin`, and open a GitHub pull request with a summary table.
+  - `node packages/cli/dist/bin.js pr --branch <name>` — create a new branch from `main`, apply approved proposals, append a `publish:pr-prepared` audit entry in the committed local flow, push the branch to `origin`, and open a GitHub pull request with a summary table.
 
   Implemented DyKnow Local CLI commands:
 
@@ -119,7 +119,7 @@ Build a knowledge maintenance system that:
   - `dyknow review` — persist approval, rejection, escalation, one edited proposal text, one editor-driven edited proposal text, an explicit skip, or a targeted regenerate in `docs/dyknow/.state/update-proposals.json`
   - `dyknow log` — pretty-print recent review and publish audit entries from `docs/dyknow/.state/audit-log.jsonl`
   - `dyknow commit` — apply approved proposals, mark them published, append publish audit entries, and create a single git commit
-  - `dyknow pr` — create a review branch, append the corresponding publish audit entry, push it, and open a GitHub pull request for approved proposals
+  - `dyknow pr` — create a review branch, append a `publish:pr-prepared` audit entry, push it, and open a GitHub pull request for approved proposals
 
 See [docs/setup-guide.md](docs/setup-guide.md).
 
@@ -134,7 +134,7 @@ See [docs/setup-guide.md](docs/setup-guide.md).
 - The current review flow reads `docs/dyknow/.state/update-proposals.json`, can list proposal state counts, persists approval, rejection, or escalation decisions, can mark one targeted proposal `Edited` while replacing its proposed text inside that artifact from either `--text` or an external editor command, can explicitly skip targeted proposals without mutating the snapshot, can regenerate targeted proposals from the saved repo diff while leaving untargeted drafts alone, and appends one audit entry per targeted review action to `docs/dyknow/.state/audit-log.jsonl`.
 - The current log flow reads `docs/dyknow/.state/audit-log.jsonl`, validates each JSONL entry against the shared audit-entry schema, and pretty-prints the most recent review and publish entries first without mutating the audit artifact.
 - The current commit flow reads `docs/dyknow/.state/update-proposals.json`, applies only approved proposals to their output files, marks them `Published`, appends publish audit entries to `docs/dyknow/.state/audit-log.jsonl`, and creates one git commit while refusing unrelated worktree changes.
-- The current PR flow must start from the base branch (default `main`), creates a new review branch, reuses the approved-proposal commit path, carries the corresponding publish audit entry in that committed flow, pushes to `origin`, and opens a GitHub pull request whose body summarizes pages, source evidence, risk, and confidence.
+- The current PR flow must start from the base branch (default `main`), creates a new review branch, reuses the approved-proposal commit path, carries a `publish:pr-prepared` audit entry in that committed local flow before the external PR-open call, pushes to `origin`, and opens a GitHub pull request whose body summarizes pages, source evidence, risk, and confidence.
 - Favor small vertical slices that keep source evidence, confidence, risk, and review-state data explicit in the design.
 
 ## Documentation conventions

@@ -297,7 +297,7 @@ export async function createPrResult(options: {
   const commitResult = await createCommitResult({
     additionalAuditEntries: [
       {
-        action: "publish:pr",
+        action: "publish:pr-prepared",
         entries: [
           {
             outputsAffected: [
