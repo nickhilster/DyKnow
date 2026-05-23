@@ -82,6 +82,7 @@ async function readAuditEntries(options: {
       return {
         entries: [] as ReportAuditEntry[],
         inputPath: formatRelativePath(options.rootPath, absolutePath),
+        source: options.source,
       };
     }
 
@@ -105,6 +106,7 @@ async function readAuditEntries(options: {
           }) satisfies ReportAuditEntry,
       ),
     inputPath: formatRelativePath(options.rootPath, absolutePath),
+    source: options.source,
   };
 }
 
@@ -216,6 +218,24 @@ function matchesActionFilter(
   return entry.action.startsWith(`${actionFilter}:`);
 }
 
+function formatEmptyAuditReport(options: {
+  inputPath: string;
+  source: LogSource;
+  action: LogActionFilter;
+  reportPaths: readonly string[];
+}) {
+  if (options.source === "all" && options.action === "all") {
+    return `No audit entries found at ${options.inputPath}.`;
+  }
+
+  const scopeLabel =
+    options.reportPaths.length > 0
+      ? options.reportPaths.join(" and ")
+      : options.inputPath;
+
+  return `No audit entries found in ${scopeLabel} for source=${options.source} and action=${options.action}.`;
+}
+
 export async function createAuditLogReport(options: {
   cwd: string;
   inputPath: string;
@@ -256,10 +276,21 @@ export async function createAuditLogReport(options: {
         matchesActionFilter(reportEntry.entry, options.action),
     );
 
+  const reportPaths = reports
+    .filter(
+      (report) => options.source === "all" || report.source === options.source,
+    )
+    .map((report) => report.inputPath);
+
   if (entries.length === 0) {
     return {
       inputPath: options.inputPath,
-      report: `No audit entries found at ${options.inputPath}.`,
+      report: formatEmptyAuditReport({
+        inputPath: options.inputPath,
+        source: options.source,
+        action: options.action,
+        reportPaths,
+      }),
       shownEntries: 0,
       totalEntries: 0,
     };
