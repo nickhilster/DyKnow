@@ -1,0 +1,21 @@
+{
+  "comparedAt": "2026-05-23T16:52:41.022Z",
+  "rootPath": "C:\\DEV\\DyKnow",
+  "configPath": "dyknow.config.json",
+  "baseSnapshotPath": "docs/dyknow/.state/repo-map.json",
+  "outputPath": "docs/dyknow/.state/repo-diff.json",
+  "previousScannedAt": "2026-05-23T16:52:40.807Z",
+  "currentScannedAt": "2026-05-23T16:52:41.007Z",
+  "addedFiles": [],
+  "changedFiles": [],
+  "removedFiles": [],
+  "addedWarnings": [],
+  "removedWarnings": [],
+  "summary": {
+    "addedFiles": 0,
+    "changedFiles": 0,
+    "removedFiles": 0,
+    "addedWarnings": 0,
+    "removedWarnings": 0
+  }
+}

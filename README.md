@@ -7,7 +7,7 @@ DyKnow keeps a company's most important knowledge pages aligned with the latest 
 - **DyKnow Cloud** — hosted system that monitors approved external/internal sources.
 - **DyKnow Local** — repo-native CLI / VS Code extension that runs inside the customer's environment.
 
-This repository contains the working concept, whitepaper, documentation system, and the initial TypeScript workspace for DyKnow Local's shared engine plus the first implemented `init` and `scan` CLI slices.
+This repository contains the working concept, whitepaper, documentation system, and the initial TypeScript workspace for DyKnow Local's shared engine plus the first implemented `init`, `scan`, and `diff` CLI slices.
 
 ## Repo layout
 
@@ -33,7 +33,7 @@ This repository contains the working concept, whitepaper, documentation system, 
 ├── tsconfig.base.json              Shared TypeScript compiler settings.
 └── docs/
     ├── dyknow/
-    │   └── .state/                 Generated repo-map snapshots.
+    │   └── .state/                 Generated repo-map and repo-diff snapshots.
     ├── index.md                    Catalog of all Dynamic Knowledge Pages.
     ├── log.md                      Append-only change log.
     ├── lint.md                     Wiki health checklist.
@@ -65,8 +65,8 @@ This pattern follows Karpathy's "LLM wiki" model and DyKnow's own Dynamic Knowle
 The current implementation slice uses:
 
 - **TypeScript + npm workspaces** for shared code across DyKnow Local surfaces.
-- **`packages/core`** for JSON-serializable shared contracts, config validation, and repo-map schemas.
-- **`packages/cli`** for the DyKnow Local CLI package with working `dyknow init` and `dyknow scan` commands.
+- **`packages/core`** for JSON-serializable shared contracts, config validation, repo-map schemas, and repo-diff schemas.
+- **`packages/cli`** for the DyKnow Local CLI package with working `dyknow init`, `dyknow scan`, and `dyknow diff` commands.
 - **Biome + Vitest + GitHub Actions** for formatting, linting, tests, and CI.
 
 ## Quick starts
@@ -78,3 +78,4 @@ The current implementation slice uses:
 - Validating the bootstrap: run `npm test`, `npm run build`, and `npm run lint`.
 - Creating the repo-local DyKnow config: run `node packages/cli/dist/bin.js init --force --project-name DyKnow` after a build.
 - Generating the repo map snapshot: run `node packages/cli/dist/bin.js scan` after a build.
+- Generating the structured repo diff: run `node packages/cli/dist/bin.js diff` after a build and after at least one scan.

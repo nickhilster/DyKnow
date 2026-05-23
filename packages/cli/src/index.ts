@@ -3,6 +3,7 @@ import { basename, dirname, relative, resolve } from "node:path";
 
 import {
   DEFAULT_IGNORED_SOURCE_PATTERNS,
+  DEFAULT_REPO_DIFF_OUTPUT_PATH,
   DEFAULT_REPO_MAP_OUTPUT_PATH,
   DYKNOW_CONFIG_FILE_NAME,
   DYKNOW_CONFIG_SCHEMA_FILE_NAME,
@@ -12,12 +13,12 @@ import {
   renderDyknowConfigJsonSchema,
 } from "@dyknow/core";
 
+import { createRepoDiff, parseDiffOptions } from "./diff.js";
 import { scanWorkspace } from "./scan.js";
 
 export const PLANNED_COMMANDS = [
   "dyknow init",
   "dyknow scan",
-  "dyknow diff",
   "dyknow update",
   "dyknow review",
   "dyknow commit",
@@ -148,6 +149,7 @@ function formatHelp(): string {
     "Implemented commands:",
     "- dyknow init [--force] [--connected] [--project-name <name>]",
     "- dyknow scan [--config <path>] [--output <path>]",
+    "- dyknow diff [--config <path>] [--snapshot <path>] [--output <path>]",
     "",
     "Default ignored source patterns:",
     ...DEFAULT_IGNORED_SOURCE_PATTERNS.map((pattern) => `- ${pattern}`),
@@ -224,6 +226,29 @@ async function handleScan(args: readonly string[], context?: CliContext) {
   return 0;
 }
 
+async function handleDiff(args: readonly string[], context?: CliContext) {
+  const { cwd, stderr, stdout } = getContext(context);
+
+  try {
+    const options = parseDiffOptions(args);
+    const repoDiff = await createRepoDiff({
+      cwd,
+      configPath: options.configPath,
+      outputPath: options.outputPath,
+      snapshotPath: options.snapshotPath,
+    });
+    const outputPath = repoDiff.outputPath || DEFAULT_REPO_DIFF_OUTPUT_PATH;
+
+    stdout(
+      `Compared ${repoDiff.baseSnapshotPath} to the current workspace and wrote ${outputPath} with ${repoDiff.summary.addedFiles} added, ${repoDiff.summary.changedFiles} changed, and ${repoDiff.summary.removedFiles} removed file(s).`,
+    );
+    return 0;
+  } catch (error) {
+    stderr(error instanceof Error ? error.message : "Unknown diff error.");
+    return 1;
+  }
+}
+
 export function formatBootstrapStatus(): string {
   return formatHelp();
 }
@@ -246,6 +271,10 @@ export async function runCli(
 
   if (command === "scan") {
     return handleScan(commandArgs, context);
+  }
+
+  if (command === "diff") {
+    return handleDiff(commandArgs, context);
   }
 
   if (

@@ -13,7 +13,9 @@ sources:
   - ../dyknow.config.schema.json
   - ../packages/core/src/contracts.ts
   - ../packages/core/src/config.ts
+  - ../packages/core/src/repo-diff.ts
   - ../packages/core/src/repo-map.ts
+  - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
   - ../packages/cli/src/scan.ts
   - ../.github/workflows/ci.yml
@@ -26,7 +28,7 @@ confidence: medium
 
 This is the **build checklist**. Strategic phase context (goals, success criteria, risk framing) lives in [roadmap.md](roadmap.md); this page lists the actual tasks. Tasks are grouped by phase and by area within each phase. There are no dates — order within a phase is roughly suggested, but tasks within an area can usually proceed in parallel.
 
-The current code scaffold lives in `packages/core` and `packages/cli`. Phase 0 now has a real TypeScript/npm workspace, CI validation, shared-contract plus config-validation slices, and working `dyknow init` / `dyknow scan` commands that dogfood against this repo.
+The current code scaffold lives in `packages/core` and `packages/cli`. Phase 0 now has a real TypeScript/npm workspace, CI validation, shared-contract plus config-validation slices, and working `dyknow init` / `dyknow scan` / `dyknow diff` commands that dogfood against this repo.
 
 When a task is completed, tick the box and append an `update` entry to [log.md](log.md) referencing this page.
 
@@ -82,7 +84,7 @@ These items underpin every later phase. Land them once; reuse everywhere.
 ### Snapshot & change detection
 - [x] Snapshot store layout under `docs/dyknow/.state/`.
 - [x] Write repo map snapshot.
-- [ ] `dyknow diff` command — compute structured delta between snapshots.
+- [x] `dyknow diff` command — compute structured delta between snapshots.
 - [ ] Map deltas → affected page IDs via source map.
 
 ### LLM runner

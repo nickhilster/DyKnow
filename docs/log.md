@@ -48,3 +48,12 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | docs/feature-map.md | Marked dyknow init and dyknow scan as implemented and documented current scanner behavior.
 2026-05-23 | update | docs/setup-guide.md | Updated the workflow page to show init/scan as implemented and later steps as planned.
 2026-05-23 | update | docs/implementation-roadmap.md | Marked JSON schema, scanner, dependency extraction, and repo-map snapshot tasks complete.
+2026-05-23 | create | docs/dyknow/.state/repo-diff.json | Generated the first repo diff snapshot via dyknow diff.
+2026-05-23 | update | README.md | Documented the implemented dyknow diff command and repo-diff artifact.
+2026-05-23 | update | AGENTS.md | Reflected the repo-diff snapshot, diff schema, and current CLI command status.
+2026-05-23 | update | CHANGELOG.md | Recorded dyknow diff implementation and generated repo-diff artifact.
+2026-05-23 | update | docs/feature-map.md | Marked dyknow diff as implemented and documented current diff behavior.
+2026-05-23 | update | docs/setup-guide.md | Updated the workflow page to show dyknow diff as implemented and describe its output.
+2026-05-23 | update | docs/implementation-roadmap.md | Marked the dyknow diff task complete.
+2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after implementing dyknow diff.
+2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot after refreshing the repo map snapshot.
