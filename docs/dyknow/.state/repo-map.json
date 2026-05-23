@@ -103,7 +103,7 @@
     {
       "path": "AGENTS.md",
       "kind": "markdown",
-      "size": 12675,
+      "size": 12757,
       "lineCount": 162,
       "signals": [
         "documentation",
@@ -114,7 +114,7 @@
     {
       "path": "CHANGELOG.md",
       "kind": "markdown",
-      "size": 6560,
+      "size": 6624,
       "lineCount": 71,
       "signals": [
         "documentation"
@@ -145,7 +145,7 @@
     {
       "path": "README.md",
       "kind": "markdown",
-      "size": 8282,
+      "size": 8340,
       "lineCount": 87,
       "signals": [
         "documentation"
@@ -175,7 +175,7 @@
     {
       "path": "docs/feature-map.md",
       "kind": "markdown",
-      "size": 7570,
+      "size": 7596,
       "lineCount": 119,
       "signals": [
         "documentation"
@@ -225,8 +225,8 @@
     {
       "path": "docs/log.md",
       "kind": "markdown",
-      "size": 22922,
-      "lineCount": 191,
+      "size": 23624,
+      "lineCount": 197,
       "signals": [
         "documentation"
       ],
@@ -265,7 +265,7 @@
     {
       "path": "docs/setup-guide.md",
       "kind": "markdown",
-      "size": 11569,
+      "size": 11616,
       "lineCount": 310,
       "signals": [
         "documentation"
@@ -394,8 +394,8 @@
     {
       "path": "packages/cli/src/index.ts",
       "kind": "typescript",
-      "size": 12572,
-      "lineCount": 455,
+      "size": 12634,
+      "lineCount": 456,
       "signals": [
         "source-code"
       ],
@@ -404,8 +404,8 @@
     {
       "path": "packages/cli/src/log.ts",
       "kind": "typescript",
-      "size": 6329,
-      "lineCount": 253,
+      "size": 7265,
+      "lineCount": 288,
       "signals": [
         "source-code"
       ],
@@ -484,8 +484,8 @@
     {
       "path": "packages/cli/test/log.test.ts",
       "kind": "typescript",
-      "size": 7415,
-      "lineCount": 231,
+      "size": 9743,
+      "lineCount": 301,
       "signals": [
         "source-code"
       ],
@@ -745,6 +745,6 @@
   ],
   "outputPath": "docs/dyknow/.state/repo-map.json",
   "rootPath": "C:\\DEV\\DyKnow",
-  "scannedAt": "2026-05-23T22:13:17.299Z",
+  "scannedAt": "2026-05-23T22:47:51.484Z",
   "warnings": []
 }

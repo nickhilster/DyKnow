@@ -188,3 +188,9 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | CHANGELOG.md | Recorded dyknow log source filtering for committed and runtime audit entries.
 2026-05-23 | update | docs/setup-guide.md | Documented the new dyknow log --source option and current filter values.
 2026-05-23 | update | docs/feature-map.md | Updated the dyknow log command description to include source filtering.
+2026-05-23 | update | packages/cli/src/log.ts | Added an all|review|publish action-family filter so dyknow log can isolate review and publish entries.
+2026-05-23 | update | README.md | Documented the new dyknow log --action filter options.
+2026-05-23 | update | AGENTS.md | Updated agent context to include dyknow log action-family filtering.
+2026-05-23 | update | CHANGELOG.md | Recorded dyknow log action-family filtering for review and publish entries.
+2026-05-23 | update | docs/setup-guide.md | Documented the new dyknow log --action option and current filter values.
+2026-05-23 | update | docs/feature-map.md | Updated the dyknow log command description to include action-family filtering.
