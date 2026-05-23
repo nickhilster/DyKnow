@@ -271,9 +271,9 @@ export async function createAuditLogReport(options: {
       right.entry.timestamp.localeCompare(left.entry.timestamp),
     )
     .slice(0, options.limit);
-  const sourceLabels = reports
-    .filter((report) => report.entries.length > 0)
-    .map((report) => report.inputPath);
+  const sourceLabels = [
+    ...new Set(shownEntries.map((entry) => entry.inputPath)),
+  ];
   const header = `Recent audit entries from ${sourceLabels.join(" and ")} (showing ${shownEntries.length} of ${entries.length}):`;
 
   return {

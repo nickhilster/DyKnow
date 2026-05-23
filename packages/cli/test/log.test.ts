@@ -225,6 +225,12 @@ describe("dyknow log", () => {
     expect(stderr).toEqual([]);
     expect(stdout[0]).toContain("publish:pr-opened by copilot");
     expect(stdout[0]).not.toContain("publish:pr-prepared by copilot");
+    expect(stdout[0]).toContain(
+      "Recent audit entries from .git/dyknow/runtime-audit-log.jsonl (showing 1 of 1):",
+    );
+    expect(stdout[0]).not.toContain(
+      "Recent audit entries from docs/dyknow/.state/audit-log.jsonl and .git/dyknow/runtime-audit-log.jsonl",
+    );
     expect(stdout[0]).toContain("  log: .git/dyknow/runtime-audit-log.jsonl");
   });
 
