@@ -112,7 +112,7 @@ These items underpin every later phase. Land them once; reuse everywhere.
 - [x] Persist review decisions to snapshot.
 
 ### Commit / PR
-- [ ] `dyknow commit` — apply approved updates and create a single commit.
+- [x] `dyknow commit` — apply approved updates and create a single commit.
 - [ ] `dyknow pr` — create a branch + open a PR via `gh` / `glab`.
 - [ ] PR body: summary table of pages updated, source evidence, risk levels.
 

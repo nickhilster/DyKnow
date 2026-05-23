@@ -14,6 +14,7 @@ import {
   renderDyknowConfigJsonSchema,
 } from "@dyknow/core";
 
+import { createCommitResult, parseCommitOptions } from "./commit.js";
 import { createRepoDiff, parseDiffOptions } from "./diff.js";
 import { createReviewUpdateBatch, parseReviewOptions } from "./review.js";
 import { scanWorkspace } from "./scan.js";
@@ -22,8 +23,6 @@ import { createUpdateDraftBatch, parseUpdateOptions } from "./update.js";
 export const PLANNED_COMMANDS = [
   "dyknow init",
   "dyknow scan",
-  "dyknow review",
-  "dyknow commit",
   "dyknow pr",
 ] as const;
 
@@ -154,6 +153,7 @@ function formatHelp(): string {
     "- dyknow diff [--config <path>] [--snapshot <path>] [--output <path>]",
     "- dyknow update [--config <path>] [--diff <path>] [--output <path>]",
     "- dyknow review [--input <path>] [--output <path>] [--approve|--reject|--escalate] (--all | --page <id>...)",
+    "- dyknow commit [--input <path>] [--message <text>]",
     "",
     `Default repo diff output: ${DEFAULT_REPO_DIFF_OUTPUT_PATH}`,
     `Default update output: ${DEFAULT_UPDATE_OUTPUT_PATH}`,
@@ -310,6 +310,27 @@ async function handleReview(args: readonly string[], context?: CliContext) {
   }
 }
 
+async function handleCommit(args: readonly string[], context?: CliContext) {
+  const { cwd, stderr, stdout } = getContext(context);
+
+  try {
+    const options = parseCommitOptions(args);
+    const result = await createCommitResult({
+      cwd,
+      inputPath: options.inputPath,
+      message: options.message,
+    });
+
+    stdout(
+      `Applied ${result.publishedProposals} approved update proposal(s) and created commit ${result.commitHash}.`,
+    );
+    return 0;
+  } catch (error) {
+    stderr(error instanceof Error ? error.message : "Unknown commit error.");
+    return 1;
+  }
+}
+
 export function formatBootstrapStatus(): string {
   return formatHelp();
 }
@@ -344,6 +365,10 @@ export async function runCli(
 
   if (command === "review") {
     return handleReview(commandArgs, context);
+  }
+
+  if (command === "commit") {
+    return handleCommit(commandArgs, context);
   }
 
   if (
