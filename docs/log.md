@@ -169,3 +169,10 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | CHANGELOG.md | Recorded the narrower publish:pr-prepared audit semantics for dyknow pr.
 2026-05-23 | update | docs/setup-guide.md | Clarified that the current PR audit trail records prepared local state before external PR creation.
 2026-05-23 | update | docs/feature-map.md | Updated the dyknow pr command description to reflect publish:pr-prepared audit semantics.
+2026-05-23 | update | packages/cli/src/pr.ts | Added a confirmed publish:pr-opened runtime audit event after successful external PR creation.
+2026-05-23 | update | packages/cli/src/log.ts | Expanded dyknow log to merge the committed audit artifact with the git-local runtime audit file.
+2026-05-23 | update | README.md | Documented the git-local runtime audit file used for confirmed external PR-open events.
+2026-05-23 | update | AGENTS.md | Updated agent context to describe the split between committed and runtime PR audit events.
+2026-05-23 | update | CHANGELOG.md | Recorded confirmed external PR-open runtime audit coverage and merged log viewing.
+2026-05-23 | update | docs/setup-guide.md | Clarified that confirmed external PR-open events now land in the git-local runtime audit file.
+2026-05-23 | update | docs/feature-map.md | Updated the dyknow log and dyknow pr descriptions for confirmed external PR-open runtime events.

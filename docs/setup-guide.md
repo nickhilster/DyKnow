@@ -243,7 +243,7 @@ dyknow log
 
 **Status:** implemented for the first read-only audit-viewer slice.
 
-The current implementation reads `docs/dyknow/.state/audit-log.jsonl`, validates each JSONL line against the shared audit-entry schema, and pretty-prints recent review and publish entries newest first without mutating the log artifact.
+The current implementation reads the committed `docs/dyknow/.state/audit-log.jsonl` artifact plus the git-local runtime audit file used for confirmed external PR-open events, validates each JSONL line against the shared audit-entry schema, and pretty-prints recent review and publish entries newest first without mutating the committed log artifact.
 
 If you are working inside this repo today, the direct invocation is:
 
@@ -279,7 +279,7 @@ If no approved proposals exist yet, `dyknow commit` exits with a helpful message
 
 If the worktree has unrelated changes, `dyknow commit` refuses to proceed so the resulting commit only contains the approved DyKnow updates.
 
-The current `dyknow pr` implementation must start from the base branch (defaults to `main`), creates a new branch, reuses the approved-proposal apply-and-commit step, carries a `publish:pr-prepared` audit entry in that committed local flow before the external PR-open call, pushes the branch to `origin`, and opens a GitHub pull request with a summary table covering updated pages, source evidence, risk, and confidence.
+The current `dyknow pr` implementation must start from the base branch (defaults to `main`), creates a new branch, reuses the approved-proposal apply-and-commit step, carries a `publish:pr-prepared` audit entry in that committed local flow before the external PR-open call, pushes the branch to `origin`, opens a GitHub pull request with a summary table covering updated pages, source evidence, risk, and confidence, and appends a confirmed `publish:pr-opened` event to the git-local runtime audit file after the external PR-open call succeeds.
 
 If you are working inside this repo today, the direct invocation is:
 
@@ -287,7 +287,7 @@ If you are working inside this repo today, the direct invocation is:
 node packages/cli/dist/bin.js pr --branch dyknow/review-product-updates
 ```
 
-If no approved proposals exist yet, `dyknow pr` exits with a helpful message telling you to run `dyknow review --approve` first. If you run it from the wrong starting branch, it tells you to return to the configured base branch or pass `--base` explicitly. The current audit trail distinguishes this prepared local PR-publication state from a future confirmed external PR-open event.
+If no approved proposals exist yet, `dyknow pr` exits with a helpful message telling you to run `dyknow review --approve` first. If you run it from the wrong starting branch, it tells you to return to the configured base branch or pass `--base` explicitly. The current audit trail now distinguishes the prepared local PR-publication state in the committed artifact from the confirmed external PR-open event in the git-local runtime audit file.
 
 Optionally:
 

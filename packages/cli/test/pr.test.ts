@@ -189,8 +189,21 @@ describe("dyknow pr", () => {
       join(root, "docs", "dyknow", ".state", "audit-log.jsonl"),
       "utf8",
     );
+    const runtimeAuditPath = await runGit(root, [
+      "rev-parse",
+      "--git-path",
+      "dyknow/runtime-audit-log.jsonl",
+    ]);
+    const runtimeAuditText = await readFile(
+      join(root, runtimeAuditPath),
+      "utf8",
+    );
     const batch = UpdateDraftBatchSchema.parse(JSON.parse(batchText));
     const auditEntries = auditText
+      .trim()
+      .split(/\r?\n/u)
+      .map((line) => AuditLogEntrySchema.parse(JSON.parse(line)));
+    const runtimeAuditEntries = runtimeAuditText
       .trim()
       .split(/\r?\n/u)
       .map((line) => AuditLogEntrySchema.parse(JSON.parse(line)));
@@ -216,6 +229,12 @@ describe("dyknow pr", () => {
       "publish:commit",
       "publish:pr-prepared",
     ]);
+    expect(runtimeAuditEntries.map((entry) => entry.action)).toEqual([
+      "publish:pr-opened",
+    ]);
+    expect(runtimeAuditEntries[0]?.outputsAffected).toContain(
+      "github-pr:https://github.com/example/DyKnow/pull/99",
+    );
     expect(auditEntries[1]?.outputsAffected).toContain(
       "docs/product-overview.md",
     );

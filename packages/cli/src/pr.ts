@@ -10,7 +10,7 @@ import {
   UpdateDraftBatchSchema,
 } from "@dyknow/core";
 
-import { appendAuditEntries } from "./audit.js";
+import { appendAuditEntries, resolveRuntimeAuditPath } from "./audit.js";
 import { DEFAULT_COMMIT_MESSAGE, createCommitResult } from "./commit.js";
 
 const execFileAsync = promisify(execFile);
@@ -333,6 +333,28 @@ export async function createPrResult(options: {
     "--body",
     body,
   ]);
+
+  const runtimeAuditPath = await resolveRuntimeAuditPath(rootPath);
+
+  if (runtimeAuditPath) {
+    await appendAuditEntries({
+      action: "publish:pr-opened",
+      auditPath: runtimeAuditPath,
+      entries: [
+        {
+          outputsAffected: [
+            ...approvedDrafts.map((draft) => draft.affectedPage.outputPath),
+            formatRelativePath(rootPath, resolve(rootPath, options.inputPath)),
+            `github-pr:${url}`,
+          ],
+          sourcesRead: approvedDrafts.flatMap(
+            (draft) => draft.proposal.sources,
+          ),
+        },
+      ],
+      rootPath,
+    });
+  }
 
   return {
     base: options.base,

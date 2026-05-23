@@ -1,10 +1,23 @@
+import { execFile } from "node:child_process";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { promisify } from "node:util";
 
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "../src/index.js";
+
+const execFileAsync = promisify(execFile);
+
+async function runGit(cwd: string, args: readonly string[]) {
+  const result = await execFileAsync("git", [...args], {
+    cwd,
+    encoding: "utf8",
+  });
+
+  return result.stdout.trim();
+}
 
 describe("dyknow log", () => {
   it("reports when the audit log does not exist", async () => {
@@ -91,5 +104,65 @@ describe("dyknow log", () => {
     expect(stdout[0]).not.toContain(
       "[2026-05-23T20:00:00.000Z] review:approve by copilot",
     );
+  });
+
+  it("includes runtime audit entries from the git metadata path when reading the default log", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-log-"));
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+
+    await mkdir(join(root, "docs", "dyknow", ".state"), { recursive: true });
+    await writeFile(join(root, "README.md"), "# Fixture\n", "utf8");
+    await runGit(root, ["init"]);
+    await runGit(root, ["config", "user.name", "DyKnow Test"]);
+    await runGit(root, ["config", "user.email", "dyknow@example.com"]);
+    await writeFile(
+      join(root, "docs", "dyknow", ".state", "audit-log.jsonl"),
+      `${JSON.stringify({
+        action: "publish:pr-prepared",
+        actor: "copilot",
+        sourcesRead: ["README.md"],
+        outputsAffected: ["docs/product-overview.md"],
+        timestamp: "2026-05-23T20:05:00.000Z",
+        hash: "22222222",
+      })}\n`,
+      "utf8",
+    );
+    const runtimeAuditPath = await runGit(root, [
+      "rev-parse",
+      "--git-path",
+      "dyknow/runtime-audit-log.jsonl",
+    ]);
+    await mkdir(join(root, ".git", "dyknow"), { recursive: true });
+    await writeFile(
+      join(root, runtimeAuditPath.replaceAll("/", "\\")),
+      `${JSON.stringify({
+        action: "publish:pr-opened",
+        actor: "copilot",
+        sourcesRead: ["README.md"],
+        outputsAffected: [
+          "github-pr:https://github.com/example/DyKnow/pull/99",
+        ],
+        timestamp: "2026-05-23T20:10:00.000Z",
+        hash: "33333333",
+      })}\n`,
+      "utf8",
+    );
+
+    const exitCode = await runCli(["log", "--limit", "2"], {
+      cwd: root,
+      stdout: (message) => {
+        stdout.push(message);
+      },
+      stderr: (message) => {
+        stderr.push(message);
+      },
+    });
+
+    expect(exitCode).toBe(0);
+    expect(stderr).toEqual([]);
+    expect(stdout[0]).toContain("publish:pr-opened by copilot");
+    expect(stdout[0]).toContain("publish:pr-prepared by copilot");
+    expect(stdout[0]).toContain(".git/dyknow/runtime-audit-log.jsonl");
   });
 });
