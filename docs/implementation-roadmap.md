@@ -112,6 +112,7 @@ These items underpin every later phase. Land them once; reuse everywhere.
 - [ ] `dyknow review` — CLI walk-through of pending updates (approve / reject / edit / regenerate / skip).
 - [ ] Edit-in-editor for proposed text.
 - [x] Persist review decisions to snapshot.
+- [x] Persist one edited proposal text back into the review snapshot.
 
 ### Commit / PR
 - [x] `dyknow commit` — apply approved updates and create a single commit.

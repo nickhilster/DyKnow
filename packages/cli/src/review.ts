@@ -10,19 +10,22 @@ import {
 } from "@dyknow/core";
 
 const REVIEW_DECISION_STATES = ["Approved", "Rejected", "Escalated"] as const;
+const REVIEW_MUTATION_STATES = [...REVIEW_DECISION_STATES, "Edited"] as const;
 
 type ReviewDecision = (typeof REVIEW_DECISION_STATES)[number];
+type ReviewMutationState = (typeof REVIEW_MUTATION_STATES)[number];
 
 export type ReviewOptions = {
   all: boolean;
-  decision?: ReviewDecision;
+  decision?: ReviewMutationState;
+  editText?: string;
   inputPath: string;
   outputPath: string;
   pageIds: string[];
 };
 
 export type ReviewResult = {
-  decision?: ReviewDecision;
+  decision?: ReviewMutationState;
   outputPath: string;
   summary: string;
   totalDrafts: number;
@@ -78,6 +81,10 @@ function parseReviewDecision(argument: string): ReviewDecision | undefined {
   return undefined;
 }
 
+function isEditFlag(argument: string): boolean {
+  return argument === "--edit";
+}
+
 function formatSummary(batch: UpdateDraftBatch): string {
   const counts = new Map<ReviewState, number>();
 
@@ -99,7 +106,8 @@ function formatSummary(batch: UpdateDraftBatch): string {
 export function parseReviewOptions(args: readonly string[]): ReviewOptions {
   let inputPath = DEFAULT_UPDATE_OUTPUT_PATH;
   let outputPath = DEFAULT_UPDATE_OUTPUT_PATH;
-  let decision: ReviewDecision | undefined;
+  let decision: ReviewMutationState | undefined;
+  let editText: string | undefined;
   let all = false;
   const pageIds: string[] = [];
 
@@ -148,15 +156,38 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
       continue;
     }
 
+    if (argument === "--text") {
+      const value = args[index + 1];
+
+      if (!value) {
+        throw new Error("Missing value for --text.");
+      }
+
+      editText = value;
+      index += 1;
+      continue;
+    }
+
     if (argument === "--all") {
       all = true;
+      continue;
+    }
+
+    if (isEditFlag(argument)) {
+      if (decision) {
+        throw new Error(
+          "Specify only one review action flag: --approve, --reject, --escalate, or --edit.",
+        );
+      }
+
+      decision = "Edited";
       continue;
     }
 
     if (decisionFlag) {
       if (decision) {
         throw new Error(
-          "Specify only one review decision flag: --approve, --reject, or --escalate.",
+          "Specify only one review action flag: --approve, --reject, --escalate, or --edit.",
         );
       }
 
@@ -169,7 +200,7 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
 
   if (!decision && (all || pageIds.length > 0)) {
     throw new Error(
-      "Review targets require a decision flag: --approve, --reject, or --escalate.",
+      "Review targets require an action flag: --approve, --reject, --escalate, or --edit.",
     );
   }
 
@@ -183,19 +214,33 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
     throw new Error("Use either --all or --page <id>, not both.");
   }
 
+  if (decision === "Edited") {
+    if (!editText) {
+      throw new Error("Edited review actions require --text <value>.");
+    }
+
+    if (all || pageIds.length !== 1) {
+      throw new Error(
+        "Edited review actions require exactly one --page <id> target.",
+      );
+    }
+  }
+
   return {
     all,
     inputPath,
     outputPath,
     pageIds,
     ...(decision ? { decision } : {}),
+    ...(editText ? { editText } : {}),
   };
 }
 
 export async function createReviewUpdateBatch(options: {
   all: boolean;
   cwd: string;
-  decision?: ReviewDecision;
+  decision?: ReviewMutationState;
+  editText?: string;
   inputPath: string;
   outputPath: string;
   pageIds: readonly string[];
@@ -262,6 +307,9 @@ export async function createReviewUpdateBatch(options: {
         ...draft,
         proposal: {
           ...draft.proposal,
+          ...(options.decision === "Edited" && options.editText
+            ? { proposedText: options.editText }
+            : {}),
           reviewState: options.decision,
         },
       };
