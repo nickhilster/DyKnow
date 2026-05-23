@@ -103,8 +103,8 @@
     {
       "path": "AGENTS.md",
       "kind": "markdown",
-      "size": 7203,
-      "lineCount": 144,
+      "size": 8775,
+      "lineCount": 153,
       "signals": [
         "documentation",
         "agent-context"
@@ -114,8 +114,8 @@
     {
       "path": "CHANGELOG.md",
       "kind": "markdown",
-      "size": 3893,
-      "lineCount": 58,
+      "size": 4871,
+      "lineCount": 64,
       "signals": [
         "documentation"
       ],
@@ -145,8 +145,8 @@
     {
       "path": "README.md",
       "kind": "markdown",
-      "size": 5368,
-      "lineCount": 82,
+      "size": 6069,
+      "lineCount": 84,
       "signals": [
         "documentation"
       ],
@@ -175,8 +175,8 @@
     {
       "path": "docs/feature-map.md",
       "kind": "markdown",
-      "size": 5460,
-      "lineCount": 110,
+      "size": 6101,
+      "lineCount": 114,
       "signals": [
         "documentation"
       ],
@@ -195,8 +195,8 @@
     {
       "path": "docs/implementation-roadmap.md",
       "kind": "markdown",
-      "size": 12648,
-      "lineCount": 307,
+      "size": 13241,
+      "lineCount": 312,
       "signals": [
         "documentation"
       ],
@@ -225,8 +225,8 @@
     {
       "path": "docs/log.md",
       "kind": "markdown",
-      "size": 6264,
-      "lineCount": 68,
+      "size": 8459,
+      "lineCount": 83,
       "signals": [
         "documentation"
       ],
@@ -265,8 +265,8 @@
     {
       "path": "docs/setup-guide.md",
       "kind": "markdown",
-      "size": 5484,
-      "lineCount": 208,
+      "size": 7089,
+      "lineCount": 240,
       "signals": [
         "documentation"
       ],
@@ -374,8 +374,18 @@
     {
       "path": "packages/cli/src/index.ts",
       "kind": "typescript",
-      "size": 7237,
-      "lineCount": 292,
+      "size": 9534,
+      "lineCount": 361,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/cli/src/review.ts",
+      "kind": "typescript",
+      "size": 6857,
+      "lineCount": 288,
       "signals": [
         "source-code"
       ],
@@ -386,6 +396,16 @@
       "kind": "typescript",
       "size": 7279,
       "lineCount": 308,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/cli/src/update.ts",
+      "kind": "typescript",
+      "size": 5494,
+      "lineCount": 227,
       "signals": [
         "source-code"
       ],
@@ -412,10 +432,30 @@
       "dependencies": []
     },
     {
+      "path": "packages/cli/test/review.test.ts",
+      "kind": "typescript",
+      "size": 3144,
+      "lineCount": 103,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
       "path": "packages/cli/test/scan.test.ts",
       "kind": "typescript",
       "size": 1949,
       "lineCount": 65,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/cli/test/update.test.ts",
+      "kind": "typescript",
+      "size": 5125,
+      "lineCount": 174,
       "signals": [
         "source-code"
       ],
@@ -483,8 +523,8 @@
     {
       "path": "packages/core/src/index.ts",
       "kind": "typescript",
-      "size": 160,
-      "lineCount": 6,
+      "size": 235,
+      "lineCount": 8,
       "signals": [
         "source-code"
       ],
@@ -505,6 +545,26 @@
       "kind": "typescript",
       "size": 1878,
       "lineCount": 68,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/core/src/update-runner.ts",
+      "kind": "typescript",
+      "size": 5604,
+      "lineCount": 180,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/core/src/update-templates.ts",
+      "kind": "typescript",
+      "size": 3620,
+      "lineCount": 89,
       "signals": [
         "source-code"
       ],
@@ -563,6 +623,26 @@
       "dependencies": []
     },
     {
+      "path": "packages/core/test/update-runner.test.ts",
+      "kind": "typescript",
+      "size": 2182,
+      "lineCount": 79,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/core/test/update-templates.test.ts",
+      "kind": "typescript",
+      "size": 646,
+      "lineCount": 22,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
       "path": "packages/core/tsconfig.json",
       "kind": "json",
       "size": 189,
@@ -595,6 +675,6 @@
   ],
   "outputPath": "docs/dyknow/.state/repo-map.json",
   "rootPath": "C:\\DEV\\DyKnow",
-  "scannedAt": "2026-05-23T16:56:54.276Z",
+  "scannedAt": "2026-05-23T19:23:37.987Z",
   "warnings": []
 }

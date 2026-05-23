@@ -7,10 +7,14 @@ sources:
   - ../dyknow.config.json
   - ../dyknow.config.schema.json
   - dyknow/.state/repo-diff.json
+  - dyknow/.state/update-proposals.json
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
+  - ../packages/cli/src/review.ts
   - ../packages/cli/src/scan.ts
+  - ../packages/cli/src/update.ts
   - ../packages/core/src/repo-diff.ts
+  - ../packages/core/src/update-runner.ts
   - dyknow/.state/repo-map.json
 last_reviewed: 2026-05-23
 confidence: medium
@@ -18,7 +22,7 @@ confidence: medium
 
 ## Summary
 
-This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`, and `dyknow diff` are now implemented in this repo; the later review, update, and publish steps remain the target workflow.
+This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`, `dyknow diff`, and the first `dyknow update` drafting path are now implemented in this repo; the later review and publish steps remain the target workflow.
 
 ## Prerequisites
 
@@ -139,9 +143,9 @@ If no repo-map snapshot exists yet, `dyknow diff` exits with a helpful message t
 dyknow update
 ```
 
-**Status:** planned. `dyknow update` is not implemented yet.
+**Status:** implemented for the local stub drafting path.
 
-Drafts updates to affected pages. Each suggested update includes:
+Drafts updates to affected pages from `docs/dyknow/.state/repo-diff.json` and writes them to `docs/dyknow/.state/update-proposals.json`. Each suggested update includes:
 
 - What changed
 - Why the page needs updating
@@ -153,15 +157,41 @@ Drafts updates to affected pages. Each suggested update includes:
 
 DyKnow does not blindly overwrite. It produces a diff with reasoning.
 
+If you are working inside this repo today, the direct invocation is:
+
+```bash
+node packages/cli/dist/bin.js update
+```
+
+If no repo diff snapshot exists yet, `dyknow update` exits with a helpful message telling you to run `dyknow diff` first.
+
+The current implementation uses the local stub update provider. It drafts `Needs review` proposals and never applies them automatically.
+
 ## Step 5 — Review
 
 ```bash
 dyknow review
 ```
 
-**Status:** planned. `dyknow review` is not implemented yet.
+**Status:** implemented for the first persisted decision slice.
 
-Or use the VS Code extension to inspect changes visually. Reviewers can:
+The current implementation reads `docs/dyknow/.state/update-proposals.json`, can summarize proposal counts by review state, and can persist approval, rejection, or escalation decisions back into that artifact.
+
+If you are working inside this repo today, the direct invocation is:
+
+```bash
+node packages/cli/dist/bin.js review --approve --page product-overview
+```
+
+You can also target all proposals at once:
+
+```bash
+node packages/cli/dist/bin.js review --reject --all
+```
+
+If no update-proposals snapshot exists yet, `dyknow review` exits with a helpful message telling you to run `dyknow update` first.
+
+The full walkthrough remains broader than the current slice. Reviewers will eventually be able to:
 
 - Approve
 - Reject
@@ -170,6 +200,8 @@ Or use the VS Code extension to inspect changes visually. Reviewers can:
 - Assign to another reviewer
 - Mark source as irrelevant
 - Update config rules
+
+Today, only approve / reject / escalate decisions are implemented.
 
 ## Step 6 — Commit or publish
 

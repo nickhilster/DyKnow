@@ -15,12 +15,17 @@ sources:
   - ../packages/core/src/config.ts
   - ../packages/core/src/repo-diff.ts
   - ../packages/core/src/repo-map.ts
+  - ../packages/core/src/update-runner.ts
+  - ../packages/core/src/update-templates.ts
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
+  - ../packages/cli/src/review.ts
   - ../packages/cli/src/scan.ts
+  - ../packages/cli/src/update.ts
   - ../.github/workflows/ci.yml
   - dyknow/.state/repo-map.json
   - dyknow/.state/repo-diff.json
+  - dyknow/.state/update-proposals.json
 last_reviewed: 2026-05-23
 confidence: medium
 ---
@@ -29,7 +34,7 @@ confidence: medium
 
 This is the **build checklist**. Strategic phase context (goals, success criteria, risk framing) lives in [roadmap.md](roadmap.md); this page lists the actual tasks. Tasks are grouped by phase and by area within each phase. There are no dates — order within a phase is roughly suggested, but tasks within an area can usually proceed in parallel.
 
-The current code scaffold lives in `packages/core` and `packages/cli`. Phase 0 now has a real TypeScript/npm workspace, CI validation, shared-contract plus config-validation slices, and working `dyknow init` / `dyknow scan` / `dyknow diff` commands that dogfood against this repo.
+The current code scaffold lives in `packages/core` and `packages/cli`. Phase 0 now has a real TypeScript/npm workspace, CI validation, shared-contract plus config-validation slices, working `dyknow init` / `dyknow scan` / `dyknow diff` / `dyknow update` commands, and the first provider-backed drafting path that writes structured update proposals for affected pages.
 
 When a task is completed, tick the box and append an `update` entry to [log.md](log.md) referencing this page.
 
@@ -89,22 +94,22 @@ These items underpin every later phase. Land them once; reuse everywhere.
 - [x] Map deltas → affected page IDs via source map.
 
 ### LLM runner
-- [ ] LLM provider abstraction (interface for local model, BYO key, vendor).
+- [x] LLM provider abstraction (interface for local model, BYO key, vendor).
 - [ ] At least one provider implementation (BYO key recommended for MVP).
 - [ ] Token/cost accounting per call.
 - [ ] Retry + timeout policy.
 - [ ] Local-only mode that hard-fails if a remote provider is selected.
 
 ### Drafting engine
-- [ ] Prompt templates per page type (overview, feature map, architecture, setup, AGENTS.md).
-- [ ] `dyknow update` command — drafts updates for each affected page.
-- [ ] Per-update output: what changed, why, source files cited, exact proposed text, confidence, risk.
+- [x] Prompt templates per page type (overview, feature map, architecture, setup, AGENTS.md).
+- [x] `dyknow update` command — drafts updates for each affected page.
+- [x] Per-update output: what changed, why, source files cited, exact proposed text, confidence, risk.
 - [ ] High-risk flag enforcement (never auto-apply).
 
 ### Review flow
 - [ ] `dyknow review` — CLI walk-through of pending updates (approve / reject / edit / regenerate / skip).
 - [ ] Edit-in-editor for proposed text.
-- [ ] Persist review decisions to snapshot.
+- [x] Persist review decisions to snapshot.
 
 ### Commit / PR
 - [ ] `dyknow commit` — apply approved updates and create a single commit.

@@ -1,0 +1,13 @@
+{
+  "draftedAt": "2026-05-23T19:23:39.349Z",
+  "rootPath": "C:\\DEV\\DyKnow",
+  "configPath": "dyknow.config.json",
+  "repoDiffPath": "docs/dyknow/.state/repo-diff.json",
+  "outputPath": "docs/dyknow/.state/update-proposals.json",
+  "providerId": "local",
+  "drafts": [],
+  "summary": {
+    "affectedPages": 0,
+    "draftedProposals": 0
+  }
+}
