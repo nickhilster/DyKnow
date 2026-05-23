@@ -80,3 +80,10 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | docs/setup-guide.md | Documented the first dyknow review decision flow and its current limits.
 2026-05-23 | update | docs/feature-map.md | Marked dyknow review implemented for the first persisted decision slice.
 2026-05-23 | update | AGENTS.md | Updated agent context to include the dyknow review command and persisted review-state behavior.
+2026-05-23 | update | packages/cli/src/commit.ts | Implemented the first dyknow commit command slice to apply approved proposals and create one git commit.
+2026-05-23 | update | docs/setup-guide.md | Documented the first dyknow commit workflow and its current worktree guard.
+2026-05-23 | update | docs/feature-map.md | Marked dyknow commit implemented for the first apply-and-commit slice.
+2026-05-23 | update | AGENTS.md | Updated agent context to include the dyknow commit command and published-state behavior.
+2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after implementing the dyknow commit slice.
+2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot after implementing the dyknow commit slice.
+2026-05-23 | update | docs/dyknow/.state/update-proposals.json | Regenerated the update-proposals artifact after implementing the dyknow commit slice.

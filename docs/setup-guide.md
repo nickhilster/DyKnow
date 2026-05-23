@@ -8,6 +8,7 @@ sources:
   - ../dyknow.config.schema.json
   - dyknow/.state/repo-diff.json
   - dyknow/.state/update-proposals.json
+  - ../packages/cli/src/commit.ts
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
   - ../packages/cli/src/review.ts
@@ -215,9 +216,21 @@ or
 dyknow pr
 ```
 
-**Status:** planned. `dyknow commit`, `dyknow pr`, and `dyknow sync` are not implemented yet.
+**Status:** `dyknow commit` is implemented for the first apply-and-commit slice. `dyknow pr` and `dyknow sync` are still planned.
 
-Creates a branch and pull request containing the documentation updates.
+The current implementation reads `docs/dyknow/.state/update-proposals.json`, applies only proposals whose `reviewState` is `Approved`, updates those output files, marks the applied proposals `Published`, and creates a single git commit.
+
+If you are working inside this repo today, the direct invocation is:
+
+```bash
+node packages/cli/dist/bin.js commit
+```
+
+If no approved proposals exist yet, `dyknow commit` exits with a helpful message telling you to run `dyknow review --approve` first.
+
+If the worktree has unrelated changes, `dyknow commit` refuses to proceed so the resulting commit only contains the approved DyKnow updates.
+
+`dyknow pr` will eventually create a branch and pull request containing the documentation updates.
 
 Optionally:
 

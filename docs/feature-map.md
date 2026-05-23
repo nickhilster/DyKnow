@@ -7,6 +7,7 @@ sources:
   - ../dyknow.config.json
   - dyknow/.state/repo-diff.json
   - dyknow/.state/update-proposals.json
+  - ../packages/cli/src/commit.ts
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
   - ../packages/cli/src/review.ts
@@ -71,7 +72,7 @@ READMEs, `docs/` folders, source route files, API schemas, OpenAPI specs, packag
 | `dyknow diff` | Implemented | Compare the current workspace scan against the saved repo map snapshot, map deltas to affected configured pages, and write `docs/dyknow/.state/repo-diff.json`. |
 | `dyknow update` | Implemented | Draft update proposals from `docs/dyknow/.state/repo-diff.json`, include reasoning and source evidence, and write `docs/dyknow/.state/update-proposals.json`. The current provider is a local stub and still requires human review. |
 | `dyknow review` | Implemented (first slice) | Read `docs/dyknow/.state/update-proposals.json`, list proposal state counts, and persist `Approved`, `Rejected`, or `Escalated` decisions back into the artifact. Edit, regenerate, and skip flows remain planned. |
-| `dyknow commit` | Planned | Commit approved updates. |
+| `dyknow commit` | Implemented (first slice) | Apply `Approved` proposals from `docs/dyknow/.state/update-proposals.json`, update the affected output files, mark those proposals `Published`, and create one git commit. It currently refuses unrelated worktree changes. |
 | `dyknow pr` | Planned | Open a pull request with updates. |
 | `dyknow sync` | Planned | (Optional) push approved outputs to Cloud, CMS, Notion, Confluence. |
 
