@@ -1,0 +1,560 @@
+{
+  "configPath": "dyknow.config.json",
+  "files": [
+    {
+      "path": ".github/agents/dyknow-docs-maintainer.agent.md",
+      "kind": "markdown",
+      "size": 1273,
+      "lineCount": 24,
+      "signals": [
+        "documentation",
+        "config"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": ".github/agents/dyknow-local-builder.agent.md",
+      "kind": "markdown",
+      "size": 1233,
+      "lineCount": 24,
+      "signals": [
+        "documentation",
+        "config"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": ".github/instructions/docs-wiki.instructions.md",
+      "kind": "markdown",
+      "size": 1421,
+      "lineCount": 21,
+      "signals": [
+        "documentation",
+        "config"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": ".github/instructions/phase0-build.instructions.md",
+      "kind": "markdown",
+      "size": 1315,
+      "lineCount": 14,
+      "signals": [
+        "documentation",
+        "config"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": ".github/instructions/raw-sources.instructions.md",
+      "kind": "markdown",
+      "size": 882,
+      "lineCount": 13,
+      "signals": [
+        "documentation",
+        "config"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": ".github/instructions/trust-boundaries.instructions.md",
+      "kind": "markdown",
+      "size": 1188,
+      "lineCount": 14,
+      "signals": [
+        "documentation",
+        "config"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": ".github/skills/dyknow-build-slice/SKILL.md",
+      "kind": "markdown",
+      "size": 1618,
+      "lineCount": 38,
+      "signals": [
+        "documentation",
+        "config"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": ".github/skills/dyknow-page-maintenance/SKILL.md",
+      "kind": "markdown",
+      "size": 1435,
+      "lineCount": 31,
+      "signals": [
+        "documentation",
+        "config"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "kind": "yaml",
+      "size": 530,
+      "lineCount": 33,
+      "signals": [
+        "openapi",
+        "config"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "AGENTS.md",
+      "kind": "markdown",
+      "size": 6437,
+      "lineCount": 139,
+      "signals": [
+        "documentation",
+        "agent-context"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "CHANGELOG.md",
+      "kind": "markdown",
+      "size": 3436,
+      "lineCount": 54,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "CLAUDE.md",
+      "kind": "markdown",
+      "size": 4418,
+      "lineCount": 104,
+      "signals": [
+        "documentation",
+        "agent-context"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "kind": "markdown",
+      "size": 4018,
+      "lineCount": 105,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "README.md",
+      "kind": "markdown",
+      "size": 5058,
+      "lineCount": 81,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "biome.json",
+      "kind": "json",
+      "size": 334,
+      "lineCount": 17,
+      "signals": [
+        "config"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "docs/architecture.md",
+      "kind": "markdown",
+      "size": 3681,
+      "lineCount": 73,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "docs/feature-map.md",
+      "kind": "markdown",
+      "size": 5229,
+      "lineCount": 107,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "docs/glossary.md",
+      "kind": "markdown",
+      "size": 3998,
+      "lineCount": 96,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "docs/implementation-roadmap.md",
+      "kind": "markdown",
+      "size": 12529,
+      "lineCount": 304,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "docs/index.md",
+      "kind": "markdown",
+      "size": 1597,
+      "lineCount": 35,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "docs/lint.md",
+      "kind": "markdown",
+      "size": 4638,
+      "lineCount": 82,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "docs/log.md",
+      "kind": "markdown",
+      "size": 4253,
+      "lineCount": 51,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "docs/messaging.md",
+      "kind": "markdown",
+      "size": 3124,
+      "lineCount": 83,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "docs/product-overview.md",
+      "kind": "markdown",
+      "size": 4311,
+      "lineCount": 62,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "docs/roadmap.md",
+      "kind": "markdown",
+      "size": 3305,
+      "lineCount": 120,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "docs/setup-guide.md",
+      "kind": "markdown",
+      "size": 5054,
+      "lineCount": 197,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "docs/sources/README.md",
+      "kind": "markdown",
+      "size": 1301,
+      "lineCount": 36,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "docs/sources/dyknow_local_whitepaper.md",
+      "kind": "markdown",
+      "size": 29500,
+      "lineCount": 1342,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "docs/trust-and-security.md",
+      "kind": "markdown",
+      "size": 3271,
+      "lineCount": 121,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "package.json",
+      "kind": "json",
+      "size": 482,
+      "lineCount": 24,
+      "signals": [
+        "package-manifest",
+        "config"
+      ],
+      "dependencies": [
+        {
+          "name": "@biomejs/biome",
+          "section": "devDependencies",
+          "version": "^1.9.4"
+        },
+        {
+          "name": "@types/node",
+          "section": "devDependencies",
+          "version": "^22.15.30"
+        },
+        {
+          "name": "typescript",
+          "section": "devDependencies",
+          "version": "^5.8.3"
+        },
+        {
+          "name": "vitest",
+          "section": "devDependencies",
+          "version": "^3.2.4"
+        }
+      ]
+    },
+    {
+      "path": "packages/cli/package.json",
+      "kind": "json",
+      "size": 366,
+      "lineCount": 21,
+      "signals": [
+        "package-manifest",
+        "config"
+      ],
+      "dependencies": [
+        {
+          "name": "@dyknow/core",
+          "section": "dependencies",
+          "version": "file:../core"
+        }
+      ]
+    },
+    {
+      "path": "packages/cli/src/bin.ts",
+      "kind": "typescript",
+      "size": 115,
+      "lineCount": 6,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/cli/src/index.ts",
+      "kind": "typescript",
+      "size": 6177,
+      "lineCount": 263,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/cli/src/scan.ts",
+      "kind": "typescript",
+      "size": 7279,
+      "lineCount": 308,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/cli/test/init.test.ts",
+      "kind": "typescript",
+      "size": 1865,
+      "lineCount": 70,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/cli/test/scan.test.ts",
+      "kind": "typescript",
+      "size": 1949,
+      "lineCount": 65,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/cli/tsconfig.json",
+      "kind": "json",
+      "size": 248,
+      "lineCount": 15,
+      "signals": [
+        "config"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/core/package.json",
+      "kind": "json",
+      "size": 307,
+      "lineCount": 18,
+      "signals": [
+        "package-manifest",
+        "config"
+      ],
+      "dependencies": [
+        {
+          "name": "zod",
+          "section": "dependencies",
+          "version": "^3.24.4"
+        }
+      ]
+    },
+    {
+      "path": "packages/core/src/config-schema.ts",
+      "kind": "typescript",
+      "size": 4183,
+      "lineCount": 181,
+      "signals": [
+        "config",
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/core/src/config.ts",
+      "kind": "typescript",
+      "size": 6207,
+      "lineCount": 250,
+      "signals": [
+        "config",
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/core/src/contracts.ts",
+      "kind": "typescript",
+      "size": 2996,
+      "lineCount": 97,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/core/src/index.ts",
+      "kind": "typescript",
+      "size": 128,
+      "lineCount": 5,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/core/src/repo-map.ts",
+      "kind": "typescript",
+      "size": 1878,
+      "lineCount": 68,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/core/test/config-schema.test.ts",
+      "kind": "typescript",
+      "size": 1168,
+      "lineCount": 38,
+      "signals": [
+        "config",
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/core/test/config.test.ts",
+      "kind": "typescript",
+      "size": 2252,
+      "lineCount": 88,
+      "signals": [
+        "config",
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/core/test/contracts.test.ts",
+      "kind": "typescript",
+      "size": 1802,
+      "lineCount": 63,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/core/test/repo-map.test.ts",
+      "kind": "typescript",
+      "size": 704,
+      "lineCount": 28,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/core/tsconfig.json",
+      "kind": "json",
+      "size": 189,
+      "lineCount": 10,
+      "signals": [
+        "config"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "tsconfig.base.json",
+      "kind": "json",
+      "size": 551,
+      "lineCount": 24,
+      "signals": [
+        "config"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "tsconfig.json",
+      "kind": "json",
+      "size": 129,
+      "lineCount": 12,
+      "signals": [
+        "config"
+      ],
+      "dependencies": []
+    }
+  ],
+  "outputPath": "docs/dyknow/.state/repo-map.json",
+  "rootPath": "C:\\DEV\\DyKnow",
+  "scannedAt": "2026-05-23T16:25:32.830Z",
+  "warnings": []
+}

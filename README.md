@@ -7,7 +7,7 @@ DyKnow keeps a company's most important knowledge pages aligned with the latest 
 - **DyKnow Cloud** — hosted system that monitors approved external/internal sources.
 - **DyKnow Local** — repo-native CLI / VS Code extension that runs inside the customer's environment.
 
-This repository contains the working concept, whitepaper, documentation system, and the initial TypeScript workspace for DyKnow Local's shared engine and CLI bootstrap.
+This repository contains the working concept, whitepaper, documentation system, and the initial TypeScript workspace for DyKnow Local's shared engine plus the first implemented `init` and `scan` CLI slices.
 
 ## Repo layout
 
@@ -19,6 +19,8 @@ This repository contains the working concept, whitepaper, documentation system, 
 │   ├── skills/                    On-demand Copilot skills for page maintenance and build slicing.
 │   └── workflows/                 CI validation workflow.
 ├── biome.json                     Formatter and linter config.
+├── dyknow.config.json             Generated repo-local DyKnow config.
+├── dyknow.config.schema.json      JSON Schema for `dyknow.config.json`.
 ├── README.md                       This file.
 ├── CLAUDE.md                       Schema for the LLM wiki maintainer (read this first).
 ├── AGENTS.md                       Agent context: project purpose, conventions, do-not-touch.
@@ -30,6 +32,8 @@ This repository contains the working concept, whitepaper, documentation system, 
 │   └── core/                       Shared engine contracts and config validation.
 ├── tsconfig.base.json              Shared TypeScript compiler settings.
 └── docs/
+    ├── dyknow/
+    │   └── .state/                 Generated repo-map snapshots.
     ├── index.md                    Catalog of all Dynamic Knowledge Pages.
     ├── log.md                      Append-only change log.
     ├── lint.md                     Wiki health checklist.
@@ -61,8 +65,8 @@ This pattern follows Karpathy's "LLM wiki" model and DyKnow's own Dynamic Knowle
 The current implementation slice uses:
 
 - **TypeScript + npm workspaces** for shared code across DyKnow Local surfaces.
-- **`packages/core`** for JSON-serializable shared contracts and config validation.
-- **`packages/cli`** for the bootstrap CLI package that will grow into `dyknow init`, `scan`, `diff`, and review commands.
+- **`packages/core`** for JSON-serializable shared contracts, config validation, and repo-map schemas.
+- **`packages/cli`** for the DyKnow Local CLI package with working `dyknow init` and `dyknow scan` commands.
 - **Biome + Vitest + GitHub Actions** for formatting, linting, tests, and CI.
 
 ## Quick starts
@@ -72,3 +76,5 @@ The current implementation slice uses:
 - Maintaining these docs (as a human or LLM): read [CLAUDE.md](CLAUDE.md).
 - Installing the workspace: run `npm install`.
 - Validating the bootstrap: run `npm test`, `npm run build`, and `npm run lint`.
+- Creating the repo-local DyKnow config: run `node packages/cli/dist/bin.js init --force --project-name DyKnow` after a build.
+- Generating the repo map snapshot: run `node packages/cli/dist/bin.js scan` after a build.

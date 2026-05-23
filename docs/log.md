@@ -39,3 +39,12 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | repo bootstrap | Added TypeScript workspace, shared contracts, config validation, tests, and CI scaffold.
 2026-05-23 | update | AGENTS.md | Reflected current package layout, build commands, and coding conventions.
 2026-05-23 | update | docs/implementation-roadmap.md | Marked completed Phase 0 scaffolding and config-validation tasks.
+2026-05-23 | create | dyknow.config.schema.json | Generated the first DyKnow Local config schema from the implemented init slice.
+2026-05-23 | create | dyknow.config.json | Generated the repo-local DyKnow configuration via dyknow init.
+2026-05-23 | create | docs/dyknow/.state/repo-map.json | Generated the first repo map snapshot via dyknow scan.
+2026-05-23 | update | README.md | Documented generated config/schema artifacts and the implemented init/scan commands.
+2026-05-23 | update | AGENTS.md | Reflected generated config, repo-map snapshot, and current CLI command status.
+2026-05-23 | update | CHANGELOG.md | Recorded init/scan implementation and generated repo artifacts.
+2026-05-23 | update | docs/feature-map.md | Marked dyknow init and dyknow scan as implemented and documented current scanner behavior.
+2026-05-23 | update | docs/setup-guide.md | Updated the workflow page to show init/scan as implemented and later steps as planned.
+2026-05-23 | update | docs/implementation-roadmap.md | Marked JSON schema, scanner, dependency extraction, and repo-map snapshot tasks complete.

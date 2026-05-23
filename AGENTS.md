@@ -7,9 +7,14 @@ sources:
   - CLAUDE.md
   - package.json
   - biome.json
+  - dyknow.config.json
+  - dyknow.config.schema.json
+  - docs/dyknow/.state/repo-map.json
   - packages/core/src/contracts.ts
   - packages/core/src/config.ts
+  - packages/core/src/repo-map.ts
   - packages/cli/src/index.ts
+  - packages/cli/src/scan.ts
 last_reviewed: 2026-05-23
 confidence: high
 ---
@@ -18,7 +23,7 @@ confidence: high
 
 This repository is the working concept, documentation hub, and bootstrap implementation workspace for **DyKnow** — a system for maintaining Dynamic Knowledge Pages that stay synchronized with product, code, docs, and websites. It has two surfaces: DyKnow Cloud (hosted) and DyKnow Local (repo-native).
 
-The repo now contains the founding whitepaper, a wiki of source-backed pages, and an initial TypeScript/npm workspace for DyKnow Local shared contracts and config validation.
+The repo now contains the founding whitepaper, a wiki of source-backed pages, a TypeScript/npm workspace for DyKnow Local shared contracts, and working `dyknow init` plus `dyknow scan` commands that generate the repo-local config and repo-map snapshot.
 
 ## External hubs
 
@@ -45,6 +50,8 @@ Build a knowledge maintenance system that:
 │   ├── skills/                    On-demand Copilot skills for page maintenance and build slicing.
 │   └── workflows/                 CI validation workflow.
 ├── biome.json                     Formatter and linter config.
+├── dyknow.config.json             Generated repo-local DyKnow config.
+├── dyknow.config.schema.json      JSON Schema for the local config.
 ├── README.md
 ├── CLAUDE.md                    Schema for the wiki maintainer.
 ├── AGENTS.md                    You are here.
@@ -56,6 +63,8 @@ Build a knowledge maintenance system that:
 │   └── core/                     Shared engine contracts and config validation.
 ├── tsconfig.base.json            Shared TypeScript compiler settings.
 └── docs/
+  ├── dyknow/
+  │   └── .state/               Generated repo-map snapshots.
     ├── index.md                 Catalog of pages.
     ├── log.md                   Append-only change log.
     ├── lint.md                  Wiki health checklist.
@@ -72,7 +81,7 @@ Build a knowledge maintenance system that:
         └── dyknow_local_whitepaper.md   Founding raw source.
 ```
 
-  The implemented code surface is still small, but it is real: `packages/core` defines the first shared engine contracts and DyKnow config validation, `packages/cli` is the bootstrap CLI package, and CI runs lint, tests, and build checks.
+  The implemented code surface is still small, but it is real: `packages/core` defines the first shared engine contracts, config validation, and repo-map schema, `packages/cli` implements `dyknow init` and `dyknow scan`, and CI runs lint, tests, and build checks.
 
 ## Development commands
 
@@ -80,11 +89,16 @@ Build a knowledge maintenance system that:
   - `npm test` — run the shared-contract and config-validation tests.
   - `npm run build` — compile `packages/core` and `packages/cli`.
   - `npm run lint` — run Biome checks across the scaffolded workspace.
+  - `node packages/cli/dist/bin.js init --force --project-name DyKnow` — generate the repo-local config and schema after a build.
+  - `node packages/cli/dist/bin.js scan` — build the repo map snapshot at `docs/dyknow/.state/repo-map.json` after a build.
 
-  The planned DyKnow Local CLI commands remain:
+  Implemented DyKnow Local CLI commands:
 
-- `dyknow init` — create config
-- `dyknow scan` — build repo map
+  - `dyknow init` — create `dyknow.config.json` and `dyknow.config.schema.json`
+  - `dyknow scan` — build repo map at `docs/dyknow/.state/repo-map.json`
+
+  Planned DyKnow Local CLI commands remain:
+
 - `dyknow diff` — detect changes since last scan
 - `dyknow update` — draft page updates
 - `dyknow review` — review proposed diffs
@@ -97,6 +111,7 @@ See [docs/setup-guide.md](docs/setup-guide.md).
 - TypeScript uses npm workspaces and NodeNext module resolution.
 - Shared engine contracts live in `packages/core`; CLI-specific wiring lives in `packages/cli`.
 - Biome handles formatting and baseline linting; Vitest covers executable validation.
+- The current scanner honors `allowedSources` and `ignoredSources`, extracts package dependencies, classifies route candidates heuristically, and warns on likely sensitive content without writing file contents into the repo map.
 - Favor small vertical slices that keep source evidence, confidence, risk, and review-state data explicit in the design.
 
 ## Documentation conventions

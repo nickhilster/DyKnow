@@ -4,6 +4,10 @@ purpose: Inventory of DyKnow features across Cloud and Local, including connecto
 audience: mixed
 sources:
   - sources/dyknow_local_whitepaper.md (sections 4, 6, 7, 8, 13)
+  - ../dyknow.config.json
+  - ../packages/cli/src/index.ts
+  - ../packages/cli/src/scan.ts
+  - dyknow/.state/repo-map.json
 last_reviewed: 2026-05-23
 confidence: high
 ---
@@ -51,18 +55,18 @@ READMEs, `docs/` folders, source route files, API schemas, OpenAPI specs, packag
 
 `.env` files, secrets, credentials, raw customer data, private keys, production dumps, sensitive logs, payment data, unapproved folders, build artifacts. Enforced through configuration and default ignore patterns. See [Trust and Security](trust-and-security.md).
 
-### Local CLI commands (planned)
+### Local CLI commands
 
-| Command | Purpose |
-|---|---|
-| `dyknow init` | Create `dyknow.config.json` |
-| `dyknow scan` | Build repo map at `docs/dyknow/.state/repo-map.json` |
-| `dyknow diff` | Detect changes since last snapshot |
-| `dyknow update` | Draft updates with reasoning, source evidence, confidence |
-| `dyknow review` | Inspect proposed diffs |
-| `dyknow commit` | Commit approved updates |
-| `dyknow pr` | Open a pull request with updates |
-| `dyknow sync` | (Optional) push approved outputs to Cloud, CMS, Notion, Confluence |
+| Command | Status | Purpose |
+|---|---|---|
+| `dyknow init` | Implemented | Create `dyknow.config.json` and `dyknow.config.schema.json` with local-first defaults. |
+| `dyknow scan` | Implemented | Build repo map at `docs/dyknow/.state/repo-map.json` while honoring `allowedSources` / `ignoredSources`, extracting package dependencies, and warning on likely sensitive content. |
+| `dyknow diff` | Planned | Detect changes since last snapshot. |
+| `dyknow update` | Planned | Draft updates with reasoning, source evidence, confidence. |
+| `dyknow review` | Planned | Inspect proposed diffs. |
+| `dyknow commit` | Planned | Commit approved updates. |
+| `dyknow pr` | Planned | Open a pull request with updates. |
+| `dyknow sync` | Planned | (Optional) push approved outputs to Cloud, CMS, Notion, Confluence. |
 
 Full workflow detail: [Setup Guide](setup-guide.md).
 

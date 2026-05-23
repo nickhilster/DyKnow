@@ -1,4 +1,18 @@
-import { DEFAULT_IGNORED_SOURCE_PATTERNS } from "@dyknow/core";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
+import { basename, dirname, relative, resolve } from "node:path";
+
+import {
+  DEFAULT_IGNORED_SOURCE_PATTERNS,
+  DEFAULT_REPO_MAP_OUTPUT_PATH,
+  DYKNOW_CONFIG_FILE_NAME,
+  DYKNOW_CONFIG_SCHEMA_FILE_NAME,
+  createInitialDyknowConfig,
+  parseDyknowConfig,
+  renderDyknowConfig,
+  renderDyknowConfigJsonSchema,
+} from "@dyknow/core";
+
+import { scanWorkspace } from "./scan.js";
 
 export const PLANNED_COMMANDS = [
   "dyknow init",
@@ -10,14 +24,130 @@ export const PLANNED_COMMANDS = [
   "dyknow pr",
 ] as const;
 
-export function formatBootstrapStatus(): string {
+type CliWriter = (message: string) => void;
+
+export type CliContext = {
+  cwd?: string;
+  stderr?: CliWriter;
+  stdout?: CliWriter;
+};
+
+type InitOptions = {
+  force: boolean;
+  mode: "connected" | "local-only";
+  projectName?: string;
+};
+
+type ScanOptions = {
+  configPath: string;
+  outputPath: string;
+};
+
+function defaultWriter(message: string) {
+  console.log(message);
+}
+
+function getContext(context?: CliContext) {
+  return {
+    cwd: context?.cwd ?? process.cwd(),
+    stderr: context?.stderr ?? defaultWriter,
+    stdout: context?.stdout ?? defaultWriter,
+  };
+}
+
+async function pathExists(path: string) {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function parseInitOptions(args: readonly string[]): InitOptions {
+  let force = false;
+  let mode: InitOptions["mode"] = "local-only";
+  let projectName: string | undefined;
+
+  for (let index = 0; index < args.length; index += 1) {
+    const argument = args[index];
+
+    if (argument === "--force") {
+      force = true;
+      continue;
+    }
+
+    if (argument === "--connected") {
+      mode = "connected";
+      continue;
+    }
+
+    if (argument === "--project-name") {
+      const value = args[index + 1];
+
+      if (!value) {
+        throw new Error("Missing value for --project-name.");
+      }
+
+      projectName = value;
+      index += 1;
+      continue;
+    }
+
+    throw new Error(`Unknown init option: ${argument}`);
+  }
+
+  if (projectName) {
+    return { force, mode, projectName };
+  }
+
+  return { force, mode };
+}
+
+function parseScanOptions(args: readonly string[]): ScanOptions {
+  let configPath = DYKNOW_CONFIG_FILE_NAME;
+  let outputPath = DEFAULT_REPO_MAP_OUTPUT_PATH;
+
+  for (let index = 0; index < args.length; index += 1) {
+    const argument = args[index];
+
+    if (argument === "--config") {
+      const value = args[index + 1];
+
+      if (!value) {
+        throw new Error("Missing value for --config.");
+      }
+
+      configPath = value;
+      index += 1;
+      continue;
+    }
+
+    if (argument === "--output") {
+      const value = args[index + 1];
+
+      if (!value) {
+        throw new Error("Missing value for --output.");
+      }
+
+      outputPath = value;
+      index += 1;
+      continue;
+    }
+
+    throw new Error(`Unknown scan option: ${argument}`);
+  }
+
+  return { configPath, outputPath };
+}
+
+function formatHelp(): string {
   const lines = [
-    "DyKnow Local bootstrap workspace",
+    "DyKnow Local CLI",
     "",
-    "Implemented in this slice:",
-    "- npm workspaces with TypeScript project references",
-    "- Shared engine contract schemas",
-    "- DyKnow config validation with local-only safeguards",
+    "Implemented commands:",
+    "- dyknow init [--force] [--connected] [--project-name <name>]",
+    "- dyknow scan [--config <path>] [--output <path>]",
     "",
     "Default ignored source patterns:",
     ...DEFAULT_IGNORED_SOURCE_PATTERNS.map((pattern) => `- ${pattern}`),
@@ -27,4 +157,106 @@ export function formatBootstrapStatus(): string {
   ];
 
   return lines.join("\n");
+}
+
+async function handleInit(args: readonly string[], context?: CliContext) {
+  const { cwd, stderr, stdout } = getContext(context);
+  const options = parseInitOptions(args);
+  const configPath = resolve(cwd, DYKNOW_CONFIG_FILE_NAME);
+  const schemaPath = resolve(cwd, DYKNOW_CONFIG_SCHEMA_FILE_NAME);
+  const projectName = options.projectName ?? basename(cwd);
+
+  if (!options.force) {
+    const existingTargets = await Promise.all([
+      pathExists(configPath),
+      pathExists(schemaPath),
+    ]);
+
+    if (existingTargets.some(Boolean)) {
+      stderr(
+        `Refusing to overwrite existing DyKnow config artifacts. Re-run with --force to replace ${relative(
+          cwd,
+          configPath,
+        )} and ${relative(cwd, schemaPath)}.`,
+      );
+      return 1;
+    }
+  }
+
+  const config = createInitialDyknowConfig({
+    mode: options.mode,
+    projectName,
+  });
+
+  await writeFile(schemaPath, renderDyknowConfigJsonSchema(), "utf8");
+  await writeFile(configPath, renderDyknowConfig(config), "utf8");
+
+  stdout(
+    `Created ${relative(cwd, configPath)} and ${relative(cwd, schemaPath)} for project ${projectName}.`,
+  );
+  return 0;
+}
+
+async function handleScan(args: readonly string[], context?: CliContext) {
+  const { cwd, stdout } = getContext(context);
+  const options = parseScanOptions(args);
+  const configPath = resolve(cwd, options.configPath);
+  const outputPath = resolve(cwd, options.outputPath);
+  const configText = await readFile(configPath, "utf8");
+  const config = parseDyknowConfig(configText);
+  const repoMap = await scanWorkspace({
+    config,
+    configPath,
+    outputPath,
+    rootPath: cwd,
+  });
+
+  await mkdir(dirname(outputPath), { recursive: true });
+  await writeFile(
+    `${outputPath}`,
+    `${JSON.stringify(repoMap, null, 2)}\n`,
+    "utf8",
+  );
+
+  stdout(
+    `Scanned ${repoMap.files.length} files and wrote ${relative(cwd, outputPath)} with ${repoMap.warnings.length} warning(s).`,
+  );
+  return 0;
+}
+
+export function formatBootstrapStatus(): string {
+  return formatHelp();
+}
+
+export async function runCli(
+  args: readonly string[],
+  context?: CliContext,
+): Promise<number> {
+  const { stderr, stdout } = getContext(context);
+  const [command, ...commandArgs] = args;
+
+  if (!command || command === "help" || command === "--help") {
+    stdout(formatHelp());
+    return 0;
+  }
+
+  if (command === "init") {
+    return handleInit(commandArgs, context);
+  }
+
+  if (command === "scan") {
+    return handleScan(commandArgs, context);
+  }
+
+  if (
+    PLANNED_COMMANDS.includes(
+      `dyknow ${command}` as (typeof PLANNED_COMMANDS)[number],
+    )
+  ) {
+    stderr(`Command not implemented yet: dyknow ${command}`);
+    return 1;
+  }
+
+  stderr(`Unknown command: ${command}`);
+  return 1;
 }

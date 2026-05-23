@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import { formatBootstrapStatus } from "./index.js";
+import { runCli } from "./index.js";
 
-console.log(formatBootstrapStatus());
+process.exitCode = await runCli(process.argv.slice(2));

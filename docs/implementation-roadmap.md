@@ -9,9 +9,15 @@ sources:
   - feature-map.md
   - ../package.json
   - ../biome.json
+  - ../dyknow.config.json
+  - ../dyknow.config.schema.json
   - ../packages/core/src/contracts.ts
   - ../packages/core/src/config.ts
+  - ../packages/core/src/repo-map.ts
+  - ../packages/cli/src/index.ts
+  - ../packages/cli/src/scan.ts
   - ../.github/workflows/ci.yml
+  - dyknow/.state/repo-map.json
 last_reviewed: 2026-05-23
 confidence: medium
 ---
@@ -20,7 +26,7 @@ confidence: medium
 
 This is the **build checklist**. Strategic phase context (goals, success criteria, risk framing) lives in [roadmap.md](roadmap.md); this page lists the actual tasks. Tasks are grouped by phase and by area within each phase. There are no dates — order within a phase is roughly suggested, but tasks within an area can usually proceed in parallel.
 
-The current code scaffold lives in `packages/core` and `packages/cli`. Phase 0 now has a real TypeScript/npm workspace, CI validation, and the first shared-contract plus config-validation slice.
+The current code scaffold lives in `packages/core` and `packages/cli`. Phase 0 now has a real TypeScript/npm workspace, CI validation, shared-contract plus config-validation slices, and working `dyknow init` / `dyknow scan` commands that dogfood against this repo.
 
 When a task is completed, tick the box and append an `update` entry to [log.md](log.md) referencing this page.
 
@@ -60,22 +66,22 @@ These items underpin every later phase. Land them once; reuse everywhere.
 **Strategic goal:** dogfood inside Teambotics repos; maintain 5 pages reliably with human approval. See [roadmap.md § Phase 1](roadmap.md).
 
 ### Config system
-- [ ] `dyknow.config.json` JSON Schema.
+- [x] `dyknow.config.json` JSON Schema.
 - [x] Config loader + validator with helpful errors.
 - [ ] `dyknow init` command (interactive prompts, stack detection, sensible defaults).
 - [x] Default ignore patterns enforced regardless of user config (`.env`, `secrets/**`, etc.).
 
 ### Scanner
-- [ ] File reader honoring `allowedSources` / `ignoredSources`.
-- [ ] Secret-pattern detection in scanned files (warn, never include).
+- [x] File reader honoring `allowedSources` / `ignoredSources`.
+- [x] Secret-pattern detection in scanned files (warn, never include).
 - [ ] Basic AST/text parsers for: Markdown, JSON, YAML, OpenAPI, package files (package.json, pyproject.toml, etc.).
 - [ ] Route/endpoint extraction for at least one stack (e.g., Next.js or Express).
-- [ ] Dependency extraction.
-- [ ] `dyknow scan` command — produces repo map.
+- [x] Dependency extraction.
+- [x] `dyknow scan` command — produces repo map.
 
 ### Snapshot & change detection
-- [ ] Snapshot store layout under `docs/dyknow/.state/`.
-- [ ] Write repo map snapshot.
+- [x] Snapshot store layout under `docs/dyknow/.state/`.
+- [x] Write repo map snapshot.
 - [ ] `dyknow diff` command — compute structured delta between snapshots.
 - [ ] Map deltas → affected page IDs via source map.
 

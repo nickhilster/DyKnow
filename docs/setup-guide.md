@@ -4,19 +4,25 @@ purpose: Walk through the planned DyKnow Local CLI workflow from init to PR.
 audience: external
 sources:
   - sources/dyknow_local_whitepaper.md (section 8)
+  - ../dyknow.config.json
+  - ../dyknow.config.schema.json
+  - ../packages/cli/src/index.ts
+  - ../packages/cli/src/scan.ts
+  - dyknow/.state/repo-map.json
 last_reviewed: 2026-05-23
 confidence: medium
 ---
 
 ## Summary
 
-This page describes the planned DyKnow Local CLI workflow. **No commands exist yet** — this is the target workflow being built toward.
+This page describes the DyKnow Local CLI workflow. `dyknow init` and `dyknow scan` are now implemented in this repo; the later review, update, and publish steps remain the target workflow.
 
-## Prerequisites (planned)
+## Prerequisites
 
 - A git repository.
 - An LLM access method: local model, BYO API key, or vendor-hosted provider.
 - Permission to write to a `docs/dyknow/` directory and (optionally) open pull requests.
+- In this repository's current bootstrap, run `npm run build` before invoking `node packages/cli/dist/bin.js ...` directly.
 
 ## Step 1 — Initialize
 
@@ -24,7 +30,15 @@ This page describes the planned DyKnow Local CLI workflow. **No commands exist y
 dyknow init
 ```
 
-Creates `dyknow.config.json`. The config defines:
+Creates `dyknow.config.json` and `dyknow.config.schema.json`. The current implementation writes a local-only default config that points at the schema file and pre-populates the MVP 1 maintained pages for this repo.
+
+If you are working inside this repo today, the direct invocation is:
+
+```bash
+node packages/cli/dist/bin.js init --force --project-name DyKnow
+```
+
+The config defines:
 
 - Allowed folders
 - Ignored folders
@@ -41,14 +55,15 @@ Creates `dyknow.config.json`. The config defines:
 
 ```json
 {
+  "$schema": "./dyknow.config.schema.json",
   "projectName": "Example Product",
   "mode": "local-only",
   "allowedSources": [
     "README.md",
     "docs/**",
-    "src/routes/**",
-    "openapi.yaml",
-    "CHANGELOG.md"
+    "packages/**",
+    ".github/**",
+    "package.json"
   ],
   "ignoredSources": [
     ".env",
@@ -61,16 +76,18 @@ Creates `dyknow.config.json`. The config defines:
     {
       "id": "product-overview",
       "title": "Product Overview",
-      "output": "docs/dyknow/product-overview.md",
-      "audience": "internal",
-      "sources": ["README.md", "docs/**", "src/routes/**"]
+      "outputPath": "docs/product-overview.md",
+      "audience": "mixed",
+      "sources": ["README.md", "docs/**", "packages/**"],
+      "reviewRules": { "approvalRequired": true }
     },
     {
       "id": "agent-context",
       "title": "AI Agent Context",
-      "output": "AGENTS.md",
+      "outputPath": "AGENTS.md",
       "audience": "agent",
-      "sources": ["README.md", "docs/**", "src/**"]
+      "sources": ["README.md", "docs/**", "packages/**"],
+      "reviewRules": { "approvalRequired": true }
     }
   ],
   "approvalRequired": true,
@@ -85,7 +102,13 @@ Creates `dyknow.config.json`. The config defines:
 dyknow scan
 ```
 
-Builds a repo map: routes, components, API endpoints, data models, feature areas, config, existing docs, product concepts, architecture patterns, dependencies, user-facing behaviors.
+Builds a repo map from the configured source set. The current implementation classifies markdown, JSON, YAML, and TypeScript files; flags route candidates heuristically; extracts package dependencies from `package.json` files; and warns on likely sensitive content patterns without writing raw file contents into the repo map.
+
+If you are working inside this repo today, the direct invocation is:
+
+```bash
+node packages/cli/dist/bin.js scan
+```
 
 Output: `docs/dyknow/.state/repo-map.json`.
 
@@ -95,6 +118,8 @@ Output: `docs/dyknow/.state/repo-map.json`.
 dyknow diff
 ```
 
+**Status:** planned. `dyknow diff` is not implemented yet.
+
 Compares current repo state against the previous snapshot. Identifies new/removed features, changed APIs, changed routes, changed config, new dependencies, updated setup process, changed terminology, stale documentation, and which DyKnow Pages are affected.
 
 ## Step 4 — Draft updates
@@ -102,6 +127,8 @@ Compares current repo state against the previous snapshot. Identifies new/remove
 ```bash
 dyknow update
 ```
+
+**Status:** planned. `dyknow update` is not implemented yet.
 
 Drafts updates to affected pages. Each suggested update includes:
 
@@ -120,6 +147,8 @@ DyKnow does not blindly overwrite. It produces a diff with reasoning.
 ```bash
 dyknow review
 ```
+
+**Status:** planned. `dyknow review` is not implemented yet.
 
 Or use the VS Code extension to inspect changes visually. Reviewers can:
 
@@ -143,6 +172,8 @@ or
 dyknow pr
 ```
 
+**Status:** planned. `dyknow commit`, `dyknow pr`, and `dyknow sync` are not implemented yet.
+
 Creates a branch and pull request containing the documentation updates.
 
 Optionally:
@@ -162,4 +193,4 @@ Pushes approved outputs to DyKnow Cloud, a CMS, Notion, Confluence, or a website
 ## Open questions
 
 - Whether `dyknow init` should auto-detect the framework/stack and pre-fill `allowedSources`.
-- Default page set for `init` (likely Product Overview, Feature Map, Architecture, Setup Guide, AGENTS.md per MVP 1).
+- Whether `dyknow init` should stay non-interactive by default or add an interactive prompt mode alongside current defaults.
