@@ -9,13 +9,16 @@ export const DEFAULT_REVIEW_AUDIT_LOG_PATH =
   "docs/dyknow/.state/audit-log.jsonl";
 
 export const LOG_SOURCES = ["all", "committed", "runtime"] as const;
+export const LOG_ACTION_FILTERS = ["all", "review", "publish"] as const;
 
 export type LogSource = (typeof LOG_SOURCES)[number];
+export type LogActionFilter = (typeof LOG_ACTION_FILTERS)[number];
 
 export type LogOptions = {
   inputPath: string;
   limit: number;
   source: LogSource;
+  action: LogActionFilter;
 };
 
 export type AuditLogReport = {
@@ -127,6 +130,7 @@ export function parseLogOptions(args: readonly string[]): LogOptions {
   let inputPath = DEFAULT_REVIEW_AUDIT_LOG_PATH;
   let limit = 10;
   let source: LogSource = "all";
+  let action: LogActionFilter = "all";
 
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
@@ -177,10 +181,39 @@ export function parseLogOptions(args: readonly string[]): LogOptions {
       continue;
     }
 
+    if (argument === "--action") {
+      const value = args[index + 1];
+
+      if (!value) {
+        throw new Error("Missing value for --action.");
+      }
+
+      if (!LOG_ACTION_FILTERS.includes(value as LogActionFilter)) {
+        throw new Error(
+          `--action must be one of: ${LOG_ACTION_FILTERS.join(", ")}.`,
+        );
+      }
+
+      action = value as LogActionFilter;
+      index += 1;
+      continue;
+    }
+
     throw new Error(`Unknown log option: ${argument}`);
   }
 
-  return { inputPath, limit, source };
+  return { inputPath, limit, source, action };
+}
+
+function matchesActionFilter(
+  entry: AuditLogEntry,
+  actionFilter: LogActionFilter,
+) {
+  if (actionFilter === "all") {
+    return true;
+  }
+
+  return entry.action.startsWith(`${actionFilter}:`);
 }
 
 export async function createAuditLogReport(options: {
@@ -188,6 +221,7 @@ export async function createAuditLogReport(options: {
   inputPath: string;
   limit: number;
   source: LogSource;
+  action: LogActionFilter;
 }): Promise<AuditLogReport> {
   const reports = [
     await readAuditEntries({
@@ -218,7 +252,8 @@ export async function createAuditLogReport(options: {
     .flatMap((report) => report.entries)
     .filter(
       (reportEntry) =>
-        options.source === "all" || reportEntry.source === options.source,
+        (options.source === "all" || reportEntry.source === options.source) &&
+        matchesActionFilter(reportEntry.entry, options.action),
     );
 
   if (entries.length === 0) {

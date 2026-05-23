@@ -152,7 +152,7 @@ function formatHelp(): string {
     "- dyknow update [--config <path>] [--diff <path>] [--output <path>]",
     "- dyknow review [--input <path>] [--output <path>] [--approve|--reject|--escalate|--skip|--regenerate] (--all | --page <id>...)",
     "- dyknow review [--input <path>] [--output <path>] --edit --page <id> (--text <value> | --editor)",
-    "- dyknow log [--input <path>] [--limit <count>] [--source <all|committed|runtime>]",
+    "- dyknow log [--input <path>] [--limit <count>] [--source <all|committed|runtime>] [--action <all|review|publish>]",
     "- dyknow commit [--input <path>] [--message <text>]",
     "- dyknow pr [--input <path>] [--base <branch>] [--branch <name>] [--message <text>] [--title <text>]",
     "",
@@ -337,6 +337,7 @@ async function handleLog(args: readonly string[], context?: CliContext) {
       inputPath: options.inputPath,
       limit: options.limit,
       source: options.source,
+      action: options.action,
     });
 
     stdout(result.report);
