@@ -1,0 +1,47 @@
+# Changelog
+
+Human-facing release notes for DyKnow. For granular wiki-maintenance history, see [docs/log.md](docs/log.md). For roadmap and phase context, see [docs/roadmap.md](docs/roadmap.md).
+
+Format: each release gets a heading with date and a short list of changes grouped by `Added` / `Changed` / `Removed` / `Notes`. Newest at the top.
+
+---
+
+## [Unreleased]
+
+### Added
+- `.github/workflows/ci.yml` — CI workflow running lint, tests, and build on push and pull request.
+- `package.json`, `biome.json`, `tsconfig.base.json`, `tsconfig.json` — npm workspace and TypeScript bootstrap.
+- `packages/core/` — shared engine contracts, DyKnow config validation, and unit tests.
+- `packages/cli/` — bootstrap DyKnow Local CLI package.
+- `CONTRIBUTING.md` — workflow for adding sources, updating pages, creating new pages, deleting pages, and opening PRs.
+- `CHANGELOG.md` — this file.
+- `docs/lint.md` — runnable wiki health checklist (precursor to the future `dyknow lint` command).
+- `docs/implementation-roadmap.md` — task-level build checklist phased 0–5 (foundations, Local CLI, VS Code, public demo, Cloud Lite, pilots).
+
+### Changed
+- The repo now includes a real TypeScript implementation scaffold for DyKnow Local in addition to the documentation wiki.
+- Relocated `dyknow_local_whitepaper.md` from the repo root into `docs/sources/` so all raw inputs live in one place. Updated every cross-reference (README, CLAUDE, AGENTS, all wiki page frontmatter, log).
+
+---
+
+## 2026-05-23 — Documentation bootstrap
+
+### Added
+- `README.md` — repo intro and layout.
+- `CLAUDE.md` — wiki maintainer schema (Karpathy-style three-layer model: raw sources → wiki → schema).
+- `AGENTS.md` — agent context for coding assistants.
+- `docs/index.md` — catalog of all Dynamic Knowledge Pages.
+- `docs/log.md` — append-only wiki change log.
+- `docs/product-overview.md` — what DyKnow is and the problem it solves.
+- `docs/feature-map.md` — full feature inventory across Cloud and Local.
+- `docs/architecture.md` — components of Cloud, Local, and the shared engine.
+- `docs/setup-guide.md` — planned DyKnow Local CLI workflow.
+- `docs/trust-and-security.md` — trust model, controls, governance, high-risk handling.
+- `docs/messaging.md` — positioning, one-liners, audience pitches.
+- `docs/roadmap.md` — five-phase build path.
+- `docs/glossary.md` — canonical terms.
+- `docs/sources/README.md` — raw source index and authority hierarchy.
+
+### Notes
+- The founding source is the DyKnow whitepaper. All product claims trace back to it until additional sources land.
+- No application code exists yet. Planned CLI commands (`dyknow init`, `scan`, `diff`, `update`, `review`, `commit`, `pr`, `sync`) are described in `docs/setup-guide.md` as the build target.

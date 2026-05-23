@@ -1,0 +1,23 @@
+{
+  "name": "dyknow",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "build": "tsc -b",
+    "format": "biome format . --write",
+    "lint": "biome check .",
+    "test": "vitest run",
+    "typecheck": "tsc -b --pretty false"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^22.15.30",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}
