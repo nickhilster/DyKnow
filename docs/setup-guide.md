@@ -175,9 +175,9 @@ The current implementation uses the local stub update provider. It drafts `Needs
 dyknow review
 ```
 
-**Status:** implemented for the first persisted decision, text edit, editor edit, skip, and regenerate slice.
+**Status:** implemented for the first persisted decision, text edit, editor edit, skip, regenerate, and review-audit slice.
 
-The current implementation reads `docs/dyknow/.state/update-proposals.json`, can summarize proposal counts by review state, can persist approval, rejection, or escalation decisions, can replace one targeted proposal's `proposedText` while marking it `Edited` from either inline text or an external editor command, can explicitly skip targeted proposals without changing the snapshot, and can regenerate targeted proposals from the saved repo diff.
+The current implementation reads `docs/dyknow/.state/update-proposals.json`, can summarize proposal counts by review state, can persist approval, rejection, or escalation decisions, can replace one targeted proposal's `proposedText` while marking it `Edited` from either inline text or an external editor command, can explicitly skip targeted proposals without changing the snapshot, can regenerate targeted proposals from the saved repo diff, and appends one audit entry per targeted review action to `docs/dyknow/.state/audit-log.jsonl`.
 
 If you are working inside this repo today, the direct invocation is:
 
@@ -230,6 +230,8 @@ The full walkthrough remains broader than the current slice. Reviewers will even
 - Update config rules
 
 Today, approve / reject / escalate plus a single inline edited-proposal text path, a single external-editor edit path, explicit skip handling, and targeted regenerate handling are implemented. Richer in-product review surfaces remain planned.
+
+The first audit slice is intentionally narrow: only review actions append entries today, and the planned `dyknow log` reader remains separate work.
 
 ## Step 6 — Commit or publish
 

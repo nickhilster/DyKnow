@@ -1,11 +1,20 @@
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import {
+  appendFile,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, relative, resolve } from "node:path";
 import { join } from "node:path";
 import { promisify } from "node:util";
 
 import {
+  AuditLogEntrySchema,
   DEFAULT_UPDATE_OUTPUT_PATH,
   type RepoMapDiff,
   RepoMapDiffSchema,
@@ -31,6 +40,7 @@ type ReviewMutationState = (typeof REVIEW_MUTATION_STATES)[number];
 type ReviewActionState = (typeof REVIEW_ACTION_STATES)[number];
 
 const execFileAsync = promisify(execFile);
+const DEFAULT_REVIEW_AUDIT_LOG_PATH = "docs/dyknow/.state/audit-log.jsonl";
 
 export type ReviewOptions = {
   all: boolean;
@@ -56,6 +66,70 @@ function toPortablePath(path: string): string {
 
 function formatRelativePath(rootPath: string, targetPath: string): string {
   return toPortablePath(relative(rootPath, targetPath) || targetPath);
+}
+
+function getAuditActor(): string {
+  return process.env.DYKNOW_ACTOR ?? "copilot";
+}
+
+function formatReviewAction(decision: ReviewActionState): string {
+  switch (decision) {
+    case "Approved":
+      return "review:approve";
+    case "Rejected":
+      return "review:reject";
+    case "Escalated":
+      return "review:escalate";
+    case "Edited":
+      return "review:edit";
+    case "Skipped":
+      return "review:skip";
+    case "Regenerated":
+      return "review:regenerate";
+  }
+}
+
+async function appendReviewAuditEntries(options: {
+  auditPath: string;
+  decision: ReviewActionState;
+  drafts: readonly UpdateDraftBatch["drafts"][number][];
+  outputPath: string;
+  rootPath: string;
+}) {
+  const auditPath = resolve(options.rootPath, options.auditPath);
+  const timestamp = new Date().toISOString();
+  const actor = getAuditActor();
+  const entries = options.drafts.map((draft) => {
+    const outputsAffected = [
+      draft.affectedPage.outputPath,
+      formatRelativePath(options.rootPath, options.outputPath),
+    ];
+    const hashInput = JSON.stringify({
+      action: formatReviewAction(options.decision),
+      actor,
+      pageId: draft.proposal.pageId,
+      reviewState: draft.proposal.reviewState,
+      sourcesRead: draft.proposal.sources,
+      outputsAffected,
+      timestamp,
+    });
+
+    return AuditLogEntrySchema.parse({
+      action: formatReviewAction(options.decision),
+      actor,
+      sourcesRead: draft.proposal.sources,
+      outputsAffected,
+      timestamp,
+      hash: createHash("sha256").update(hashInput).digest("hex"),
+    });
+  });
+
+  await mkdir(dirname(auditPath), { recursive: true });
+  await appendFile(
+    auditPath,
+    entries.map((entry) => `${JSON.stringify(entry)}\n`).join(""),
+    "utf8",
+  );
 }
 
 function parseUpdateBatch(
@@ -519,14 +593,24 @@ export async function createReviewUpdateBatch(options: {
   }
 
   if (options.decision === "Skipped") {
+    const targetedDrafts = updateBatch.drafts.filter((draft) =>
+      targetedPageIds.has(draft.proposal.pageId),
+    );
+
+    await appendReviewAuditEntries({
+      auditPath: DEFAULT_REVIEW_AUDIT_LOG_PATH,
+      decision: options.decision,
+      drafts: targetedDrafts,
+      outputPath: inputPath,
+      rootPath,
+    });
+
     return {
       decision: options.decision,
       outputPath: formatRelativePath(rootPath, inputPath),
       summary: formatSummary(updateBatch),
       totalDrafts: updateBatch.drafts.length,
-      updatedProposals: updateBatch.drafts.filter((draft) =>
-        targetedPageIds.has(draft.proposal.pageId),
-      ).length,
+      updatedProposals: targetedDrafts.length,
     };
   }
 
@@ -561,6 +645,16 @@ export async function createReviewUpdateBatch(options: {
       `${JSON.stringify(nextBatch, null, 2)}\n`,
       "utf8",
     );
+
+    await appendReviewAuditEntries({
+      auditPath: DEFAULT_REVIEW_AUDIT_LOG_PATH,
+      decision: options.decision,
+      drafts: nextBatch.drafts.filter((draft) =>
+        targetedPageIds.has(draft.proposal.pageId),
+      ),
+      outputPath,
+      rootPath,
+    });
 
     return {
       decision: options.decision,
@@ -639,6 +733,16 @@ export async function createReviewUpdateBatch(options: {
     `${JSON.stringify(nextBatch, null, 2)}\n`,
     "utf8",
   );
+
+  await appendReviewAuditEntries({
+    auditPath: DEFAULT_REVIEW_AUDIT_LOG_PATH,
+    decision: options.decision,
+    drafts: nextBatch.drafts.filter((draft) =>
+      targetedPageIds.has(draft.proposal.pageId),
+    ),
+    outputPath,
+    rootPath,
+  });
 
   return {
     decision: options.decision,

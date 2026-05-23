@@ -137,3 +137,13 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after implementing the dyknow review external-editor slice.
 2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot after implementing the dyknow review external-editor slice.
 2026-05-23 | update | docs/dyknow/.state/update-proposals.json | Regenerated the update-proposals artifact after implementing the dyknow review external-editor slice.
+2026-05-23 | update | packages/cli/src/review.ts | Implemented the first review-action audit-log writer to append one entry per targeted review action.
+2026-05-23 | update | README.md | Documented the first review-action audit-log artifact alongside the existing review workflow.
+2026-05-23 | update | AGENTS.md | Updated agent context to include review-action audit logging.
+2026-05-23 | update | CHANGELOG.md | Marked dyknow review updated for the first review-action audit-log slice.
+2026-05-23 | update | docs/setup-guide.md | Documented the first review-action audit-log behavior and clarified the remaining audit work.
+2026-05-23 | update | docs/feature-map.md | Marked dyknow review implemented for the first review-action audit-log slice.
+2026-05-23 | update | docs/implementation-roadmap.md | Checked off review-action audit entry appends in the audit backlog.
+2026-05-23 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot after implementing the review-action audit-log slice.
+2026-05-23 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot after implementing the review-action audit-log slice.
+2026-05-23 | update | docs/dyknow/.state/update-proposals.json | Regenerated the update-proposals artifact after implementing the review-action audit-log slice.
