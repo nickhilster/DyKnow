@@ -451,4 +451,75 @@ describe("dyknow log", () => {
       "Recent audit entries from .git/dyknow/runtime-audit-log.jsonl for action=publish and source=runtime (showing 1 of 1):",
     );
   });
+
+  it("does not advertise source filters for custom input views", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-log-"));
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+    const customInputPath = "docs/dyknow/.state/custom-audit-log.jsonl";
+
+    await mkdir(join(root, "docs", "dyknow", ".state"), { recursive: true });
+    await writeFile(
+      join(root, "docs", "dyknow", ".state", "custom-audit-log.jsonl"),
+      `${JSON.stringify({
+        action: "publish:pr-prepared",
+        actor: "copilot",
+        sourcesRead: ["README.md"],
+        outputsAffected: ["docs/product-overview.md"],
+        timestamp: "2026-05-23T20:05:00.000Z",
+        hash: "22222222",
+      })}\n`,
+      "utf8",
+    );
+
+    const emptyExitCode = await runCli(
+      ["log", "--input", customInputPath, "--source", "runtime"],
+      {
+        cwd: root,
+        stdout: (message) => {
+          stdout.push(message);
+        },
+        stderr: (message) => {
+          stderr.push(message);
+        },
+      },
+    );
+
+    expect(emptyExitCode).toBe(0);
+    expect(stderr).toEqual([]);
+    expect(stdout[0]).toContain(
+      `Recent audit entries from ${customInputPath} (showing 1 of 1):`,
+    );
+    expect(stdout[0]).not.toContain("source=runtime");
+
+    stdout.length = 0;
+
+    const filteredExitCode = await runCli(
+      [
+        "log",
+        "--input",
+        customInputPath,
+        "--source",
+        "runtime",
+        "--action",
+        "publish",
+      ],
+      {
+        cwd: root,
+        stdout: (message) => {
+          stdout.push(message);
+        },
+        stderr: (message) => {
+          stderr.push(message);
+        },
+      },
+    );
+
+    expect(filteredExitCode).toBe(0);
+    expect(stderr).toEqual([]);
+    expect(stdout[0]).toContain(
+      `Recent audit entries from ${customInputPath} for action=publish (showing 1 of 1):`,
+    );
+    expect(stdout[0]).not.toContain("source=runtime");
+  });
 });

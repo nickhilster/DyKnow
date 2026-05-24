@@ -223,8 +223,13 @@ function formatEmptyAuditReport(options: {
   source: LogSource;
   action: LogActionFilter;
   reportPaths: readonly string[];
+  supportsSourceFiltering: boolean;
 }) {
-  if (options.source === "all" && options.action === "all") {
+  const hasEffectiveSourceFilter =
+    options.supportsSourceFiltering && options.source !== "all";
+  const hasEffectiveActionFilter = options.action !== "all";
+
+  if (!hasEffectiveSourceFilter && !hasEffectiveActionFilter) {
     return `No audit entries found at ${options.inputPath}.`;
   }
 
@@ -233,7 +238,11 @@ function formatEmptyAuditReport(options: {
       ? options.reportPaths.join(" and ")
       : options.inputPath;
 
-  return `No audit entries found in ${scopeLabel}${formatFilterLabel(options.source, options.action)}.`;
+  return `No audit entries found in ${scopeLabel}${formatFilterLabel({
+    source: options.source,
+    action: options.action,
+    supportsSourceFiltering: options.supportsSourceFiltering,
+  })}.`;
 }
 
 function formatAuditReportHeader(options: {
@@ -242,19 +251,30 @@ function formatAuditReportHeader(options: {
   totalEntries: number;
   source: LogSource;
   action: LogActionFilter;
+  supportsSourceFiltering: boolean;
 }) {
-  return `Recent audit entries from ${options.sourceLabels.join(" and ")}${formatFilterLabel(options.source, options.action)} (showing ${options.shownEntries} of ${options.totalEntries}):`;
+  return `Recent audit entries from ${options.sourceLabels.join(" and ")}${formatFilterLabel(
+    {
+      source: options.source,
+      action: options.action,
+      supportsSourceFiltering: options.supportsSourceFiltering,
+    },
+  )} (showing ${options.shownEntries} of ${options.totalEntries}):`;
 }
 
-function formatFilterLabel(source: LogSource, action: LogActionFilter): string {
+function formatFilterLabel(options: {
+  source: LogSource;
+  action: LogActionFilter;
+  supportsSourceFiltering: boolean;
+}): string {
   const filters: string[] = [];
 
-  if (action !== "all") {
-    filters.push(`action=${action}`);
+  if (options.action !== "all") {
+    filters.push(`action=${options.action}`);
   }
 
-  if (source !== "all") {
-    filters.push(`source=${source}`);
+  if (options.supportsSourceFiltering && options.source !== "all") {
+    filters.push(`source=${options.source}`);
   }
 
   return filters.length > 0 ? ` for ${filters.join(" and ")}` : "";
@@ -287,6 +307,8 @@ export async function createAuditLogReport(options: {
   source: LogSource;
   action: LogActionFilter;
 }): Promise<AuditLogReport> {
+  const supportsSourceFiltering =
+    options.inputPath === DEFAULT_REVIEW_AUDIT_LOG_PATH;
   const reports = [
     await readAuditEntries({
       inputPath: options.inputPath,
@@ -316,7 +338,9 @@ export async function createAuditLogReport(options: {
     .flatMap((report) => report.entries)
     .filter(
       (reportEntry) =>
-        (options.source === "all" || reportEntry.source === options.source) &&
+        (!supportsSourceFiltering ||
+          options.source === "all" ||
+          reportEntry.source === options.source) &&
         matchesActionFilter(reportEntry.entry, options.action),
     );
 
@@ -334,6 +358,7 @@ export async function createAuditLogReport(options: {
         source: options.source,
         action: options.action,
         reportPaths,
+        supportsSourceFiltering,
       }),
       shownEntries: 0,
       totalEntries: 0,
@@ -353,6 +378,7 @@ export async function createAuditLogReport(options: {
     totalEntries: entries.length,
     source: options.source,
     action: options.action,
+    supportsSourceFiltering,
   });
 
   return {
