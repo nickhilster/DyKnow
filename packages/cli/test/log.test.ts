@@ -150,6 +150,60 @@ describe("dyknow log", () => {
     );
   });
 
+  it("reports when both default committed and runtime audit logs are missing", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-log-"));
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+
+    await writeFile(join(root, "README.md"), "# Fixture\n", "utf8");
+    await runGit(root, ["init"]);
+    await runGit(root, ["config", "user.name", "DyKnow Test"]);
+    await runGit(root, ["config", "user.email", "dyknow@example.com"]);
+
+    const exitCode = await runCli(["log"], {
+      cwd: root,
+      stdout: (message) => {
+        stdout.push(message);
+      },
+      stderr: (message) => {
+        stderr.push(message);
+      },
+    });
+
+    expect(exitCode).toBe(0);
+    expect(stderr).toEqual([]);
+    expect(stdout[0]).toBe(
+      "No audit logs found in docs/dyknow/.state/audit-log.jsonl and .git/dyknow/runtime-audit-log.jsonl.",
+    );
+  });
+
+  it("keeps missing-log precedence when action filtering with no default logs", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-log-"));
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+
+    await writeFile(join(root, "README.md"), "# Fixture\n", "utf8");
+    await runGit(root, ["init"]);
+    await runGit(root, ["config", "user.name", "DyKnow Test"]);
+    await runGit(root, ["config", "user.email", "dyknow@example.com"]);
+
+    const exitCode = await runCli(["log", "--action", "publish"], {
+      cwd: root,
+      stdout: (message) => {
+        stdout.push(message);
+      },
+      stderr: (message) => {
+        stderr.push(message);
+      },
+    });
+
+    expect(exitCode).toBe(0);
+    expect(stderr).toEqual([]);
+    expect(stdout[0]).toBe(
+      "No audit logs found in docs/dyknow/.state/audit-log.jsonl and .git/dyknow/runtime-audit-log.jsonl.",
+    );
+  });
+
   it("pretty-prints the most recent audit entries first", async () => {
     const root = await mkdtemp(join(tmpdir(), "dyknow-log-"));
     const stdout: string[] = [];
