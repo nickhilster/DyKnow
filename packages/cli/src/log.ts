@@ -249,12 +249,12 @@ function formatAuditReportHeader(options: {
 function formatFilterLabel(source: LogSource, action: LogActionFilter): string {
   const filters: string[] = [];
 
-  if (source !== "all") {
-    filters.push(`source=${source}`);
-  }
-
   if (action !== "all") {
     filters.push(`action=${action}`);
+  }
+
+  if (source !== "all") {
+    filters.push(`source=${source}`);
   }
 
   return filters.length > 0 ? ` for ${filters.join(" and ")}` : "";
