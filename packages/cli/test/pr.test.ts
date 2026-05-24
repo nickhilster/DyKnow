@@ -637,4 +637,123 @@ describe("dyknow pr", () => {
     expect(stderr[0]).toContain("GitHub CLI command");
     expect(stderr[0]).toContain("shell control operators");
   }, 20000);
+
+  it("rejects GitHub CLI .cmd wrappers on Windows", async () => {
+    if (process.platform !== "win32") {
+      return;
+    }
+
+    const root = await mkdtemp(join(tmpdir(), "dyknow-pr-"));
+    const remote = await mkdtemp(join(tmpdir(), "dyknow-pr-remote-"));
+    const tools = await mkdtemp(join(tmpdir(), "dyknow-pr-tools-"));
+
+    await mkdir(join(root, "docs", "dyknow", ".state"), { recursive: true });
+    await writeFile(
+      join(root, "docs", "product-overview.md"),
+      "# Product Overview\n\nOld content.\n",
+      "utf8",
+    );
+    await writeFile(join(root, "README.md"), "# Fixture\n", "utf8");
+    await writeFile(
+      join(root, "dyknow.config.json"),
+      `${JSON.stringify(
+        {
+          $schema: "./dyknow.config.schema.json",
+          projectName: "Fixture",
+          mode: "local-only",
+          allowedSources: ["README.md", "docs/**"],
+          ignoredSources: [],
+          pages: [
+            {
+              id: "product-overview",
+              title: "Product Overview",
+              outputPath: "docs/product-overview.md",
+              audience: "mixed",
+              sources: ["README.md"],
+              reviewRules: {
+                approvalRequired: true,
+              },
+            },
+          ],
+          approvalRequired: true,
+          llmProvider: "local",
+          publishTargets: [],
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    await runGit(root, ["init"]);
+    await runGit(root, ["config", "user.name", "DyKnow Test"]);
+    await runGit(root, ["config", "user.email", "dyknow@example.com"]);
+    await runGit(root, ["branch", "-M", "main"]);
+    await runGit(remote, ["init", "--bare"]);
+    await runGit(root, ["remote", "add", "origin", remote]);
+    await runGit(root, ["add", "."]);
+    await runGit(root, ["commit", "-m", "chore: initial fixture"]);
+    await runGit(root, ["push", "--set-upstream", "origin", "main"]);
+    await writeFile(
+      join(root, DEFAULT_UPDATE_OUTPUT_PATH),
+      `${JSON.stringify(
+        {
+          draftedAt: "2026-05-23T18:00:00.000Z",
+          rootPath: root,
+          configPath: "dyknow.config.json",
+          repoDiffPath: "docs/dyknow/.state/repo-diff.json",
+          outputPath: DEFAULT_UPDATE_OUTPUT_PATH,
+          providerId: "local",
+          drafts: [
+            {
+              affectedPage: {
+                pageId: "product-overview",
+                outputPath: "docs/product-overview.md",
+                matchedSourcePaths: ["README.md"],
+                reasons: ["changed-file"],
+              },
+              proposal: {
+                pageId: "product-overview",
+                summary: "Summary",
+                why: "Why",
+                sources: ["README.md"],
+                proposedText: "# Product Overview\n\nApproved content.",
+                confidence: "low",
+                risk: "medium",
+                reviewState: "Approved",
+                requiresHumanReview: true,
+              },
+            },
+          ],
+          summary: {
+            affectedPages: 1,
+            draftedProposals: 1,
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    await writeFile(
+      join(tools, "gh.cmd"),
+      ["@echo off", "echo https://example.invalid/pr/1"].join("\r\n"),
+      "utf8",
+    );
+
+    process.env.PATH = `${tools};${originalPath}`;
+    process.env.DYKNOW_GH_COMMAND = "gh";
+
+    const stderr: string[] = [];
+    const exitCode = await runCli(["pr", "--branch", "dyknow/test-gh-cmd"], {
+      cwd: root,
+      stderr: (message) => {
+        stderr.push(message);
+      },
+    });
+
+    expect(exitCode).toBe(1);
+    expect(stderr[0]).toContain("GitHub CLI command");
+    expect(stderr[0]).toContain("native executable");
+    expect(stderr[0]).toContain(".cmd or .bat wrapper");
+  }, 20000);
 });
