@@ -7,8 +7,8 @@
     {
       "path": "./packages/cli"
     },
-    {
-      "path": "./packages/vscode-extension"
-    }
+    // vscode-extension has its own standalone tsconfig (bundler moduleResolution,
+    // noEmit) and is built via esbuild — not included in the composite project refs.
+    // Run: cd packages/vscode-extension && npm run build
   ]
 }

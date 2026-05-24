@@ -1,0 +1,137 @@
+{
+  "name": "@dyknow/vscode-extension",
+  "displayName": "DyKnow",
+  "description": "Source-aligned knowledge maintenance — scan, detect drift, and apply approved updates from inside VS Code.",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/extension.js",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "workspaceContains:dyknow.config.json"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "dyknow",
+          "title": "DyKnow",
+          "icon": "$(search-view-icon)"
+        }
+      ]
+    },
+    "views": {
+      "dyknow": [
+        {
+          "id": "dyknow.changedKnowledge",
+          "name": "Changed Knowledge",
+          "when": "dyknow:hasConfig"
+        },
+        {
+          "id": "dyknow.suggestedUpdates",
+          "name": "Suggested Updates",
+          "when": "dyknow:hasConfig"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "dyknow.scan",
+        "title": "DyKnow: Scan",
+        "icon": "$(search)"
+      },
+      {
+        "command": "dyknow.diff",
+        "title": "DyKnow: Detect Changes",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "dyknow.update",
+        "title": "DyKnow: Draft Updates",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "dyknow.approveProposal",
+        "title": "Approve",
+        "icon": "$(check)"
+      },
+      {
+        "command": "dyknow.skipProposal",
+        "title": "Skip",
+        "icon": "$(x)"
+      },
+      {
+        "command": "dyknow.commit",
+        "title": "DyKnow: Commit Approved Updates",
+        "icon": "$(git-commit)"
+      },
+      {
+        "command": "dyknow.openPr",
+        "title": "DyKnow: Open PR",
+        "icon": "$(git-pull-request)"
+      },
+      {
+        "command": "dyknow.refreshViews",
+        "title": "DyKnow: Refresh",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "dyknow.scan",
+          "when": "view == dyknow.changedKnowledge",
+          "group": "navigation@1"
+        },
+        {
+          "command": "dyknow.diff",
+          "when": "view == dyknow.changedKnowledge",
+          "group": "navigation@2"
+        },
+        {
+          "command": "dyknow.update",
+          "when": "view == dyknow.changedKnowledge",
+          "group": "navigation@3"
+        },
+        {
+          "command": "dyknow.refreshViews",
+          "when": "view == dyknow.changedKnowledge || view == dyknow.suggestedUpdates",
+          "group": "navigation@4"
+        },
+        {
+          "command": "dyknow.commit",
+          "when": "view == dyknow.suggestedUpdates",
+          "group": "navigation@1"
+        },
+        {
+          "command": "dyknow.openPr",
+          "when": "view == dyknow.suggestedUpdates",
+          "group": "navigation@2"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "dyknow.approveProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-needs-review",
+          "group": "inline@1"
+        },
+        {
+          "command": "dyknow.skipProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-needs-review",
+          "group": "inline@2"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.100.0",
+    "esbuild": "^0.27.7"
+  }
+}
