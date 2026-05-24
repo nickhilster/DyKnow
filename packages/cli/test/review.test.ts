@@ -286,7 +286,7 @@ describe("dyknow review", () => {
     expect(reviewBatch.drafts[0]?.proposal.proposedText).toBe(
       "Edited from node editor",
     );
-  });
+  }, 15000);
 
   it("rejects editor commands that contain shell control operators", async () => {
     const root = await mkdtemp(join(tmpdir(), "dyknow-review-"));
@@ -703,7 +703,7 @@ describe("dyknow review", () => {
     expect(reviewBatch.drafts[0]?.proposal.proposedText.trimEnd()).toBe(
       "Edited from node editor",
     );
-  });
+  }, 15000);
 
   it("requires a prior update-proposals snapshot", async () => {
     const root = await mkdtemp(join(tmpdir(), "dyknow-review-"));

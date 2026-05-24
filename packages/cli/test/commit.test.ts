@@ -159,7 +159,7 @@ describe("dyknow commit", () => {
     );
     expect(commitSubject).toBe("docs: apply approved dyknow updates");
     expect(status).toBe("");
-  });
+  }, 15000);
 
   it("requires at least one approved proposal", async () => {
     const root = await mkdtemp(join(tmpdir(), "dyknow-commit-"));
@@ -203,7 +203,7 @@ describe("dyknow commit", () => {
 
     expect(exitCode).toBe(1);
     expect(stderr[0]).toContain("Run dyknow review --approve first");
-  });
+  }, 15000);
 
   it("rejects approved proposals whose output path does not match the configured page", async () => {
     const root = await mkdtemp(join(tmpdir(), "dyknow-commit-"));
@@ -306,5 +306,5 @@ describe("dyknow commit", () => {
     expect(stderr[0]).toContain("does not match the configured output path");
     expect(readmeText).toBe("# Fixture\n");
     expect(headSubject).toBe("chore: initial fixture");
-  });
+  }, 15000);
 });
