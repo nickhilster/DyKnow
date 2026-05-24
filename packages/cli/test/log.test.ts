@@ -486,6 +486,7 @@ describe("dyknow log", () => {
     const stdout: string[] = [];
     const stderr: string[] = [];
     const customInputPath = "docs/dyknow/.state/custom-audit-log.jsonl";
+    const warning = `Ignoring --source runtime for custom audit log input ${customInputPath}. Source filtering only applies to the default merged log view.`;
 
     await mkdir(join(root, "docs", "dyknow", ".state"), { recursive: true });
     await writeFile(
@@ -515,13 +516,14 @@ describe("dyknow log", () => {
     );
 
     expect(emptyExitCode).toBe(0);
-    expect(stderr).toEqual([]);
+    expect(stderr).toEqual([warning]);
     expect(stdout[0]).toContain(
       `Recent audit entries from ${customInputPath} (showing 1 of 1):`,
     );
     expect(stdout[0]).not.toContain("source=runtime");
 
     stdout.length = 0;
+    stderr.length = 0;
 
     const filteredExitCode = await runCli(
       [
@@ -545,7 +547,7 @@ describe("dyknow log", () => {
     );
 
     expect(filteredExitCode).toBe(0);
-    expect(stderr).toEqual([]);
+    expect(stderr).toEqual([warning]);
     expect(stdout[0]).toContain(
       `Recent audit entries from ${customInputPath} for action=publish (showing 1 of 1):`,
     );

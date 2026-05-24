@@ -16,7 +16,11 @@ import {
 
 import { createCommitResult, parseCommitOptions } from "./commit.js";
 import { createRepoDiff, parseDiffOptions } from "./diff.js";
-import { createAuditLogReport, parseLogOptions } from "./log.js";
+import {
+  createAuditLogReport,
+  parseLogOptions,
+  supportsLogSourceFiltering,
+} from "./log.js";
 import { createPrResult, parsePrOptions } from "./pr.js";
 import { createReviewUpdateBatch, parseReviewOptions } from "./review.js";
 import { scanWorkspace } from "./scan.js";
@@ -332,6 +336,16 @@ async function handleLog(args: readonly string[], context?: CliContext) {
 
   try {
     const options = parseLogOptions(args);
+
+    if (
+      options.source !== "all" &&
+      !supportsLogSourceFiltering(options.inputPath)
+    ) {
+      stderr(
+        `Ignoring --source ${options.source} for custom audit log input ${options.inputPath}. Source filtering only applies to the default merged log view.`,
+      );
+    }
+
     const result = await createAuditLogReport({
       cwd,
       inputPath: options.inputPath,
