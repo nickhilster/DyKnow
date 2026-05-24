@@ -85,5 +85,9 @@
   ],
   "approvalRequired": true,
   "llmProvider": "local",
-  "publishTargets": []
+  "publishTargets": [],
+  "dependencyPolicy": {
+    "allow": ["@dyknow/core"],
+    "deny": ["left-pad"]
+  }
 }

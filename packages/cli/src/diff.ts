@@ -12,6 +12,7 @@ import {
 } from "@dyknow/core";
 
 import { scanWorkspace } from "./scan.js";
+import { resolveWorkspacePath } from "./security.js";
 
 export type DiffOptions = {
   configPath: string;
@@ -109,9 +110,21 @@ export async function createRepoDiff(options: {
   snapshotPath: string;
 }): Promise<RepoMapDiff> {
   const rootPath = resolve(options.cwd);
-  const configPath = resolve(rootPath, options.configPath);
-  const outputPath = resolve(rootPath, options.outputPath);
-  const snapshotPath = resolve(rootPath, options.snapshotPath);
+  const configPath = await resolveWorkspacePath(
+    rootPath,
+    options.configPath,
+    "Diff config path",
+  );
+  const outputPath = await resolveWorkspacePath(
+    rootPath,
+    options.outputPath,
+    "Diff output path",
+  );
+  const snapshotPath = await resolveWorkspacePath(
+    rootPath,
+    options.snapshotPath,
+    "Diff snapshot path",
+  );
   const configText = await readFile(configPath, "utf8");
   const config = parseDyknowConfig(configText);
   let snapshotText: string;

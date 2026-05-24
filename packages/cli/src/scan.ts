@@ -20,6 +20,14 @@ const SKIPPED_DIRECTORY_NAMES = new Set([
   "node_modules",
 ]);
 
+const SECRET_PATH_PATTERNS = [
+  {
+    label: "sensitive-file-name",
+    matcher:
+      /(?:^|\/)(?:\.npmrc|\.pypirc|\.netrc|id_rsa|id_dsa|id_ed25519|.*\.(?:pem|p12|pfx|key))$/i,
+  },
+] as const;
+
 const SECRET_PATTERNS = [
   {
     code: "secret-pattern",
@@ -42,6 +50,53 @@ const SECRET_PATTERNS = [
     code: "secret-pattern",
     label: "bearer-token",
     matcher: /authorization\s*:\s*bearer\s+[A-Za-z0-9._\-=]{20,}/i,
+  },
+  {
+    code: "secret-pattern",
+    label: "connection-string",
+    matcher:
+      /\b(?:postgres(?:ql)?|mysql|mariadb|mongodb(?:\+srv)?|redis|amqp):\/\/[^\s"'`]+/i,
+  },
+  {
+    code: "secret-pattern",
+    label: "npm-auth-token",
+    matcher: /\/\/registry\.npmjs\.org\/:_authToken=\S+/i,
+  },
+  {
+    code: "secret-pattern",
+    label: "slack-token",
+    matcher: /xox[baprs]-[A-Za-z0-9-]{10,}/,
+  },
+  {
+    code: "secret-pattern",
+    label: "google-api-key",
+    matcher: /AIza[0-9A-Za-z\-_]{35}/,
+  },
+  {
+    code: "secret-pattern",
+    label: "jwt",
+    matcher: /eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/,
+  },
+] as const;
+
+const DEPENDENCY_POLICY_RULES = [
+  {
+    label: "local-source",
+    matcher: /^(?:file:|workspace:)/i,
+    message: (name: string, version: string) =>
+      `Dependency "${name}" uses a local source specifier "${version}". Approve it explicitly in dependencyPolicy.allow if this package is an intended workspace or local dependency.`,
+  },
+  {
+    label: "non-registry-source",
+    matcher: /^(?:github:|git(?:\+|:|:\/\/)|https?:\/\/)/i,
+    message: (name: string, version: string) =>
+      `Dependency "${name}" uses a non-registry source specifier "${version}". Prefer a published registry release or a vetted local source.`,
+  },
+  {
+    label: "broad-version",
+    matcher: /^(?:\*|latest)$/i,
+    message: (name: string, version: string) =>
+      `Dependency "${name}" uses an overly broad version specifier "${version}". Prefer an explicit semver range.`,
   },
 ] as const;
 
@@ -172,7 +227,14 @@ function countLines(text: string): number {
   return text.split(/\r\n|\r|\n/).length;
 }
 
-function extractDependencies(text: string): {
+function normalizePackageName(value: string): string {
+  return value.toLowerCase();
+}
+
+function extractDependencies(
+  text: string,
+  dependencyPolicy: DyknowConfig["dependencyPolicy"],
+): {
   dependencies: DependencyRecord[];
   warnings: RepoMapWarning[];
 } {
@@ -187,6 +249,12 @@ function extractDependencies(text: string): {
       "peerDependencies",
     ];
     const dependencies: DependencyRecord[] = [];
+    const allowedDependencies = new Set(
+      dependencyPolicy.allow.map(normalizePackageName),
+    );
+    const deniedDependencies = new Set(
+      dependencyPolicy.deny.map(normalizePackageName),
+    );
 
     for (const section of sections) {
       const records = manifest[section] ?? {};
@@ -196,7 +264,31 @@ function extractDependencies(text: string): {
       }
     }
 
-    return { dependencies, warnings: [] };
+    return {
+      dependencies,
+      warnings: dependencies.flatMap((dependency) =>
+        deniedDependencies.has(normalizePackageName(dependency.name))
+          ? [
+              {
+                code: "dependency-policy",
+                path: "package.json",
+                message: `Dependency "${dependency.name}" is explicitly denied by dependencyPolicy.deny.`,
+              } satisfies RepoMapWarning,
+            ]
+          : allowedDependencies.has(normalizePackageName(dependency.name))
+            ? []
+            : DEPENDENCY_POLICY_RULES.filter((rule) =>
+                rule.matcher.test(dependency.version),
+              ).map(
+                (rule) =>
+                  ({
+                    code: "dependency-policy",
+                    path: "package.json",
+                    message: rule.message(dependency.name, dependency.version),
+                  }) satisfies RepoMapWarning,
+              ),
+      ),
+    };
   } catch (error) {
     const reason =
       error instanceof Error ? error.message : "Unknown parse error.";
@@ -218,9 +310,10 @@ function detectSecretWarnings(
   filePath: string,
   text: string,
 ): RepoMapWarning[] {
-  const matches = SECRET_PATTERNS.filter((pattern) =>
-    pattern.matcher.test(text),
-  );
+  const matches = [
+    ...SECRET_PATH_PATTERNS.filter((pattern) => pattern.matcher.test(filePath)),
+    ...SECRET_PATTERNS.filter((pattern) => pattern.matcher.test(text)),
+  ];
 
   if (matches.length === 0) {
     return [];
@@ -268,7 +361,10 @@ export async function scanWorkspace(options: {
       warnings.push(...detectSecretWarnings(filePath, text));
 
       if (filePath.endsWith("package.json")) {
-        const dependencyResult = extractDependencies(text);
+        const dependencyResult = extractDependencies(
+          text,
+          options.config.dependencyPolicy,
+        );
 
         dependencies = dependencyResult.dependencies;
         warnings.push(

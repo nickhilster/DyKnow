@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
@@ -20,53 +20,27 @@ const originalPath = process.env.PATH ?? "";
 const originalGhCommand = process.env.DYKNOW_GH_COMMAND;
 
 async function writeFakeGhCommand(tools: string) {
-  if (process.platform === "win32") {
-    const commandPath = join(tools, "gh.cmd");
-
-    await writeFile(
-      commandPath,
-      ["@echo off", "echo https://github.com/example/DyKnow/pull/99"].join(
-        "\r\n",
-      ),
-      "utf8",
-    );
-
-    return commandPath;
-  }
-
-  const commandPath = join(tools, "gh");
+  const commandPath = join(tools, "gh.mjs");
 
   await writeFile(
     commandPath,
-    ["#!/bin/sh", "echo https://github.com/example/DyKnow/pull/99"].join("\n"),
+    ['console.log("https://github.com/example/DyKnow/pull/99");'].join("\n"),
     "utf8",
   );
-  await chmod(commandPath, 0o755);
 
   return commandPath;
 }
 
 async function writeFailingGhCommand(tools: string) {
-  if (process.platform === "win32") {
-    const commandPath = join(tools, "gh-fail.cmd");
-
-    await writeFile(
-      commandPath,
-      ["@echo off", "echo gh pr create failed 1>&2", "exit /b 1"].join("\r\n"),
-      "utf8",
-    );
-
-    return commandPath;
-  }
-
-  const commandPath = join(tools, "gh-fail");
+  const commandPath = join(tools, "gh-fail.mjs");
 
   await writeFile(
     commandPath,
-    ["#!/bin/sh", "echo gh pr create failed 1>&2", "exit 1"].join("\n"),
+    ['console.error("gh pr create failed");', "process.exitCode = 1;"].join(
+      "\n",
+    ),
     "utf8",
   );
-  await chmod(commandPath, 0o755);
 
   return commandPath;
 }
@@ -102,6 +76,36 @@ describe("dyknow pr", () => {
       "utf8",
     );
     await writeFile(join(root, "README.md"), "# Fixture\n", "utf8");
+    await writeFile(
+      join(root, "dyknow.config.json"),
+      `${JSON.stringify(
+        {
+          $schema: "./dyknow.config.schema.json",
+          projectName: "Fixture",
+          mode: "local-only",
+          allowedSources: ["README.md", "docs/**"],
+          ignoredSources: [],
+          pages: [
+            {
+              id: "product-overview",
+              title: "Product Overview",
+              outputPath: "docs/product-overview.md",
+              audience: "mixed",
+              sources: ["README.md"],
+              reviewRules: {
+                approvalRequired: true,
+              },
+            },
+          ],
+          approvalRequired: true,
+          llmProvider: "local",
+          publishTargets: [],
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
     await runGit(root, ["init"]);
     await runGit(root, ["config", "user.name", "DyKnow Test"]);
     await runGit(root, ["config", "user.email", "dyknow@example.com"]);
@@ -154,7 +158,7 @@ describe("dyknow pr", () => {
     );
     const fakeGhCommand = await writeFakeGhCommand(tools);
     process.env.PATH = `${tools};${originalPath}`;
-    process.env.DYKNOW_GH_COMMAND = fakeGhCommand;
+    process.env.DYKNOW_GH_COMMAND = `node ${fakeGhCommand}`;
 
     const stdout: string[] = [];
     const stderr: string[] = [];
@@ -249,7 +253,7 @@ describe("dyknow pr", () => {
       "| product-overview | docs/product-overview.md | medium | low | README.md |",
     );
     expect(status).toBe("");
-  });
+  }, 15000);
 
   it("requires at least one approved proposal", async () => {
     const root = await mkdtemp(join(tmpdir(), "dyknow-pr-"));
@@ -312,6 +316,36 @@ describe("dyknow pr", () => {
       "utf8",
     );
     await writeFile(join(root, "README.md"), "# Fixture\n", "utf8");
+    await writeFile(
+      join(root, "dyknow.config.json"),
+      `${JSON.stringify(
+        {
+          $schema: "./dyknow.config.schema.json",
+          projectName: "Fixture",
+          mode: "local-only",
+          allowedSources: ["README.md", "docs/**"],
+          ignoredSources: [],
+          pages: [
+            {
+              id: "product-overview",
+              title: "Product Overview",
+              outputPath: "docs/product-overview.md",
+              audience: "mixed",
+              sources: ["README.md"],
+              reviewRules: {
+                approvalRequired: true,
+              },
+            },
+          ],
+          approvalRequired: true,
+          llmProvider: "local",
+          publishTargets: [],
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
     await runGit(root, ["init"]);
     await runGit(root, ["config", "user.name", "DyKnow Test"]);
     await runGit(root, ["config", "user.email", "dyknow@example.com"]);
@@ -364,7 +398,7 @@ describe("dyknow pr", () => {
     );
     const failingGhCommand = await writeFailingGhCommand(tools);
     process.env.PATH = `${tools};${originalPath}`;
-    process.env.DYKNOW_GH_COMMAND = failingGhCommand;
+    process.env.DYKNOW_GH_COMMAND = `node ${failingGhCommand}`;
 
     const stderr: string[] = [];
     const exitCode = await runCli(["pr", "--branch", "dyknow/test-failed-pr"], {
@@ -389,5 +423,81 @@ describe("dyknow pr", () => {
       "publish:commit",
       "publish:pr-prepared",
     ]);
+  });
+
+  it("rejects invalid branch names before creating a PR branch", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-pr-"));
+    const remote = await mkdtemp(join(tmpdir(), "dyknow-pr-remote-"));
+
+    await mkdir(join(root, "docs", "dyknow", ".state"), { recursive: true });
+    await writeFile(
+      join(root, "docs", "product-overview.md"),
+      "# Product Overview\n\nOld content.\n",
+      "utf8",
+    );
+    await writeFile(join(root, "README.md"), "# Fixture\n", "utf8");
+    await runGit(root, ["init"]);
+    await runGit(root, ["config", "user.name", "DyKnow Test"]);
+    await runGit(root, ["config", "user.email", "dyknow@example.com"]);
+    await runGit(root, ["branch", "-M", "main"]);
+    await runGit(remote, ["init", "--bare"]);
+    await runGit(root, ["remote", "add", "origin", remote]);
+    await runGit(root, ["add", "."]);
+    await runGit(root, ["commit", "-m", "chore: initial fixture"]);
+    await runGit(root, ["push", "--set-upstream", "origin", "main"]);
+    await writeFile(
+      join(root, DEFAULT_UPDATE_OUTPUT_PATH),
+      `${JSON.stringify(
+        {
+          draftedAt: "2026-05-23T18:00:00.000Z",
+          rootPath: root,
+          configPath: "dyknow.config.json",
+          repoDiffPath: "docs/dyknow/.state/repo-diff.json",
+          outputPath: DEFAULT_UPDATE_OUTPUT_PATH,
+          providerId: "local",
+          drafts: [
+            {
+              affectedPage: {
+                pageId: "product-overview",
+                outputPath: "docs/product-overview.md",
+                matchedSourcePaths: ["README.md"],
+                reasons: ["changed-file"],
+              },
+              proposal: {
+                pageId: "product-overview",
+                summary: "Summary",
+                why: "Why",
+                sources: ["README.md"],
+                proposedText: "# Product Overview\n\nApproved content.",
+                confidence: "low",
+                risk: "medium",
+                reviewState: "Approved",
+                requiresHumanReview: true,
+              },
+            },
+          ],
+          summary: {
+            affectedPages: 1,
+            draftedProposals: 1,
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const stderr: string[] = [];
+    const exitCode = await runCli(["pr", "--branch", "bad..name"], {
+      cwd: root,
+      stderr: (message) => {
+        stderr.push(message);
+      },
+    });
+    const branchName = await runGit(root, ["branch", "--show-current"]);
+
+    expect(exitCode).toBe(1);
+    expect(stderr[0]).toContain("Invalid PR branch name");
+    expect(branchName).toBe("main");
   });
 });

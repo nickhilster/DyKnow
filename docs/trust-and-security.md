@@ -4,6 +4,10 @@ purpose: Define the trust model, security controls, governance, and sensitive-co
 audience: mixed
 sources:
   - sources/dyknow_local_whitepaper.md (sections 5, 11, 12)
+  - ../.github/workflows/ci.yml
+  - ../packages/cli/src/scan.ts
+  - ../packages/cli/src/security.ts
+  - ../packages/core/src/config.ts
 last_reviewed: 2026-05-23
 confidence: high
 ---
@@ -35,6 +39,8 @@ Trust is the core commercial issue. No serious organization wants to expose priv
 - Local-only mode.
 - Bring-your-own-key mode.
 - Secret detection.
+- Dependency policy warnings for local, non-registry, or overly broad package specs.
+- CI enforcement for selected high-confidence scan warnings.
 - Default ignore patterns (`.env`, `secrets/**`, credentials, private keys, prod dumps, sensitive logs, payment data, unapproved folders, build artifacts).
 - Audit logs.
 - Role-based access.
@@ -103,6 +109,48 @@ DyKnow warns when proposed output may include:
 - Security claims
 - Pricing commitments
 - Unapproved internal terms
+
+The current local scanner also warns on:
+
+- Connection strings and registry auth tokens
+- JWT-shaped credentials and additional API token formats
+- Sensitive filenames such as key material or local auth files
+- Risky dependency specifiers such as local `file:` or `workspace:` sources, `latest`, raw GitHub refs, and git/http dependency sources
+- Explicitly denied packages from `dependencyPolicy.deny`
+
+Approved exceptions can stay explicit too:
+
+- `dependencyPolicy.allow` suppresses generic dependency-policy warnings for specifically approved packages, including approved workspace-local packages
+- `dependencyPolicy.deny` forces a dependency-policy warning whenever a blocked package appears
+
+## Repo-local guardrails
+
+The current config validation hardens the local trust boundary:
+
+- `allowedSources`, `ignoredSources`, and page `sources` must stay repo-local and cannot traverse upward with `..`
+- Maintained page `outputPath` values must stay repo-local
+- Maintained page outputs cannot target protected paths like `docs/sources/**` or `.git/**`
+- Maintained page outputs must be unique so one page cannot overwrite another
+- Dependency policy lists must use valid lowercase package names and cannot place the same package in both allow and deny
+
+## CI enforcement
+
+This repo now treats selected scanner findings as release blockers in CI:
+
+- `.github/workflows/ci.yml` runs `node packages/cli/dist/bin.js scan --fail-on dependency-policy --fail-on parse-error --fail-on secret-pattern`
+- The scan still writes `docs/dyknow/.state/repo-map.json` for inspection
+- A matching warning now produces a non-zero exit code, which fails the workflow before merge
+- The checked-in config explicitly approves `@dyknow/core` as the one intended local `file:` workspace dependency in this repo
+- The checked-in config also seeds `dependencyPolicy.deny` with `left-pad` as a starter banned-package entry that the team can expand
+
+## External command contract
+
+The current CLI treats external tool hooks as constrained process launches, not shell snippets:
+
+- `DYKNOW_EDITOR_COMMAND` and `DYKNOW_GH_COMMAND` must be a single executable plus fixed arguments
+- Shell control operators such as `&&`, `|`, `;`, redirection, and backticks are rejected
+- On Windows, `.cmd` and `.bat` wrappers are not accepted for these hooks
+- Use a native executable path or a safe command such as `node path/to/script.mjs`
 
 ## Default posture
 

@@ -8,6 +8,8 @@ import {
   DEFAULT_UPDATE_OUTPUT_PATH,
   DYKNOW_CONFIG_FILE_NAME,
   DYKNOW_CONFIG_SCHEMA_FILE_NAME,
+  type RepoMapWarning,
+  RepoMapWarningCodeSchema,
   createInitialDyknowConfig,
   parseDyknowConfig,
   renderDyknowConfig,
@@ -24,6 +26,7 @@ import {
 import { createPrResult, parsePrOptions } from "./pr.js";
 import { createReviewUpdateBatch, parseReviewOptions } from "./review.js";
 import { scanWorkspace } from "./scan.js";
+import { resolveWorkspacePath } from "./security.js";
 import { createUpdateDraftBatch, parseUpdateOptions } from "./update.js";
 
 export const PLANNED_COMMANDS = ["dyknow init", "dyknow scan"] as const;
@@ -45,6 +48,7 @@ type InitOptions = {
 type ScanOptions = {
   configPath: string;
   outputPath: string;
+  failOn: RepoMapWarning["code"][];
 };
 
 function defaultWriter(message: string) {
@@ -111,6 +115,7 @@ function parseInitOptions(args: readonly string[]): InitOptions {
 function parseScanOptions(args: readonly string[]): ScanOptions {
   let configPath = DYKNOW_CONFIG_FILE_NAME;
   let outputPath = DEFAULT_REPO_MAP_OUTPUT_PATH;
+  const failOn = new Set<RepoMapWarning["code"]>();
 
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
@@ -139,10 +144,58 @@ function parseScanOptions(args: readonly string[]): ScanOptions {
       continue;
     }
 
+    if (argument === "--fail-on") {
+      const value = args[index + 1];
+
+      if (!value) {
+        throw new Error("Missing value for --fail-on.");
+      }
+
+      const parsedCode = RepoMapWarningCodeSchema.safeParse(value);
+
+      if (!parsedCode.success) {
+        throw new Error(
+          `Invalid value for --fail-on: ${value}. Expected one of ${RepoMapWarningCodeSchema.options.join(
+            ", ",
+          )}.`,
+        );
+      }
+
+      failOn.add(parsedCode.data);
+      index += 1;
+      continue;
+    }
+
     throw new Error(`Unknown scan option: ${argument}`);
   }
 
-  return { configPath, outputPath };
+  return { configPath, outputPath, failOn: [...failOn] };
+}
+
+function formatBlockingWarnings(
+  warnings: readonly RepoMapWarning[],
+  failOn: readonly RepoMapWarning["code"][],
+): string | null {
+  const blockingWarnings = warnings.filter((warning) =>
+    failOn.includes(warning.code),
+  );
+
+  if (blockingWarnings.length === 0) {
+    return null;
+  }
+
+  const counts = new Map<RepoMapWarning["code"], number>();
+
+  for (const warning of blockingWarnings) {
+    counts.set(warning.code, (counts.get(warning.code) ?? 0) + 1);
+  }
+
+  const summary = [...counts.entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([code, count]) => `${count} ${code}`)
+    .join(", ");
+
+  return `Blocking warnings prevented a clean scan: ${summary}.`;
 }
 
 function formatHelp(): string {
@@ -151,7 +204,7 @@ function formatHelp(): string {
     "",
     "Implemented commands:",
     "- dyknow init [--force] [--connected] [--project-name <name>]",
-    "- dyknow scan [--config <path>] [--output <path>]",
+    "- dyknow scan [--config <path>] [--output <path>] [--fail-on <dependency-policy|parse-error|secret-pattern>]...",
     "- dyknow diff [--config <path>] [--snapshot <path>] [--output <path>]",
     "- dyknow update [--config <path>] [--diff <path>] [--output <path>]",
     "- dyknow review [--input <path>] [--output <path>] [--approve|--reject|--escalate|--skip|--regenerate] (--all | --page <id>...)",
@@ -212,30 +265,55 @@ async function handleInit(args: readonly string[], context?: CliContext) {
 }
 
 async function handleScan(args: readonly string[], context?: CliContext) {
-  const { cwd, stdout } = getContext(context);
-  const options = parseScanOptions(args);
-  const configPath = resolve(cwd, options.configPath);
-  const outputPath = resolve(cwd, options.outputPath);
-  const configText = await readFile(configPath, "utf8");
-  const config = parseDyknowConfig(configText);
-  const repoMap = await scanWorkspace({
-    config,
-    configPath,
-    outputPath,
-    rootPath: cwd,
-  });
+  const { cwd, stderr, stdout } = getContext(context);
 
-  await mkdir(dirname(outputPath), { recursive: true });
-  await writeFile(
-    `${outputPath}`,
-    `${JSON.stringify(repoMap, null, 2)}\n`,
-    "utf8",
-  );
+  try {
+    const options = parseScanOptions(args);
+    const configPath = await resolveWorkspacePath(
+      cwd,
+      options.configPath,
+      "Scan config path",
+    );
+    const outputPath = await resolveWorkspacePath(
+      cwd,
+      options.outputPath,
+      "Scan output path",
+    );
+    const configText = await readFile(configPath, "utf8");
+    const config = parseDyknowConfig(configText);
+    const repoMap = await scanWorkspace({
+      config,
+      configPath,
+      outputPath,
+      rootPath: cwd,
+    });
 
-  stdout(
-    `Scanned ${repoMap.files.length} files and wrote ${relative(cwd, outputPath)} with ${repoMap.warnings.length} warning(s).`,
-  );
-  return 0;
+    await mkdir(dirname(outputPath), { recursive: true });
+    await writeFile(
+      `${outputPath}`,
+      `${JSON.stringify(repoMap, null, 2)}\n`,
+      "utf8",
+    );
+
+    stdout(
+      `Scanned ${repoMap.files.length} files and wrote ${relative(cwd, outputPath)} with ${repoMap.warnings.length} warning(s).`,
+    );
+
+    const blockingWarningMessage = formatBlockingWarnings(
+      repoMap.warnings,
+      options.failOn,
+    );
+
+    if (blockingWarningMessage) {
+      stderr(blockingWarningMessage);
+      return 1;
+    }
+
+    return 0;
+  } catch (error) {
+    stderr(error instanceof Error ? error.message : "Unknown scan error.");
+    return 1;
+  }
 }
 
 async function handleDiff(args: readonly string[], context?: CliContext) {

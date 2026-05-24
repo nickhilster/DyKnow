@@ -6,6 +6,8 @@ import { promisify } from "node:util";
 
 import { AuditLogEntrySchema } from "@dyknow/core";
 
+import { isPathInsideDirectory, resolveWorkspacePath } from "./security.js";
+
 export const DEFAULT_AUDIT_LOG_PATH = "docs/dyknow/.state/audit-log.jsonl";
 export const DEFAULT_RUNTIME_AUDIT_LOG_PATH = "dyknow/runtime-audit-log.jsonl";
 
@@ -28,16 +30,28 @@ export function getAuditActor(): string {
 
 export async function resolveRuntimeAuditPath(rootPath: string) {
   try {
-    const result = await execFileAsync(
-      "git",
-      ["rev-parse", "--git-path", DEFAULT_RUNTIME_AUDIT_LOG_PATH],
-      {
+    const [gitDirResult, gitPathResult] = await Promise.all([
+      execFileAsync("git", ["rev-parse", "--absolute-git-dir"], {
         cwd: rootPath,
         encoding: "utf8",
-      },
-    );
+      }),
+      execFileAsync(
+        "git",
+        ["rev-parse", "--git-path", DEFAULT_RUNTIME_AUDIT_LOG_PATH],
+        {
+          cwd: rootPath,
+          encoding: "utf8",
+        },
+      ),
+    ]);
+    const gitDir = resolve(rootPath, gitDirResult.stdout.trim());
+    const runtimeAuditPath = resolve(rootPath, gitPathResult.stdout.trim());
 
-    return resolve(rootPath, result.stdout.trim());
+    if (!isPathInsideDirectory(gitDir, runtimeAuditPath)) {
+      throw new Error("Runtime audit log path escaped the git directory.");
+    }
+
+    return runtimeAuditPath;
   } catch {
     return undefined;
   }
@@ -52,10 +66,13 @@ export async function appendAuditEntries(options: {
   }[];
   rootPath: string;
 }) {
-  const auditPath = resolve(
-    options.rootPath,
-    options.auditPath ?? DEFAULT_AUDIT_LOG_PATH,
-  );
+  const auditPath = options.auditPath
+    ? resolve(options.rootPath, options.auditPath)
+    : await resolveWorkspacePath(
+        options.rootPath,
+        DEFAULT_AUDIT_LOG_PATH,
+        "Audit log path",
+      );
   const timestamp = new Date().toISOString();
   const actor = getAuditActor();
   const auditEntries = options.entries.map((entry) => {

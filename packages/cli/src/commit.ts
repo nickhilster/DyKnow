@@ -7,6 +7,7 @@ import {
   DEFAULT_UPDATE_OUTPUT_PATH,
   type UpdateDraftBatch,
   UpdateDraftBatchSchema,
+  parseDyknowConfig,
 } from "@dyknow/core";
 
 import {
@@ -14,6 +15,10 @@ import {
   appendAuditEntries,
   formatRelativePath,
 } from "./audit.js";
+import {
+  assertDraftMatchesConfiguredPage,
+  resolveWorkspacePath,
+} from "./security.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -73,15 +78,29 @@ async function runGit(cwd: string, args: readonly string[]): Promise<string> {
 }
 
 function parseStatusPaths(status: string): string[] {
-  return status
-    .split(/\r?\n/)
-    .filter((line) => line.length >= 4)
-    .map((line) => line.slice(3))
-    .map((path) => {
-      const renamedPath = path.split(" -> ").at(-1) ?? path;
+  const entries = status.split("\0").filter((entry) => entry.length >= 4);
+  const paths: string[] = [];
 
-      return renamedPath.trim().replaceAll("\\", "/");
-    });
+  for (let index = 0; index < entries.length; index += 1) {
+    const entry = entries[index];
+
+    if (!entry) {
+      continue;
+    }
+
+    const code = entry.slice(0, 2);
+    const renamedPath = entries[index + 1];
+
+    if ((code.includes("R") || code.includes("C")) && renamedPath) {
+      paths.push(renamedPath.trim().replaceAll("\\", "/"));
+      index += 1;
+      continue;
+    }
+
+    paths.push(entry.slice(3).trim().replaceAll("\\", "/"));
+  }
+
+  return paths;
 }
 
 async function ensureCommitableWorktree(
@@ -90,7 +109,8 @@ async function ensureCommitableWorktree(
 ) {
   const status = await runGit(cwd, [
     "status",
-    "--short",
+    "--porcelain=v1",
+    "-z",
     "--untracked-files=all",
   ]);
   const disallowedPaths = parseStatusPaths(status).filter(
@@ -152,7 +172,11 @@ export async function createCommitResult(options: {
   message: string;
 }): Promise<CommitResult> {
   const rootPath = resolve(options.cwd);
-  const inputPath = resolve(rootPath, options.inputPath);
+  const inputPath = await resolveWorkspacePath(
+    rootPath,
+    options.inputPath,
+    "Commit input path",
+  );
   const inputPathRelative = formatRelativePath(rootPath, inputPath);
   let snapshotText: string;
 
@@ -186,8 +210,30 @@ export async function createCommitResult(options: {
     );
   }
 
+  const configPath = await resolveWorkspacePath(
+    rootPath,
+    updateBatch.configPath,
+    "Commit config path",
+  );
+  const config = parseDyknowConfig(await readFile(configPath, "utf8"));
+
   for (const draft of approvedDrafts) {
-    const outputPath = resolve(rootPath, draft.affectedPage.outputPath);
+    const page = config.pages.find(
+      (candidate) => candidate.id === draft.proposal.pageId,
+    );
+
+    if (!page) {
+      throw new Error(
+        `Approved update proposal referenced unknown page "${draft.proposal.pageId}". Regenerate dyknow update with the current config.`,
+      );
+    }
+
+    assertDraftMatchesConfiguredPage(draft, page, "Approved update proposal");
+    const outputPath = await resolveWorkspacePath(
+      rootPath,
+      page.outputPath,
+      "Approved page output path",
+    );
 
     await mkdir(dirname(outputPath), { recursive: true });
     await writeFile(outputPath, `${draft.proposal.proposedText}\n`, "utf8");

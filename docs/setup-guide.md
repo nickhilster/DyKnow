@@ -6,6 +6,7 @@ sources:
   - sources/dyknow_local_whitepaper.md (section 8)
   - ../dyknow.config.json
   - ../dyknow.config.schema.json
+  - ../.github/workflows/ci.yml
   - dyknow/.state/repo-diff.json
   - dyknow/.state/update-proposals.json
   - ../packages/cli/src/audit.ts
@@ -16,8 +17,10 @@ sources:
   - ../packages/cli/src/pr.ts
   - ../packages/cli/src/review.ts
   - ../packages/cli/src/scan.ts
+  - ../packages/cli/src/security.ts
   - ../packages/cli/src/update.ts
   - ../packages/core/src/repo-diff.ts
+  - ../packages/core/src/config.ts
   - ../packages/core/src/update-runner.ts
   - dyknow/.state/repo-map.json
 last_reviewed: 2026-05-23
@@ -61,6 +64,15 @@ The config defines:
 - Source authority hierarchy
 - Output formats
 - Publishing targets
+- Dependency allow and deny rules
+
+The current implementation also enforces a few repo-safety rules at config-parse time:
+
+- `allowedSources`, `ignoredSources`, and page `sources` must stay inside the repo and cannot use upward `..` traversal
+- page `outputPath` values must stay inside the repo
+- page outputs cannot target protected paths like `docs/sources/**` or `.git/**`
+- page outputs must be unique across maintained pages
+- `dependencyPolicy.allow` and `dependencyPolicy.deny` must use valid lowercase package names, and one package cannot appear in both lists
 
 ### Example config
 
@@ -103,7 +115,11 @@ The config defines:
   ],
   "approvalRequired": true,
   "llmProvider": "local",
-  "publishTargets": []
+  "publishTargets": [],
+  "dependencyPolicy": {
+    "allow": ["@company/approved-fork", "@company/internal-ui"],
+    "deny": ["left-pad"]
+  }
 }
 ```
 
@@ -113,7 +129,7 @@ The config defines:
 dyknow scan
 ```
 
-Builds a repo map from the configured source set. The current implementation classifies markdown, JSON, YAML, and TypeScript files; flags route candidates heuristically; extracts package dependencies from `package.json` files; and warns on likely sensitive content patterns without writing raw file contents into the repo map.
+Builds a repo map from the configured source set. The current implementation classifies markdown, JSON, YAML, and TypeScript files; flags route candidates heuristically; extracts package dependencies from `package.json` files; warns on risky dependency policy patterns such as local `file:` or `workspace:` sources, non-registry sources, or `latest`; and warns on likely sensitive content patterns without writing raw file contents into the repo map.
 
 If you are working inside this repo today, the direct invocation is:
 
@@ -122,6 +138,28 @@ node packages/cli/dist/bin.js scan
 ```
 
 Output: `docs/dyknow/.state/repo-map.json`.
+
+For stricter repositories and CI, `dyknow scan` also supports blocking selected warning codes:
+
+```bash
+node packages/cli/dist/bin.js scan --fail-on dependency-policy --fail-on parse-error --fail-on secret-pattern
+```
+
+This still writes the repo map, but it returns a non-zero exit code if any matching warnings are found.
+
+`dependencyPolicy` shapes how package warnings behave:
+
+- `dependencyPolicy.allow` suppresses generic dependency-policy warnings for explicitly approved packages, including approved local `file:` or `workspace:` dependencies
+- `dependencyPolicy.deny` always raises a dependency-policy warning when that package appears, even with a normal semver version
+- the current CI workflow in this repo uses `--fail-on dependency-policy --fail-on parse-error --fail-on secret-pattern` after `npm run build`
+
+This repo's checked-in config uses that allowlist for one concrete reason:
+
+- `@dyknow/core` is explicitly approved because `packages/cli/package.json` depends on the local workspace package via `file:../core`
+
+It also ships one starter deny entry:
+
+- `left-pad` is denied in the checked-in config as the repo's initial example of a package the team does not want to adopt; extend or replace that list with your real organization policy
 
 ## Step 3 — Detect changes
 
@@ -207,6 +245,13 @@ DYKNOW_EDITOR_COMMAND=<editor-command> node packages/cli/dist/bin.js review --ed
 
 If `DYKNOW_EDITOR_COMMAND` is unset, the current implementation falls back to `EDITOR`.
 
+The external editor hook is intentionally strict:
+
+- pass one executable plus any fixed arguments
+- shell control operators such as `&&`, `|`, `;`, redirection, and backticks are rejected
+- on Windows, use a native executable instead of a `.cmd` or `.bat` wrapper
+- a safe pattern is `DYKNOW_EDITOR_COMMAND="node tools/dyknow-editor.mjs"`
+
 To skip one proposal for now without changing its current review state:
 
 ```bash
@@ -287,7 +332,14 @@ If you are working inside this repo today, the direct invocation is:
 node packages/cli/dist/bin.js pr --branch dyknow/review-product-updates
 ```
 
-If no approved proposals exist yet, `dyknow pr` exits with a helpful message telling you to run `dyknow review --approve` first. If you run it from the wrong starting branch, it tells you to return to the configured base branch or pass `--base` explicitly. The current audit trail now distinguishes the prepared local PR-publication state in the committed artifact from the confirmed external PR-open event in the git-local runtime audit file.
+If no approved proposals exist yet, `dyknow pr` exits with a helpful message telling you to run `dyknow review --approve` first. If you run it from the wrong starting branch, it tells you to return to the configured base branch or pass `--base` explicitly. Branch names are validated before any git branch creation happens. The current audit trail now distinguishes the prepared local PR-publication state in the committed artifact from the confirmed external PR-open event in the git-local runtime audit file.
+
+If you override the GitHub CLI binary, the same constrained command contract applies:
+
+- `DYKNOW_GH_COMMAND` must be one executable plus fixed arguments
+- shell control operators are rejected
+- on Windows, use a native executable instead of a `.cmd` or `.bat` wrapper
+- a safe pattern is `DYKNOW_GH_COMMAND="node tools/fake-gh.mjs"` for testing or a real native `gh.exe` path in production
 
 Optionally:
 

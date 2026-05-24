@@ -14,7 +14,22 @@ describe("DyKnow config schema helpers", () => {
 
     expect(schema.properties).toHaveProperty("projectName");
     expect(schema.properties).toHaveProperty("pages");
+    expect(schema.properties).toHaveProperty("dependencyPolicy");
     expect(schema.allOf).toHaveLength(1);
+    expect(schema.properties.allowedSources.items).toHaveProperty("pattern");
+    expect(schema.properties.ignoredSources.items).toHaveProperty("pattern");
+    expect(schema.properties.pages.items.properties.outputPath).toHaveProperty(
+      "pattern",
+    );
+    expect(
+      schema.properties.pages.items.properties.sources.items,
+    ).toHaveProperty("pattern");
+    expect(schema.properties.dependencyPolicy.properties).toHaveProperty(
+      "allow",
+    );
+    expect(schema.properties.dependencyPolicy.properties).toHaveProperty(
+      "deny",
+    );
   });
 
   it("renders a config file that points at the local schema", () => {

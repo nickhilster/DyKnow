@@ -1,9 +1,10 @@
 import { readFile } from "node:fs/promises";
-import { relative, resolve } from "node:path";
+import { isAbsolute, relative } from "node:path";
 
 import { type AuditLogEntry, AuditLogEntrySchema } from "@dyknow/core";
 
 import { resolveRuntimeAuditPath } from "./audit.js";
+import { resolveWorkspacePath } from "./security.js";
 
 export const DEFAULT_REVIEW_AUDIT_LOG_PATH =
   "docs/dyknow/.state/audit-log.jsonl";
@@ -71,7 +72,13 @@ async function readAuditEntries(options: {
   rootPath: string;
   source: Exclude<LogSource, "all">;
 }) {
-  const absolutePath = resolve(options.rootPath, options.inputPath);
+  const absolutePath = isAbsolute(options.inputPath)
+    ? options.inputPath
+    : await resolveWorkspacePath(
+        options.rootPath,
+        options.inputPath,
+        "Audit log input path",
+      );
   let inputText: string;
 
   try {
@@ -328,6 +335,12 @@ export async function createAuditLogReport(options: {
   source: LogSource;
   action: LogActionFilter;
 }): Promise<AuditLogReport> {
+  if (isAbsolute(options.inputPath)) {
+    throw new Error(
+      `Audit log input path must stay within the workspace root. Received ${options.inputPath}.`,
+    );
+  }
+
   const supportsSourceFiltering = supportsLogSourceFiltering(options.inputPath);
   const reports = [
     await readAuditEntries({
