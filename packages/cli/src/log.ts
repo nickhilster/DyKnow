@@ -81,6 +81,7 @@ async function readAuditEntries(options: {
     ) {
       return {
         entries: [] as ReportAuditEntry[],
+        exists: false,
         inputPath: formatRelativePath(options.rootPath, absolutePath),
         source: options.source,
       };
@@ -105,9 +106,25 @@ async function readAuditEntries(options: {
             source: options.source,
           }) satisfies ReportAuditEntry,
       ),
+    exists: true,
     inputPath: formatRelativePath(options.rootPath, absolutePath),
     source: options.source,
   };
+}
+
+function formatMissingAuditReport(
+  reportPaths: readonly string[],
+  inputPath: string,
+): string {
+  if (reportPaths.length === 1) {
+    return `No audit log found at ${reportPaths[0]}.`;
+  }
+
+  if (reportPaths.length > 1) {
+    return `No audit logs found in ${reportPaths.join(" and ")}.`;
+  }
+
+  return `No audit log found at ${inputPath}.`;
 }
 
 function formatEntry(reportEntry: ReportAuditEntry): string {
@@ -230,7 +247,7 @@ function formatEmptyAuditReport(options: {
   const hasEffectiveActionFilter = options.action !== "all";
 
   if (!hasEffectiveSourceFilter && !hasEffectiveActionFilter) {
-    return `No audit entries found at ${options.inputPath}.`;
+    return `No audit entries found in ${options.inputPath}.`;
   }
 
   const scopeLabel =
@@ -349,17 +366,29 @@ export async function createAuditLogReport(options: {
       (report) => options.source === "all" || report.source === options.source,
     )
     .map((report) => report.inputPath);
+  const relevantReports = reports.filter(
+    (report) =>
+      !supportsSourceFiltering ||
+      options.source === "all" ||
+      report.source === options.source,
+  );
 
   if (entries.length === 0) {
+    const hasExistingRelevantReport = relevantReports.some(
+      (report) => report.exists,
+    );
+
     return {
       inputPath: options.inputPath,
-      report: formatEmptyAuditReport({
-        inputPath: options.inputPath,
-        source: options.source,
-        action: options.action,
-        reportPaths,
-        supportsSourceFiltering,
-      }),
+      report: hasExistingRelevantReport
+        ? formatEmptyAuditReport({
+            inputPath: options.inputPath,
+            source: options.source,
+            action: options.action,
+            reportPaths,
+            supportsSourceFiltering,
+          })
+        : formatMissingAuditReport(reportPaths, options.inputPath),
       shownEntries: 0,
       totalEntries: 0,
     };

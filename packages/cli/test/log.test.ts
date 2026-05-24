@@ -38,7 +38,36 @@ describe("dyknow log", () => {
     expect(exitCode).toBe(0);
     expect(stderr).toEqual([]);
     expect(stdout[0]).toBe(
-      "No audit entries found at docs/dyknow/.state/audit-log.jsonl.",
+      "No audit log found at docs/dyknow/.state/audit-log.jsonl.",
+    );
+  });
+
+  it("reports when an audit log exists but has no entries", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-log-"));
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+
+    await mkdir(join(root, "docs", "dyknow", ".state"), { recursive: true });
+    await writeFile(
+      join(root, "docs", "dyknow", ".state", "audit-log.jsonl"),
+      "",
+      "utf8",
+    );
+
+    const exitCode = await runCli(["log"], {
+      cwd: root,
+      stdout: (message) => {
+        stdout.push(message);
+      },
+      stderr: (message) => {
+        stderr.push(message);
+      },
+    });
+
+    expect(exitCode).toBe(0);
+    expect(stderr).toEqual([]);
+    expect(stdout[0]).toBe(
+      "No audit entries found in docs/dyknow/.state/audit-log.jsonl.",
     );
   });
 
@@ -77,7 +106,7 @@ describe("dyknow log", () => {
     expect(exitCode).toBe(0);
     expect(stderr).toEqual([]);
     expect(stdout[0]).toBe(
-      "No audit entries found in .git/dyknow/runtime-audit-log.jsonl for source=runtime.",
+      "No audit log found at .git/dyknow/runtime-audit-log.jsonl.",
     );
   });
 
