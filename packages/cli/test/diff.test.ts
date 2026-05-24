@@ -202,4 +202,23 @@ describe("dyknow diff", () => {
       "Diff output path must stay within the workspace root",
     );
   });
+
+  it("rejects config paths that escape the workspace root", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-diff-"));
+    const stderr: string[] = [];
+
+    await runCli(["init", "--project-name", "Fixture"], { cwd: root });
+
+    const exitCode = await runCli(["diff", "--config", "../outside.json"], {
+      cwd: root,
+      stderr: (message) => {
+        stderr.push(message);
+      },
+    });
+
+    expect(exitCode).toBe(1);
+    expect(stderr[0]).toContain(
+      "Diff config path must stay within the workspace root",
+    );
+  });
 });
