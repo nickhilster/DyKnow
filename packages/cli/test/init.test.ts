@@ -1,4 +1,4 @@
-import { mkdtemp, readFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -65,5 +65,52 @@ describe("dyknow init", () => {
 
     expect(exitCode).toBe(1);
     expect(stderr[0]).toContain("--force");
+  });
+
+  it("supports an interactive init flow with detected stack defaults", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-init-"));
+    const prompts: string[] = [];
+
+    await mkdir(join(root, "app", "blog"), { recursive: true });
+    await writeFile(
+      join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "fixture",
+          dependencies: {
+            next: "^16.0.0",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const answers = ["Fixture App", "connected", ""];
+    const exitCode = await runCli(["init", "--interactive"], {
+      cwd: root,
+      prompt: async (message) => {
+        prompts.push(message);
+        return answers.shift() ?? "";
+      },
+    });
+
+    const configText = await readFile(
+      join(root, DYKNOW_CONFIG_FILE_NAME),
+      "utf8",
+    );
+    const config = JSON.parse(configText) as {
+      projectName: string;
+      mode: string;
+      allowedSources: string[];
+    };
+
+    expect(exitCode).toBe(0);
+    expect(prompts).toHaveLength(3);
+    expect(config.projectName).toBe("Fixture App");
+    expect(config.mode).toBe("connected");
+    expect(config.allowedSources).toContain("app/**");
+    expect(config.allowedSources).toContain("next.config.*");
   });
 });

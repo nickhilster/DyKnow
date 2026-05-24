@@ -10,6 +10,7 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, relative, resolve } from "node:path";
 import { join } from "node:path";
+import { createInterface } from "node:readline/promises";
 
 import {
   AuditLogEntrySchema,
@@ -49,6 +50,7 @@ export type ReviewOptions = {
   all: boolean;
   decision?: ReviewActionState;
   editText?: string;
+  interactive: boolean;
   launchEditor: boolean;
   inputPath: string;
   outputPath: string;
@@ -365,11 +367,74 @@ function formatSummary(batch: UpdateDraftBatch): string {
     .join(", ");
 }
 
+function isPendingInteractiveReviewState(state: ReviewState): boolean {
+  return (
+    state === "Drafted" ||
+    state === "Needs review" ||
+    state === "Edited" ||
+    state === "Escalated"
+  );
+}
+
+function parseInteractiveDecision(
+  input: string,
+):
+  | "approve"
+  | "reject"
+  | "escalate"
+  | "edit"
+  | "skip"
+  | "regenerate"
+  | "quit"
+  | undefined {
+  const normalized = input.trim().toLowerCase();
+
+  switch (normalized) {
+    case "a":
+    case "approve":
+      return "approve";
+    case "r":
+    case "reject":
+      return "reject";
+    case "x":
+    case "escalate":
+      return "escalate";
+    case "e":
+    case "edit":
+      return "edit";
+    case "s":
+    case "skip":
+      return "skip";
+    case "g":
+    case "regenerate":
+      return "regenerate";
+    case "q":
+    case "quit":
+      return "quit";
+    default:
+      return undefined;
+  }
+}
+
+async function defaultReviewPrompt(message: string): Promise<string> {
+  const readline = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  try {
+    return await readline.question(message);
+  } finally {
+    readline.close();
+  }
+}
+
 export function parseReviewOptions(args: readonly string[]): ReviewOptions {
   let inputPath = DEFAULT_UPDATE_OUTPUT_PATH;
   let outputPath = DEFAULT_UPDATE_OUTPUT_PATH;
   let decision: ReviewActionState | undefined;
   let editText: string | undefined;
+  let interactive = false;
   let all = false;
   let launchEditor = false;
   const pageIds: string[] = [];
@@ -441,6 +506,11 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
       continue;
     }
 
+    if (argument === "--interactive") {
+      interactive = true;
+      continue;
+    }
+
     if (isSkipFlag(argument)) {
       if (decision) {
         throw new Error(
@@ -494,6 +564,12 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
     );
   }
 
+  if (interactive && (decision || all || pageIds.length > 0 || editText)) {
+    throw new Error(
+      "Interactive review cannot be combined with explicit review action flags or page targeting.",
+    );
+  }
+
   if (decision && !all && pageIds.length === 0) {
     throw new Error(
       "Select review targets with --all or at least one --page <id>.",
@@ -536,6 +612,7 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
 
   return {
     all,
+    interactive,
     launchEditor,
     inputPath,
     outputPath,
@@ -543,6 +620,127 @@ export function parseReviewOptions(args: readonly string[]): ReviewOptions {
     ...(decision ? { decision } : {}),
     ...(editText ? { editText } : {}),
   };
+}
+
+export async function createInteractiveReviewSession(options: {
+  cwd: string;
+  inputPath: string;
+  outputPath: string;
+  prompt?: (message: string) => Promise<string>;
+  stdout?: (message: string) => void;
+}) {
+  const prompt = options.prompt ?? defaultReviewPrompt;
+  const stdout = options.stdout ?? (() => {});
+  let updatedProposals = 0;
+
+  while (true) {
+    const rootPath = resolve(options.cwd);
+    const inputPath = await resolveWorkspacePath(
+      rootPath,
+      options.inputPath,
+      "Review input path",
+    );
+    const snapshotText = await readFile(inputPath, "utf8");
+    const updateBatch = parseUpdateBatch(
+      snapshotText,
+      formatRelativePath(rootPath, inputPath),
+    );
+    const nextDraft = updateBatch.drafts.find((draft) =>
+      isPendingInteractiveReviewState(draft.proposal.reviewState),
+    );
+
+    if (!nextDraft) {
+      return {
+        outputPath: formatRelativePath(rootPath, inputPath),
+        remainingProposals: 0,
+        updatedProposals,
+      };
+    }
+
+    const riskBadge =
+      nextDraft.proposal.risk === "high"
+        ? "[HIGH RISK] "
+        : nextDraft.proposal.risk === "medium"
+          ? "[medium risk] "
+          : "";
+    const confidenceBadge = `confidence:${nextDraft.proposal.confidence}`;
+    stdout(
+      `\n${riskBadge}Reviewing ${nextDraft.proposal.pageId} (${nextDraft.proposal.reviewState}) [${confidenceBadge}]: ${nextDraft.proposal.summary}`,
+    );
+    stdout(`  Why: ${nextDraft.proposal.why}`);
+    stdout(`  Sources: ${nextDraft.proposal.sources.join(", ")}`);
+    if (nextDraft.proposal.risk === "high") {
+      stdout(
+        "  ⚠ This proposal is HIGH RISK. Publishing requires --allow-high-risk.",
+      );
+    }
+
+    const answer = parseInteractiveDecision(
+      await prompt(
+        "Action [approve/reject/escalate/edit/skip/regenerate/quit]: ",
+      ),
+    );
+
+    if (!answer) {
+      stdout(
+        "Unrecognized action. Try approve, reject, escalate, edit, skip, regenerate, or quit.",
+      );
+      continue;
+    }
+
+    if (answer === "quit") {
+      const remainingProposals = updateBatch.drafts.filter((draft) =>
+        isPendingInteractiveReviewState(draft.proposal.reviewState),
+      ).length;
+
+      return {
+        outputPath: formatRelativePath(rootPath, inputPath),
+        remainingProposals,
+        updatedProposals,
+      };
+    }
+
+    if (answer === "edit") {
+      const editedText = await prompt(
+        `Edited text for ${nextDraft.proposal.pageId}: `,
+      );
+
+      await createReviewUpdateBatch({
+        all: false,
+        cwd: options.cwd,
+        decision: "Edited",
+        editText: editedText,
+        inputPath: options.inputPath,
+        launchEditor: false,
+        outputPath: options.outputPath,
+        pageIds: [nextDraft.proposal.pageId],
+      });
+      updatedProposals += 1;
+      continue;
+    }
+
+    const decisionMap: Record<
+      Exclude<typeof answer, "edit" | "quit">,
+      ReviewActionState
+    > = {
+      approve: "Approved",
+      reject: "Rejected",
+      escalate: "Escalated",
+      skip: "Skipped",
+      regenerate: "Regenerated",
+    };
+
+    await createReviewUpdateBatch({
+      all: false,
+      cwd: options.cwd,
+      decision: decisionMap[answer],
+      inputPath: options.inputPath,
+      launchEditor: false,
+      outputPath: options.outputPath,
+      pageIds: [nextDraft.proposal.pageId],
+    });
+    updatedProposals += 1;
+  }
 }
 
 export async function createReviewUpdateBatch(options: {

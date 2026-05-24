@@ -304,6 +304,111 @@ describe("dyknow pr", () => {
     expect(stderr[0]).toContain("Run dyknow review --approve first");
   }, 15000);
 
+  it("requires an explicit flag before opening a PR for high-risk approved proposals", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-pr-"));
+    const remote = await mkdtemp(join(tmpdir(), "dyknow-pr-remote-"));
+    const stderr: string[] = [];
+
+    await mkdir(join(root, "docs", "dyknow", ".state"), { recursive: true });
+    await writeFile(
+      join(root, "docs", "product-overview.md"),
+      "# Product Overview\n\nOld content.\n",
+      "utf8",
+    );
+    await writeFile(join(root, "README.md"), "# Fixture\n", "utf8");
+    await writeFile(
+      join(root, "dyknow.config.json"),
+      `${JSON.stringify(
+        {
+          $schema: "./dyknow.config.schema.json",
+          projectName: "Fixture",
+          mode: "local-only",
+          allowedSources: ["README.md", "docs/**"],
+          ignoredSources: [],
+          pages: [
+            {
+              id: "product-overview",
+              title: "Product Overview",
+              outputPath: "docs/product-overview.md",
+              audience: "mixed",
+              sources: ["README.md"],
+              reviewRules: {
+                approvalRequired: true,
+              },
+            },
+          ],
+          approvalRequired: true,
+          llmProvider: "local",
+          publishTargets: [],
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    await runGit(root, ["init"]);
+    await runGit(root, ["config", "user.name", "DyKnow Test"]);
+    await runGit(root, ["config", "user.email", "dyknow@example.com"]);
+    await runGit(root, ["branch", "-M", "main"]);
+    await runGit(remote, ["init", "--bare"]);
+    await runGit(root, ["remote", "add", "origin", remote]);
+    await runGit(root, ["add", "."]);
+    await runGit(root, ["commit", "-m", "chore: initial fixture"]);
+    await runGit(root, ["push", "--set-upstream", "origin", "main"]);
+    await writeFile(
+      join(root, DEFAULT_UPDATE_OUTPUT_PATH),
+      `${JSON.stringify(
+        {
+          draftedAt: "2026-05-23T18:00:00.000Z",
+          rootPath: root,
+          configPath: "dyknow.config.json",
+          repoDiffPath: "docs/dyknow/.state/repo-diff.json",
+          outputPath: DEFAULT_UPDATE_OUTPUT_PATH,
+          providerId: "local",
+          drafts: [
+            {
+              affectedPage: {
+                pageId: "product-overview",
+                outputPath: "docs/product-overview.md",
+                matchedSourcePaths: ["README.md"],
+                reasons: ["changed-file"],
+              },
+              proposal: {
+                pageId: "product-overview",
+                summary: "Summary",
+                why: "Why",
+                sources: ["README.md"],
+                proposedText: "# Product Overview\n\nApproved content.",
+                confidence: "medium",
+                risk: "high",
+                reviewState: "Approved",
+                requiresHumanReview: true,
+              },
+            },
+          ],
+          summary: {
+            affectedPages: 1,
+            draftedProposals: 1,
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const exitCode = await runCli(["pr", "--branch", "dyknow/test-high-risk"], {
+      cwd: root,
+      stderr: (message) => {
+        stderr.push(message);
+      },
+    });
+
+    expect(exitCode).toBe(1);
+    expect(stderr[0]).toContain("--allow-high-risk");
+    expect(stderr[0]).toContain("product-overview");
+  }, 15000);
+
   it("records a prepared PR publish audit entry before an external PR creation failure", async () => {
     const root = await mkdtemp(join(tmpdir(), "dyknow-pr-"));
     const remote = await mkdtemp(join(tmpdir(), "dyknow-pr-remote-"));

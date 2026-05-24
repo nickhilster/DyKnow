@@ -26,8 +26,9 @@ sources:
   - packages/cli/src/pr.ts
   - packages/cli/src/review.ts
   - packages/cli/src/scan.ts
+  - packages/cli/src/status.ts
   - packages/cli/src/update.ts
-last_reviewed: 2026-05-23
+last_reviewed: 2026-05-24
 confidence: high
 ---
 
@@ -35,7 +36,7 @@ confidence: high
 
 This repository is the working concept, documentation hub, and bootstrap implementation workspace for **DyKnow** — a system for maintaining Dynamic Knowledge Pages that stay synchronized with product, code, docs, and websites. It has two surfaces: DyKnow Cloud (hosted) and DyKnow Local (repo-native).
 
-The repo now contains the founding whitepaper, a wiki of source-backed pages, a TypeScript/npm workspace for DyKnow Local shared contracts, and working `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow log`, `dyknow commit`, and `dyknow pr` commands that generate the repo-local config, repo-map and repo-diff snapshots, draft update proposals, persist review decisions, pretty-print recent audit entries across committed and git-local runtime audit files, and publish approved changes into reviewable branches.
+The repo now contains the founding whitepaper, a wiki of source-backed pages, a TypeScript/npm workspace for DyKnow Local shared contracts, and working `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow log`, `dyknow status`, `dyknow commit`, and `dyknow pr` commands that generate the repo-local config, repo-map and repo-diff snapshots, draft update proposals, persist review decisions, pretty-print recent audit entries across committed and git-local runtime audit files, generate an HTML status report, and publish approved changes into reviewable branches.
 
 ## External hubs
 
@@ -93,7 +94,7 @@ Build a knowledge maintenance system that:
         └── dyknow_local_whitepaper.md   Founding raw source.
 ```
 
-  The implemented code surface is still small, but it is real: `packages/core` defines the first shared engine contracts, config validation, repo-map schema, repo-diff schema, default update prompt templates, and a provider-backed update runner; `packages/cli` implements `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, the first persisted `dyknow review` decision slice including edited proposal text, external-editor handling, skip handling, targeted regenerate handling, and review-action audit logging, a read-only `dyknow log` audit viewer that now merges the committed audit artifact with a git-local runtime audit file, and the first `dyknow commit` and `dyknow pr` workflow slices with publish-action audit logging where PR publication records both a prepared local state and a confirmed external PR-open event in separate persistence boundaries; and CI runs lint, tests, and build checks.
+  The implemented code surface is still small, but it is real: `packages/core` defines the first shared engine contracts, config validation, repo-map schema, repo-diff schema, default update prompt templates, and a provider-backed update runner with local built-in page generators, local confidence/risk heuristics, BYO OpenAI retry/timeout handling, and per-draft usage telemetry; `packages/cli` implements `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, an interactive and non-interactive `dyknow review` flow with edited proposal text, external-editor handling, skip handling, targeted regenerate handling, and review-action audit logging, a read-only `dyknow log` audit viewer that now merges the committed audit artifact with a git-local runtime audit file, `dyknow status` for generating an HTML progress snapshot, and the first `dyknow commit` and `dyknow pr` workflow slices with publish-action audit logging where high-risk proposals require an explicit `--allow-high-risk` publish override and PR publication records both a prepared local state and a confirmed external PR-open event in separate persistence boundaries; and CI runs lint, tests, and build checks.
 
 ## Development commands
 
@@ -104,22 +105,24 @@ Build a knowledge maintenance system that:
   - `node packages/cli/dist/bin.js init --force --project-name DyKnow` — generate the repo-local config and schema after a build.
   - `node packages/cli/dist/bin.js scan` — build the repo map snapshot at `docs/dyknow/.state/repo-map.json` after a build.
   - `node packages/cli/dist/bin.js diff` — compare the current workspace against the saved repo-map snapshot, map deltas to affected page IDs via configured source patterns, and write `docs/dyknow/.state/repo-diff.json` after a build.
-  - `node packages/cli/dist/bin.js update` — read `docs/dyknow/.state/repo-diff.json`, draft proposals for affected pages, and write `docs/dyknow/.state/update-proposals.json` after a build.
-  - `node packages/cli/dist/bin.js review --approve --page <page-id>` — persist approval, rejection, escalation, one edited proposal text, one editor-driven edited proposal text, an explicit skip, or a targeted regenerate back into `docs/dyknow/.state/update-proposals.json` after a build while appending review-action audit entries to `docs/dyknow/.state/audit-log.jsonl`.
+  - `node packages/cli/dist/bin.js update` — read `docs/dyknow/.state/repo-diff.json`, draft proposals for affected pages through either the local built-in generator path or the BYO provider path, and write `docs/dyknow/.state/update-proposals.json` after a build.
+  - `node packages/cli/dist/bin.js review --approve --page <page-id>` — persist approval, rejection, escalation, one edited proposal text, one editor-driven edited proposal text, an explicit skip, a targeted regenerate, or an interactive walkthrough back into `docs/dyknow/.state/update-proposals.json` after a build while appending review-action audit entries to `docs/dyknow/.state/audit-log.jsonl`.
   - `node packages/cli/dist/bin.js log --limit 10 --source all --action all` — pretty-print recent entries from `docs/dyknow/.state/audit-log.jsonl` and the git-local runtime audit file after a build, label each entry with its source audit file, and optionally filter by source (`all|committed|runtime`) and action family (`all|review|publish`).
-  - `node packages/cli/dist/bin.js commit` — apply approved proposals from `docs/dyknow/.state/update-proposals.json`, mark them published, append publish audit entries, and create a single git commit.
-  - `node packages/cli/dist/bin.js pr --branch <name>` — create a new branch from `main`, apply approved proposals, append a `publish:pr-prepared` audit entry in the committed local flow, push the branch to `origin`, open a GitHub pull request with a summary table, and append a confirmed `publish:pr-opened` event to the git-local runtime audit file after the external PR-open call succeeds.
+  - `node packages/cli/dist/bin.js status` — generate `dyknow-progress-status.html` from live git metadata plus the current repo diff, update proposal, and audit artifacts after a build.
+  - `node packages/cli/dist/bin.js commit [--allow-high-risk]` — apply approved proposals from `docs/dyknow/.state/update-proposals.json`, mark them published, append publish audit entries, and create a single git commit while refusing approved high-risk proposals unless the explicit override flag is present.
+  - `node packages/cli/dist/bin.js pr --branch <name> [--allow-high-risk]` — create a new branch from `main`, apply approved proposals, append a `publish:pr-prepared` audit entry in the committed local flow, push the branch to `origin`, open a GitHub pull request with a summary table, and append a confirmed `publish:pr-opened` event to the git-local runtime audit file after the external PR-open call succeeds while refusing approved high-risk proposals unless the explicit override flag is present.
 
   Implemented DyKnow Local CLI commands:
 
-  - `dyknow init` — create `dyknow.config.json` and `dyknow.config.schema.json`
+  - `dyknow init` — create `dyknow.config.json` and `dyknow.config.schema.json`, with optional interactive prompts and stack-aware source defaults
   - `dyknow scan` — build repo map at `docs/dyknow/.state/repo-map.json`
   - `dyknow diff` — compare the current workspace to the saved repo map, identify affected pages, and write `docs/dyknow/.state/repo-diff.json`
   - `dyknow update` — draft update proposals at `docs/dyknow/.state/update-proposals.json`
   - `dyknow review` — persist approval, rejection, escalation, one edited proposal text, one editor-driven edited proposal text, an explicit skip, or a targeted regenerate in `docs/dyknow/.state/update-proposals.json`
   - `dyknow log` — pretty-print recent review and publish audit entries from the committed audit artifact plus the git-local runtime audit file
-  - `dyknow commit` — apply approved proposals, mark them published, append publish audit entries, and create a single git commit
-  - `dyknow pr` — create a review branch, append a `publish:pr-prepared` audit entry, push it, open a GitHub pull request for approved proposals, and append a confirmed `publish:pr-opened` runtime event on success
+  - `dyknow status` — generate an HTML repo status report at `dyknow-progress-status.html`
+  - `dyknow commit` — apply approved proposals, mark them published, append publish audit entries, and create a single git commit, with `--allow-high-risk` required for approved high-risk proposals
+  - `dyknow pr` — create a review branch, append a `publish:pr-prepared` audit entry, push it, open a GitHub pull request for approved proposals, and append a confirmed `publish:pr-opened` runtime event on success, with `--allow-high-risk` required for approved high-risk proposals
 
 See [docs/setup-guide.md](docs/setup-guide.md).
 
@@ -128,13 +131,14 @@ See [docs/setup-guide.md](docs/setup-guide.md).
 - TypeScript uses npm workspaces and NodeNext module resolution.
 - Shared engine contracts live in `packages/core`; CLI-specific wiring lives in `packages/cli`.
 - Biome handles formatting and baseline linting; Vitest covers executable validation.
-- The current scanner honors `allowedSources` and `ignoredSources`, extracts package dependencies, classifies route candidates heuristically, and warns on likely sensitive content without writing file contents into the repo map.
+- The current scanner honors `allowedSources` and `ignoredSources`, extracts Markdown headings, top-level JSON/YAML/TOML keys, dependency manifests from `package.json`, `pyproject.toml`, and `requirements*.txt`, captures lightweight OpenAPI, Next.js, and Express-style route metadata, and warns on likely sensitive content without writing file contents into the repo map.
 - The current diff command compares a fresh in-memory scan against the last saved repo-map snapshot, maps changed source paths to affected page IDs via configured page source patterns, and writes a structured repo-diff artifact without overwriting the base snapshot.
-- The current update flow reads affected pages from the repo diff, drafts proposals into `docs/dyknow/.state/update-proposals.json`, uses default templates for the maintained DyKnow pages, and relies on a local stub update provider that always returns needs-review proposals and enforces local-only provider matching.
-- The current review flow reads `docs/dyknow/.state/update-proposals.json`, can list proposal state counts, persists approval, rejection, or escalation decisions, can mark one targeted proposal `Edited` while replacing its proposed text inside that artifact from either `--text` or an external editor command, can explicitly skip targeted proposals without mutating the snapshot, can regenerate targeted proposals from the saved repo diff while leaving untargeted drafts alone, and appends one audit entry per targeted review action to `docs/dyknow/.state/audit-log.jsonl`.
+- The current update flow reads affected pages from the repo diff, drafts proposals into `docs/dyknow/.state/update-proposals.json`, uses default templates for the maintained DyKnow pages, and supports both a local built-in generator path and a BYO OpenAI-backed provider path while assigning heuristic confidence and risk levels from the request context.
+- The current review flow reads `docs/dyknow/.state/update-proposals.json`, can list proposal state counts, persists approval, rejection, or escalation decisions, can mark one targeted proposal `Edited` while replacing its proposed text inside that artifact from either `--text` or an external editor command, can explicitly skip targeted proposals without mutating the snapshot, can regenerate targeted proposals from the saved repo diff while leaving untargeted drafts alone, can walk pending proposals interactively, and appends one audit entry per targeted review action to `docs/dyknow/.state/audit-log.jsonl`.
 - The current log flow reads `docs/dyknow/.state/audit-log.jsonl` plus the git-local runtime audit file, validates each JSONL entry against the shared audit-entry schema, and pretty-prints the most recent review and publish entries first with an explicit per-entry source log label plus `all|committed|runtime` and `all|review|publish` filters without mutating the committed audit artifact.
-- The current commit flow reads `docs/dyknow/.state/update-proposals.json`, applies only approved proposals to their output files, marks them `Published`, appends publish audit entries to `docs/dyknow/.state/audit-log.jsonl`, and creates one git commit while refusing unrelated worktree changes.
-- The current PR flow must start from the base branch (default `main`), creates a new review branch, reuses the approved-proposal commit path, carries a `publish:pr-prepared` audit entry in that committed local flow before the external PR-open call, pushes to `origin`, opens a GitHub pull request whose body summarizes pages, source evidence, risk, and confidence, and writes a confirmed `publish:pr-opened` event to the git-local runtime audit file after the external PR-open call succeeds.
+- The current status flow writes `dyknow-progress-status.html` from live git metadata plus the current repo diff, update proposal, and audit artifacts.
+- The current commit flow reads `docs/dyknow/.state/update-proposals.json`, applies only approved proposals to their output files, marks them `Published`, appends publish audit entries to `docs/dyknow/.state/audit-log.jsonl`, creates one git commit while refusing unrelated worktree changes, and blocks approved high-risk proposals unless `--allow-high-risk` is passed.
+- The current PR flow must start from the base branch (default `main`), creates a new review branch, reuses the approved-proposal commit path, carries a `publish:pr-prepared` audit entry in that committed local flow before the external PR-open call, pushes to `origin`, opens a GitHub pull request whose body summarizes pages, source evidence, risk, and confidence, writes a confirmed `publish:pr-opened` event to the git-local runtime audit file after the external PR-open call succeeds, and blocks approved high-risk proposals unless `--allow-high-risk` is passed.
 - Favor small vertical slices that keep source evidence, confidence, risk, and review-state data explicit in the design.
 
 ## Documentation conventions

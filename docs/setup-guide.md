@@ -18,18 +18,19 @@ sources:
   - ../packages/cli/src/review.ts
   - ../packages/cli/src/scan.ts
   - ../packages/cli/src/security.ts
+  - ../packages/cli/src/status.ts
   - ../packages/cli/src/update.ts
   - ../packages/core/src/repo-diff.ts
   - ../packages/core/src/config.ts
   - ../packages/core/src/update-runner.ts
   - dyknow/.state/repo-map.json
-last_reviewed: 2026-05-23
+last_reviewed: 2026-05-24
 confidence: medium
 ---
 
 ## Summary
 
-This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow log`, `dyknow commit`, and the first `dyknow pr` publishing path are now implemented in this repo, while richer review editing and sync flows remain planned.
+This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow log`, `dyknow status`, `dyknow commit`, and the first `dyknow pr` publishing path are now implemented in this repo, while richer review editing and sync flows remain planned.
 
 ## Prerequisites
 
@@ -44,13 +45,21 @@ This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`,
 dyknow init
 ```
 
-Creates `dyknow.config.json` and `dyknow.config.schema.json`. The current implementation writes a local-only default config that points at the schema file and pre-populates the MVP 1 maintained pages for this repo.
+Creates `dyknow.config.json` and `dyknow.config.schema.json`. The current implementation writes a local-only default config that points at the schema file, pre-populates the MVP 1 maintained pages for this repo, and auto-detects a stack profile to seed `allowedSources` for generic, Next.js, Express-style Node, or Python repos.
 
 If you are working inside this repo today, the direct invocation is:
 
 ```bash
 node packages/cli/dist/bin.js init --force --project-name DyKnow
 ```
+
+You can also use the interactive flow:
+
+```bash
+node packages/cli/dist/bin.js init --interactive
+```
+
+That walkthrough prompts for project name, mode, and stack profile while starting from the detected repo defaults.
 
 The config defines:
 
@@ -129,7 +138,7 @@ The current implementation also enforces a few repo-safety rules at config-parse
 dyknow scan
 ```
 
-Builds a repo map from the configured source set. The current implementation classifies markdown, JSON, YAML, and TypeScript files; flags route candidates heuristically; extracts package dependencies from `package.json` files; warns on risky dependency policy patterns such as local `file:` or `workspace:` sources, non-registry sources, or `latest`; and warns on likely sensitive content patterns without writing raw file contents into the repo map.
+Builds a repo map from the configured source set. The current implementation classifies markdown, JSON, YAML, TOML, Python, and TypeScript files; extracts Markdown headings plus top-level JSON/YAML/TOML keys; extracts route metadata for OpenAPI specs, Next.js app/pages routes, and Express-style handlers; extracts dependency manifests from `package.json`, `pyproject.toml`, and `requirements*.txt`; warns on risky dependency policy patterns such as local `file:` or `workspace:` sources, non-registry sources, or `latest`; and warns on likely sensitive content patterns without writing raw file contents into the repo map.
 
 If you are working inside this repo today, the direct invocation is:
 
@@ -185,7 +194,7 @@ If no repo-map snapshot exists yet, `dyknow diff` exits with a helpful message t
 dyknow update
 ```
 
-**Status:** implemented for the local stub drafting path.
+**Status:** implemented for both the local built-in generator path and the BYO provider path.
 
 Drafts updates to affected pages from `docs/dyknow/.state/repo-diff.json` and writes them to `docs/dyknow/.state/update-proposals.json`. Each suggested update includes:
 
@@ -207,7 +216,19 @@ node packages/cli/dist/bin.js update
 
 If no repo diff snapshot exists yet, `dyknow update` exits with a helpful message telling you to run `dyknow diff` first.
 
-The current implementation uses the local stub update provider. It drafts `Needs review` proposals and never applies them automatically.
+The current implementation supports two drafting modes:
+
+- `llmProvider: "local"` uses the built-in deterministic generator path for the five default maintained pages
+- `llmProvider: "byo-key"` in connected mode uses a BYO OpenAI-backed provider when `OPENAI_API_KEY` and `DYKNOW_OPENAI_MODEL` are set
+
+Both drafting paths still produce `Needs review` proposals and never apply them automatically.
+
+For BYO provider runs, the update artifact also records:
+
+- aggregate token counts
+- per-draft token counts
+- known-model estimated USD cost when pricing metadata is available
+- retry attempts, total drafting duration, and timeout telemetry
 
 ## Step 5 — Review
 
@@ -215,7 +236,7 @@ The current implementation uses the local stub update provider. It drafts `Needs
 dyknow review
 ```
 
-**Status:** implemented for the first persisted decision, text edit, editor edit, skip, regenerate, and review-audit slice.
+**Status:** implemented for persisted decisions, inline and external edits, skip, regenerate, interactive walkthrough, and review-audit logging.
 
 The current implementation reads `docs/dyknow/.state/update-proposals.json`, can summarize proposal counts by review state, can persist approval, rejection, or escalation decisions, can replace one targeted proposal's `proposedText` while marking it `Edited` from either inline text or an external editor command, can explicitly skip targeted proposals without changing the snapshot, can regenerate targeted proposals from the saved repo diff, and appends one audit entry per targeted review action to `docs/dyknow/.state/audit-log.jsonl`.
 
@@ -229,6 +250,12 @@ You can also target all proposals at once:
 
 ```bash
 node packages/cli/dist/bin.js review --reject --all
+```
+
+To walk through pending proposals one at a time:
+
+```bash
+node packages/cli/dist/bin.js review --interactive
 ```
 
 To replace one proposal's draft text without applying it yet:
@@ -276,7 +303,7 @@ The full walkthrough remains broader than the current slice. Reviewers will even
 - Mark source as irrelevant
 - Update config rules
 
-Today, approve / reject / escalate plus a single inline edited-proposal text path, a single external-editor edit path, explicit skip handling, and targeted regenerate handling are implemented. Richer in-product review surfaces remain planned.
+Today, approve / reject / escalate, interactive walkthrough, a single inline edited-proposal text path, a single external-editor edit path, explicit skip handling, and targeted regenerate handling are implemented. Richer in-product review surfaces remain planned.
 
 The current audit slice still stays local and append-only, but it is no longer limited to review actions: `dyknow review`, `dyknow commit`, and `dyknow pr` all append audit entries to the same JSONL artifact.
 
@@ -298,7 +325,23 @@ node packages/cli/dist/bin.js log --limit 10 --source all --action all
 
 If no audit log exists yet, `dyknow log` exits successfully and tells you that no audit entries were found.
 
-## Step 7 — Commit or publish
+## Step 7 — Generate a status report
+
+```bash
+dyknow status
+```
+
+**Status:** implemented.
+
+The current implementation writes `dyknow-progress-status.html` using live git metadata plus the current repo diff, update proposal, and audit artifacts.
+
+If you are working inside this repo today, the direct invocation is:
+
+```bash
+node packages/cli/dist/bin.js status
+```
+
+## Step 8 — Commit or publish
 
 ```bash
 dyknow commit
@@ -324,6 +367,8 @@ If no approved proposals exist yet, `dyknow commit` exits with a helpful message
 
 If the worktree has unrelated changes, `dyknow commit` refuses to proceed so the resulting commit only contains the approved DyKnow updates.
 
+If any approved proposal carries `risk: high`, `dyknow commit` also refuses to proceed unless you pass `--allow-high-risk`.
+
 The current `dyknow pr` implementation must start from the base branch (defaults to `main`), creates a new branch, reuses the approved-proposal apply-and-commit step, carries a `publish:pr-prepared` audit entry in that committed local flow before the external PR-open call, pushes the branch to `origin`, opens a GitHub pull request with a summary table covering updated pages, source evidence, risk, and confidence, and appends a confirmed `publish:pr-opened` event to the git-local runtime audit file after the external PR-open call succeeds.
 
 If you are working inside this repo today, the direct invocation is:
@@ -333,6 +378,8 @@ node packages/cli/dist/bin.js pr --branch dyknow/review-product-updates
 ```
 
 If no approved proposals exist yet, `dyknow pr` exits with a helpful message telling you to run `dyknow review --approve` first. If you run it from the wrong starting branch, it tells you to return to the configured base branch or pass `--base` explicitly. Branch names are validated before any git branch creation happens. The current audit trail now distinguishes the prepared local PR-publication state in the committed artifact from the confirmed external PR-open event in the git-local runtime audit file.
+
+If any approved proposal carries `risk: high`, `dyknow pr` refuses to proceed unless you pass `--allow-high-risk`.
 
 If you override the GitHub CLI binary, the same constrained command contract applies:
 
@@ -357,5 +404,5 @@ Pushes approved outputs to DyKnow Cloud, a CMS, Notion, Confluence, or a website
 
 ## Open questions
 
-- Whether `dyknow init` should auto-detect the framework/stack and pre-fill `allowedSources`.
-- Whether `dyknow init` should stay non-interactive by default or add an interactive prompt mode alongside current defaults.
+- Whether `dyknow init` should eventually let teams customize the generated maintained-page set during the interactive flow.
+- Whether the scanner should expand route extraction next for FastAPI, NestJS, or React Router after the current Next.js and Express slice.

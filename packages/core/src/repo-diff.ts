@@ -6,6 +6,7 @@ import { type PageDefinition, PageDefinitionSchema } from "./contracts.js";
 import {
   type DependencyRecord,
   type RepoFileSummary,
+  type RepoRoute,
   RepoFileSummarySchema,
   type RepoMap,
   RepoMapSchema,
@@ -18,10 +19,13 @@ export const DEFAULT_REPO_DIFF_OUTPUT_PATH =
 
 export const RepoFileChangeTypeSchema = z.enum([
   "dependencies",
+  "headings",
   "kind",
   "line-count",
+  "routes",
   "signals",
   "size",
+  "top-level-keys",
 ]);
 
 export const RepoFileChangeSchema = z.object({
@@ -121,6 +125,22 @@ function haveSameDependencies(
   );
 }
 
+function sortRoutes(routes: readonly RepoRoute[]): RepoRoute[] {
+  return [...routes].sort((left, right) => {
+    const leftKey = `${left.framework}:${left.kind}:${left.path}:${left.handler}:${sortStrings(left.methods).join(",")}`;
+    const rightKey = `${right.framework}:${right.kind}:${right.path}:${right.handler}:${sortStrings(right.methods).join(",")}`;
+
+    return leftKey.localeCompare(rightKey);
+  });
+}
+
+function haveSameRoutes(
+  left: readonly RepoRoute[],
+  right: readonly RepoRoute[],
+): boolean {
+  return JSON.stringify(sortRoutes(left)) === JSON.stringify(sortRoutes(right));
+}
+
 function detectFileChanges(
   previousFile: RepoFileSummary,
   currentFile: RepoFileSummary,
@@ -147,6 +167,18 @@ function detectFileChanges(
     !haveSameDependencies(previousFile.dependencies, currentFile.dependencies)
   ) {
     changes.push("dependencies");
+  }
+
+  if (!haveSameRoutes(previousFile.routes, currentFile.routes)) {
+    changes.push("routes");
+  }
+
+  if (!haveSameValues(previousFile.headings, currentFile.headings)) {
+    changes.push("headings");
+  }
+
+  if (!haveSameValues(previousFile.topLevelKeys, currentFile.topLevelKeys)) {
+    changes.push("top-level-keys");
   }
 
   return changes;

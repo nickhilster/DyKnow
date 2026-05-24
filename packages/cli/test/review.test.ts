@@ -783,7 +783,7 @@ describe("dyknow review", () => {
     });
     expect(reviewBatch.drafts[0]?.proposal.reviewState).toBe("Needs review");
     expect(reviewBatch.drafts[0]?.proposal.proposedText).toContain(
-      "local stub update provider",
+      "# Product Overview",
     );
     expect(reviewBatch.drafts[1]?.proposal.reviewState).toBe("Approved");
     expect(reviewBatch.drafts[1]?.proposal.proposedText).toBe(
@@ -882,5 +882,78 @@ describe("dyknow review", () => {
 
     expect(exitCode).toBe(1);
     expect(stderr[0]).toContain("Run dyknow update first");
+  });
+
+  it("supports an interactive review walkthrough", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-review-"));
+    const answers = ["approve"];
+
+    await mkdir(join(root, "docs", "dyknow", ".state"), { recursive: true });
+    await writeFile(
+      join(root, DEFAULT_UPDATE_OUTPUT_PATH),
+      `${JSON.stringify(
+        {
+          draftedAt: "2026-05-23T18:00:00.000Z",
+          rootPath: root,
+          configPath: "dyknow.config.json",
+          repoDiffPath: "docs/dyknow/.state/repo-diff.json",
+          outputPath: DEFAULT_UPDATE_OUTPUT_PATH,
+          providerId: "local",
+          drafts: [
+            {
+              affectedPage: {
+                pageId: "product-overview",
+                outputPath: "docs/product-overview.md",
+                matchedSourcePaths: ["README.md"],
+                reasons: ["changed-file"],
+              },
+              proposal: {
+                pageId: "product-overview",
+                summary:
+                  "Review Product Overview for 1 changed source path(s).",
+                why: "Product Overview is affected because DyKnow detected changed file across 1 configured source path(s).",
+                sources: ["README.md"],
+                proposedText: "Draft text",
+                confidence: "low",
+                risk: "medium",
+                reviewState: "Needs review",
+                requiresHumanReview: true,
+              },
+            },
+          ],
+          summary: {
+            affectedPages: 1,
+            draftedProposals: 1,
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+    const exitCode = await runCli(["review", "--interactive"], {
+      cwd: root,
+      prompt: async () => answers.shift() ?? "quit",
+      stdout: (message) => {
+        stdout.push(message);
+      },
+      stderr: (message) => {
+        stderr.push(message);
+      },
+    });
+    const reviewText = await readFile(
+      join(root, DEFAULT_UPDATE_OUTPUT_PATH),
+      "utf8",
+    );
+    const reviewBatch = UpdateDraftBatchSchema.parse(JSON.parse(reviewText));
+
+    expect(exitCode).toBe(0);
+    expect(stderr).toEqual([]);
+    expect(stdout[0]).toContain("Reviewing product-overview");
+    expect(stdout.at(-1)).toContain("Interactive review updated 1 proposal(s)");
+    expect(reviewBatch.drafts[0]?.proposal.reviewState).toBe("Approved");
   });
 });

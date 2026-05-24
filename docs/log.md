@@ -176,6 +176,21 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | CHANGELOG.md | Recorded confirmed external PR-open runtime audit coverage and merged log viewing.
 2026-05-23 | update | docs/setup-guide.md | Clarified that confirmed external PR-open events now land in the git-local runtime audit file.
 2026-05-23 | update | docs/feature-map.md | Updated the dyknow log and dyknow pr descriptions for confirmed external PR-open runtime events.
+2026-05-24 | update | packages/cli/src/status.ts | Added dyknow status to generate an HTML repository status report from git metadata and DyKnow state artifacts.
+2026-05-24 | update | packages/core/src/update-runner.ts | Added local stub confidence and risk heuristics so drafted proposals carry more useful review metadata.
+2026-05-24 | update | packages/cli/src/commit.ts | Added an explicit --allow-high-risk publish guard for approved high-risk proposals.
+2026-05-24 | update | packages/cli/src/pr.ts | Added the same explicit high-risk publish guard to the PR publication path.
+2026-05-24 | update | docs/implementation-roadmap.md | Marked local-only provider enforcement and high-risk publish enforcement complete for the current Phase 1 slice.
+2026-05-24 | update | docs/setup-guide.md | Documented dyknow status and the explicit high-risk publish override on commit and PR flows.
+2026-05-24 | update | docs/feature-map.md | Added the dyknow status command and clarified the high-risk publish guard on commit and PR commands.
+2026-05-24 | update | AGENTS.md | Refreshed agent context for dyknow status, local stub risk heuristics, and explicit high-risk publish overrides.
+2026-05-24 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot while dogfooding the current DyKnow Local flow on this repo.
+2026-05-24 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot while dogfooding the current DyKnow Local flow on this repo.
+2026-05-24 | update | docs/dyknow/.state/update-proposals.json | Regenerated update proposals while dogfooding the current DyKnow Local flow on this repo after the status and publish-safety slices.
+2026-05-24 | update | packages/cli/src/update.ts | Added a BYO OpenAI-backed update provider path for connected-mode drafting.
+2026-05-24 | update | packages/cli/src/review.ts | Added an interactive review walkthrough on top of the existing review mutation and audit flow.
+2026-05-24 | update | packages/core/src/update-runner.ts | Added page-specific built-in local draft generators for the default maintained pages.
+2026-05-24 | update | docs/implementation-roadmap.md | Marked the BYO provider, interactive review walkthrough, and initial built-in page generators complete for the current Phase 1 slice.
 2026-05-23 | update | packages/cli/src/log.ts | Added per-entry source log labels so merged committed and runtime audit output stays traceable.
 2026-05-23 | update | README.md | Documented that dyknow log now labels each rendered entry with its source audit file.
 2026-05-23 | update | AGENTS.md | Updated agent context to note per-entry source labels in dyknow log output.
@@ -194,3 +209,38 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | CHANGELOG.md | Recorded dyknow log action-family filtering for review and publish entries.
 2026-05-23 | update | docs/setup-guide.md | Documented the new dyknow log --action option and current filter values.
 2026-05-23 | update | docs/feature-map.md | Updated the dyknow log command description to include action-family filtering.
+2026-05-24 | update | packages/cli/src/index.ts | Added an interactive dyknow init flow with stack-aware defaults for generic, Next.js, Express-style Node, and Python repos.
+2026-05-24 | update | packages/cli/src/scan.ts | Expanded the repo scanner to extract Python dependency manifests and lightweight Next.js and Express route metadata.
+2026-05-24 | update | packages/core/src/repo-map.ts | Extended the repo-map schema with route metadata so scan output and diffs can carry concrete route information.
+2026-05-24 | update | README.md | Documented interactive init, stack-aware source defaults, and richer scan extraction coverage.
+2026-05-24 | update | docs/setup-guide.md | Updated init and scan workflow steps for interactive init, stack detection, package-manifest parsing, and route extraction.
+2026-05-24 | update | docs/feature-map.md | Refreshed the dyknow init and dyknow scan command entries to reflect interactive setup and richer repo intelligence.
+2026-05-24 | update | docs/implementation-roadmap.md | Marked interactive init and route extraction complete while narrowing the remaining parser backlog to deeper Markdown/JSON/YAML/OpenAPI coverage.
+2026-05-24 | update | AGENTS.md | Updated agent context for interactive init defaults and richer scan metadata.
+2026-05-24 | update | packages/core/src/update-runner.ts | Added BYO provider retry/timeout handling plus token and known-model cost telemetry for drafted updates.
+2026-05-24 | update | packages/core/src/repo-map.ts | Expanded repo-map summaries with headings and top-level key metadata for richer scanner output.
+2026-05-24 | update | packages/cli/src/scan.ts | Added Markdown heading extraction, top-level JSON/YAML/TOML key extraction, and OpenAPI route parsing.
+2026-05-24 | update | packages/cli/src/commit.ts | Fixed the git-status parser so normal DyKnow state artifacts no longer block a clean commit flow.
+2026-05-24 | update | docs/implementation-roadmap.md | Marked parser coverage, runner accounting, retry policy, and this-repo dogfooding complete for the current Phase 1 slice.
+2026-05-24 | update | README.md | Documented richer scanner metadata plus BYO usage and retry telemetry in update artifacts.
+2026-05-24 | update | docs/setup-guide.md | Updated scan and update docs for OpenAPI parsing, structural metadata extraction, and provider telemetry.
+2026-05-24 | update | docs/feature-map.md | Reflected richer scan parsing and update-provider telemetry in the command inventory.
+2026-05-24 | update | AGENTS.md | Refreshed agent context for OpenAPI parsing and BYO provider telemetry.
+2026-05-24 | update | packages/core/src/contracts.ts | Added formal RiskClassifierRule schema, RISK_CLASSIFIER_RULES constant (6 categories: pricing, legal, compliance, security, customer-commitment, pii), CONFIDENCE_SCORING_RUBRIC constant, and RiskClassifierRule type export.
+2026-05-24 | update | packages/core/src/update-runner.ts | Replaced inline HIGH_RISK_KEYWORDS heuristic with rubric-driven classifyDraftRisk and scoreDraftConfidence functions (now exported); both are driven by RISK_CLASSIFIER_RULES and CONFIDENCE_SCORING_RUBRIC from contracts.ts.
+2026-05-24 | update | packages/cli/src/review.ts | Surfaced risk badge ([HIGH RISK] / [medium risk]), confidence level, why, and sources in the interactive review walkthrough display; added ⚠ warning for high-risk proposals.
+2026-05-24 | update | packages/core/test/contracts.test.ts | Added ruleset coverage tests: all 6 expected categories present, all rules have valid risk levels and non-empty keywords; rubric ordering and descriptions tested.
+2026-05-24 | update | packages/core/test/update-runner.test.ts | Added classifyDraftRisk and scoreDraftConfidence unit test suites (10 new cases); added low-risk/low-confidence baseline test; fixed stale medium-risk expectation now that benign source paths don't trigger a rule.
+2026-05-24 | create | packages/core/src/output-templates.ts | Added 5 output templates (markdown-page, agents-md, claude-md, json-knowledge-map, rag-source-pack) with PageScaffoldOptions schema, OUTPUT_TEMPLATE_REGISTRY, scaffoldPage, getOutputTemplate, listOutputTemplates exports.
+2026-05-24 | update | packages/core/src/index.ts | Exported output-templates module alongside existing core exports.
+2026-05-24 | create | packages/core/test/output-templates.test.ts | 45 tests covering registry invariants, per-template structure (frontmatter, sections, JSONL validity, JSON validity), cross-template validation, and dyknow:fill placeholder presence.
+2026-05-24 | create | commitlint.config.js | Added conventional commit config extending @commitlint/config-conventional; added wiki, scan, infra custom types; header-max-length set to 120.
+2026-05-24 | update | .github/workflows/ci.yml | Added commit-lint job (PR-only) that runs commitlint from PR base to head SHA with full fetch-depth.
+2026-05-24 | update | CONTRIBUTING.md | Added commit message format section (type table, examples, breaking changes, local check command); updated stale "When code lands" section to reflect Phase 1 code reality.
+2026-05-24 | update | notion | Updated DyKnow Hub page to reflect current repo progress — Phase 0 ~80%, Phase 1 ~85%, all 9 CLI commands implemented and dogfooded on this repo.
+2026-05-24 | update | linear | Populated DyKnow Linear project with 20 issues across Phase 0 and Phase 1 milestones (10 Done, 7 Todo); updated project status to In Progress; Phase 1 milestone now shows 77% progress.
+2026-05-24 | update | packages/cli/src/commit.ts | Fixed worktree guard: added DEFAULT_REPO_MAP_OUTPUT_PATH to allowed paths set so repo-map.json does not block dyknow commit when it exists as an untracked state file.
+2026-05-24 | update | dogfood/ltb-buddy | Completed full Phase 1 dogfood cycle: scan → change → diff (1 file) → update (5 proposals) → review (4 approved, 1 skipped high-risk) → commit (671a535). First successful end-to-end cycle.
+2026-05-24 | update | dogfood/Code2Motion | Completed full Phase 1 dogfood cycle: scan → change → diff (1 file) → update (5 proposals, all low risk) → review (5 approved) → commit (bd4bb2d).
+2026-05-24 | update | dogfood/teambotics-website | Completed full Phase 1 dogfood cycle: scan → change → diff (1 file) → update (5 proposals, all low risk) → review (5 approved) → commit (ca3581a).
+2026-05-24 | update | dogfood/StoryTeller | Completed full Phase 1 dogfood cycle: scan → change → diff (1 file) → update (5 proposals, all low risk) → review (5 approved) → commit (6830f88). TEA-354 complete: all 4 available dogfood repos done end-to-end without manual fixup (excluding worktree guard bug fix).

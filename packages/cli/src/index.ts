@@ -1,5 +1,7 @@
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
+import { createInterface } from "node:readline/promises";
 import { basename, dirname, relative, resolve } from "node:path";
+import { stdin as input, stdout as output } from "node:process";
 
 import {
   DEFAULT_IGNORED_SOURCE_PATTERNS,
@@ -8,6 +10,7 @@ import {
   DEFAULT_UPDATE_OUTPUT_PATH,
   DYKNOW_CONFIG_FILE_NAME,
   DYKNOW_CONFIG_SCHEMA_FILE_NAME,
+  type InitialStackProfile,
   type RepoMapWarning,
   RepoMapWarningCodeSchema,
   createInitialDyknowConfig,
@@ -24,23 +27,30 @@ import {
   supportsLogSourceFiltering,
 } from "./log.js";
 import { createPrResult, parsePrOptions } from "./pr.js";
-import { createReviewUpdateBatch, parseReviewOptions } from "./review.js";
+import {
+  createInteractiveReviewSession,
+  createReviewUpdateBatch,
+  parseReviewOptions,
+} from "./review.js";
 import { scanWorkspace } from "./scan.js";
 import { resolveWorkspacePath } from "./security.js";
+import { createStatusReport, parseStatusOptions } from "./status.js";
 import { createUpdateDraftBatch, parseUpdateOptions } from "./update.js";
 
-export const PLANNED_COMMANDS = ["dyknow init", "dyknow scan"] as const;
+export const PLANNED_COMMANDS = [] as const;
 
 type CliWriter = (message: string) => void;
 
 export type CliContext = {
   cwd?: string;
+  prompt?: (message: string) => Promise<string>;
   stderr?: CliWriter;
   stdout?: CliWriter;
 };
 
 type InitOptions = {
   force: boolean;
+  interactive: boolean;
   mode: "connected" | "local-only";
   projectName?: string;
 };
@@ -55,9 +65,20 @@ function defaultWriter(message: string) {
   console.log(message);
 }
 
+async function defaultPrompt(message: string): Promise<string> {
+  const terminal = createInterface({ input, output });
+
+  try {
+    return (await terminal.question(message)).trim();
+  } finally {
+    terminal.close();
+  }
+}
+
 function getContext(context?: CliContext) {
   return {
     cwd: context?.cwd ?? process.cwd(),
+    prompt: context?.prompt ?? defaultPrompt,
     stderr: context?.stderr ?? defaultWriter,
     stdout: context?.stdout ?? defaultWriter,
   };
@@ -74,6 +95,7 @@ async function pathExists(path: string) {
 
 function parseInitOptions(args: readonly string[]): InitOptions {
   let force = false;
+  let interactive = false;
   let mode: InitOptions["mode"] = "local-only";
   let projectName: string | undefined;
 
@@ -87,6 +109,11 @@ function parseInitOptions(args: readonly string[]): InitOptions {
 
     if (argument === "--connected") {
       mode = "connected";
+      continue;
+    }
+
+    if (argument === "--interactive") {
+      interactive = true;
       continue;
     }
 
@@ -106,10 +133,173 @@ function parseInitOptions(args: readonly string[]): InitOptions {
   }
 
   if (projectName) {
-    return { force, mode, projectName };
+    return { force, interactive, mode, projectName };
   }
 
-  return { force, mode };
+  return { force, interactive, mode };
+}
+
+type DetectedStack = {
+  profile: InitialStackProfile;
+  reason: string;
+};
+
+async function detectInitialStackProfile(cwd: string): Promise<DetectedStack> {
+  const packageJsonPath = resolve(cwd, "package.json");
+  const pyprojectPath = resolve(cwd, "pyproject.toml");
+  const requirementsPath = resolve(cwd, "requirements.txt");
+
+  if (await pathExists(packageJsonPath)) {
+    try {
+      const packageJson = JSON.parse(await readFile(packageJsonPath, "utf8")) as {
+        dependencies?: Record<string, string>;
+        devDependencies?: Record<string, string>;
+      };
+      const dependencyNames = new Set([
+        ...Object.keys(packageJson.dependencies ?? {}),
+        ...Object.keys(packageJson.devDependencies ?? {}),
+      ]);
+
+      if (dependencyNames.has("next")) {
+        return {
+          profile: "nextjs",
+          reason: 'Detected the "next" package in package.json.',
+        };
+      }
+
+      if (
+        dependencyNames.has("express") ||
+        dependencyNames.has("fastify") ||
+        dependencyNames.has("@nestjs/core")
+      ) {
+        return {
+          profile: "express",
+          reason: "Detected a Node server dependency in package.json.",
+        };
+      }
+    } catch {
+      // Fall back to file-based detection below if package.json is invalid.
+    }
+  }
+
+  if ((await pathExists(pyprojectPath)) || (await pathExists(requirementsPath))) {
+    return {
+      profile: "python",
+      reason: "Detected Python dependency manifests in the workspace.",
+    };
+  }
+
+  if (
+    (await pathExists(resolve(cwd, "app"))) ||
+    (await pathExists(resolve(cwd, "src", "app"))) ||
+    (await pathExists(resolve(cwd, "pages")))
+  ) {
+    return {
+      profile: "nextjs",
+      reason: "Detected Next.js-style app or pages directories.",
+    };
+  }
+
+  if (
+    (await pathExists(resolve(cwd, "routes"))) ||
+    (await pathExists(resolve(cwd, "src", "routes"))) ||
+    (await pathExists(resolve(cwd, "server")))
+  ) {
+    return {
+      profile: "express",
+      reason: "Detected server or routes directories in the workspace.",
+    };
+  }
+
+  return {
+    profile: "generic",
+    reason: "Using generic repo defaults because no specific stack markers were found.",
+  };
+}
+
+function parseInitModeAnswer(answer: string): InitOptions["mode"] | null {
+  const normalized = answer.trim().toLowerCase();
+
+  if (normalized === "" || normalized === "local" || normalized === "local-only") {
+    return "local-only";
+  }
+
+  if (normalized === "connected") {
+    return "connected";
+  }
+
+  return null;
+}
+
+function parseStackProfileAnswer(answer: string): InitialStackProfile | null {
+  const normalized = answer.trim().toLowerCase();
+
+  if (normalized === "" || normalized === "auto") {
+    return null;
+  }
+
+  if (
+    normalized === "generic" ||
+    normalized === "nextjs" ||
+    normalized === "express" ||
+    normalized === "python"
+  ) {
+    return normalized;
+  }
+
+  return null;
+}
+
+async function resolveInteractiveInitOptions(
+  cwd: string,
+  options: InitOptions,
+  prompt: (message: string) => Promise<string>,
+): Promise<{
+  mode: InitOptions["mode"];
+  projectName: string;
+  stackProfile: InitialStackProfile;
+}> {
+  const detectedStack = await detectInitialStackProfile(cwd);
+  const defaultProjectName = options.projectName ?? basename(cwd);
+  let projectName = defaultProjectName;
+  let mode = options.mode;
+  let stackProfile = detectedStack.profile;
+
+  const projectNameAnswer = await prompt(
+    `Project name [${defaultProjectName}]: `,
+  );
+
+  if (projectNameAnswer.trim().length > 0) {
+    projectName = projectNameAnswer.trim();
+  }
+
+  while (true) {
+    const modeAnswer = await prompt(
+      `Mode [${mode}] (local-only/connected): `,
+    );
+    const parsedMode = parseInitModeAnswer(modeAnswer);
+
+    if (parsedMode) {
+      mode = parsedMode;
+      break;
+    }
+  }
+
+  while (true) {
+    const stackAnswer = await prompt(
+      `Stack profile [${detectedStack.profile}] (auto/generic/nextjs/express/python): `,
+    );
+    const parsedStack = parseStackProfileAnswer(stackAnswer);
+
+    if (parsedStack === null && stackAnswer.trim().length > 0) {
+      continue;
+    }
+
+    stackProfile = parsedStack ?? detectedStack.profile;
+    break;
+  }
+
+  return { mode, projectName, stackProfile };
 }
 
 function parseScanOptions(args: readonly string[]): ScanOptions {
@@ -203,35 +393,40 @@ function formatHelp(): string {
     "DyKnow Local CLI",
     "",
     "Implemented commands:",
-    "- dyknow init [--force] [--connected] [--project-name <name>]",
+    "- dyknow init [--force] [--connected] [--interactive] [--project-name <name>]",
     "- dyknow scan [--config <path>] [--output <path>] [--fail-on <dependency-policy|parse-error|secret-pattern>]...",
     "- dyknow diff [--config <path>] [--snapshot <path>] [--output <path>]",
     "- dyknow update [--config <path>] [--diff <path>] [--output <path>]",
     "- dyknow review [--input <path>] [--output <path>] [--approve|--reject|--escalate|--skip|--regenerate] (--all | --page <id>...)",
     "- dyknow review [--input <path>] [--output <path>] --edit --page <id> (--text <value> | --editor)",
     "- dyknow log [--input <path>] [--limit <count>] [--source <all|committed|runtime>] [--action <all|review|publish>]",
-    "- dyknow commit [--input <path>] [--message <text>]",
-    "- dyknow pr [--input <path>] [--base <branch>] [--branch <name>] [--message <text>] [--title <text>]",
+    "- dyknow status [--output <path>]",
+    "- dyknow commit [--input <path>] [--message <text>] [--allow-high-risk]",
+    "- dyknow pr [--input <path>] [--base <branch>] [--branch <name>] [--message <text>] [--title <text>] [--allow-high-risk]",
     "",
     `Default repo diff output: ${DEFAULT_REPO_DIFF_OUTPUT_PATH}`,
     `Default update output: ${DEFAULT_UPDATE_OUTPUT_PATH}`,
     "",
     "Default ignored source patterns:",
     ...DEFAULT_IGNORED_SOURCE_PATTERNS.map((pattern) => `- ${pattern}`),
-    "",
-    "Planned commands:",
-    ...PLANNED_COMMANDS.map((command) => `- ${command}`),
   ];
+
+  if (PLANNED_COMMANDS.length > 0) {
+    lines.push(
+      "",
+      "Planned commands:",
+      ...PLANNED_COMMANDS.map((command) => `- ${command}`),
+    );
+  }
 
   return lines.join("\n");
 }
 
 async function handleInit(args: readonly string[], context?: CliContext) {
-  const { cwd, stderr, stdout } = getContext(context);
+  const { cwd, prompt, stderr, stdout } = getContext(context);
   const options = parseInitOptions(args);
   const configPath = resolve(cwd, DYKNOW_CONFIG_FILE_NAME);
   const schemaPath = resolve(cwd, DYKNOW_CONFIG_SCHEMA_FILE_NAME);
-  const projectName = options.projectName ?? basename(cwd);
 
   if (!options.force) {
     const existingTargets = await Promise.all([
@@ -250,16 +445,26 @@ async function handleInit(args: readonly string[], context?: CliContext) {
     }
   }
 
+  const detectedStack = await detectInitialStackProfile(cwd);
+  const initSelection = options.interactive
+    ? await resolveInteractiveInitOptions(cwd, options, prompt)
+    : {
+        mode: options.mode,
+        projectName: options.projectName ?? basename(cwd),
+        stackProfile: detectedStack.profile,
+      };
+
   const config = createInitialDyknowConfig({
-    mode: options.mode,
-    projectName,
+    mode: initSelection.mode,
+    projectName: initSelection.projectName,
+    stackProfile: initSelection.stackProfile,
   });
 
   await writeFile(schemaPath, renderDyknowConfigJsonSchema(), "utf8");
   await writeFile(configPath, renderDyknowConfig(config), "utf8");
 
   stdout(
-    `Created ${relative(cwd, configPath)} and ${relative(cwd, schemaPath)} for project ${projectName}.`,
+    `Created ${relative(cwd, configPath)} and ${relative(cwd, schemaPath)} for project ${initSelection.projectName} using the ${initSelection.stackProfile} stack profile. ${detectedStack.reason}`,
   );
   return 0;
 }
@@ -366,6 +571,22 @@ async function handleReview(args: readonly string[], context?: CliContext) {
 
   try {
     const options = parseReviewOptions(args);
+
+    if (options.interactive) {
+      const result = await createInteractiveReviewSession({
+        cwd,
+        inputPath: options.inputPath,
+        outputPath: options.outputPath,
+        stdout,
+        ...(context?.prompt ? { prompt: context.prompt } : {}),
+      });
+
+      stdout(
+        `Interactive review updated ${result.updatedProposals} proposal(s) and left ${result.remainingProposals} pending in ${result.outputPath}.`,
+      );
+      return 0;
+    }
+
     const reviewBatchOptions = {
       cwd,
       inputPath: options.inputPath,
@@ -446,6 +667,7 @@ async function handleCommit(args: readonly string[], context?: CliContext) {
   try {
     const options = parseCommitOptions(args);
     const result = await createCommitResult({
+      allowHighRisk: options.allowHighRisk,
       cwd,
       inputPath: options.inputPath,
       message: options.message,
@@ -461,12 +683,31 @@ async function handleCommit(args: readonly string[], context?: CliContext) {
   }
 }
 
+async function handleStatus(args: readonly string[], context?: CliContext) {
+  const { cwd, stderr, stdout } = getContext(context);
+
+  try {
+    const options = parseStatusOptions(args);
+    const result = await createStatusReport({
+      cwd,
+      outputPath: options.outputPath,
+    });
+
+    stdout(`Generated DyKnow status report at ${result.outputPath}.`);
+    return 0;
+  } catch (error) {
+    stderr(error instanceof Error ? error.message : "Unknown status error.");
+    return 1;
+  }
+}
+
 async function handlePr(args: readonly string[], context?: CliContext) {
   const { cwd, stderr, stdout } = getContext(context);
 
   try {
     const options = parsePrOptions(args);
     const result = await createPrResult({
+      allowHighRisk: options.allowHighRisk,
       cwd,
       base: options.base,
       inputPath: options.inputPath,
@@ -527,6 +768,10 @@ export async function runCli(
 
   if (command === "commit") {
     return handleCommit(commandArgs, context);
+  }
+
+  if (command === "status") {
+    return handleStatus(commandArgs, context);
   }
 
   if (command === "pr") {

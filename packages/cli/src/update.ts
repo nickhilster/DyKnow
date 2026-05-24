@@ -9,8 +9,9 @@ import {
   type UpdateDraftBatch,
   UpdateDraftBatchSchema,
   type UpdateProvider,
+  createOpenAiByoKeyUpdateProvider,
   createLocalStubUpdateProvider,
-  draftUpdateProposal,
+  draftUpdateResult,
   parseDyknowConfig,
 } from "@dyknow/core";
 
@@ -87,6 +88,31 @@ async function readCurrentContent(
 function createUpdateProvider(providerId: string): UpdateProvider {
   if (providerId === "local") {
     return createLocalStubUpdateProvider();
+  }
+
+  if (providerId === "byo-key") {
+    const apiKey = process.env.OPENAI_API_KEY;
+    const model = process.env.DYKNOW_OPENAI_MODEL;
+
+    if (!apiKey) {
+      throw new Error(
+        'The "byo-key" update provider requires OPENAI_API_KEY to be set.',
+      );
+    }
+
+    if (!model) {
+      throw new Error(
+        'The "byo-key" update provider requires DYKNOW_OPENAI_MODEL to be set.',
+      );
+    }
+
+    return createOpenAiByoKeyUpdateProvider({
+      apiKey,
+      model,
+      ...(process.env.DYKNOW_OPENAI_RESPONSES_URL
+        ? { endpoint: process.env.DYKNOW_OPENAI_RESPONSES_URL }
+        : {}),
+    });
   }
 
   throw new Error(
@@ -193,6 +219,14 @@ export async function createUpdateDraftBatch(options: {
     formatRelativePath(rootPath, diffPath),
   );
   const drafts = [];
+  let totalAttempts = 0;
+  let totalDurationMs = 0;
+  let timedOutDrafts = 0;
+  let totalInputTokens = 0;
+  let totalOutputTokens = 0;
+  let totalTokens = 0;
+  let totalEstimatedCostUsd = 0;
+  let hasEstimatedCost = false;
 
   for (const affectedPage of repoDiff.affectedPages) {
     const page = config.pages.find(
@@ -212,7 +246,7 @@ export async function createUpdateDraftBatch(options: {
     );
 
     const currentContent = await readCurrentContent(rootPath, page.outputPath);
-    const proposal = await draftUpdateProposal({
+    const draftResult = await draftUpdateResult({
       config,
       provider,
       request: {
@@ -221,10 +255,22 @@ export async function createUpdateDraftBatch(options: {
         currentContent,
       },
     });
+    totalAttempts += draftResult.providerTelemetry.attempts;
+    totalDurationMs += draftResult.providerTelemetry.durationMs;
+    timedOutDrafts += draftResult.providerTelemetry.timedOut ? 1 : 0;
+    totalInputTokens += draftResult.providerTelemetry.usage.inputTokens;
+    totalOutputTokens += draftResult.providerTelemetry.usage.outputTokens;
+    totalTokens += draftResult.providerTelemetry.usage.totalTokens;
+
+    if (draftResult.providerTelemetry.usage.estimatedCostUsd !== null) {
+      totalEstimatedCostUsd += draftResult.providerTelemetry.usage.estimatedCostUsd;
+      hasEstimatedCost = true;
+    }
 
     drafts.push({
       affectedPage,
-      proposal,
+      proposal: draftResult.proposal,
+      providerTelemetry: draftResult.providerTelemetry,
     });
   }
 
@@ -239,6 +285,19 @@ export async function createUpdateDraftBatch(options: {
     summary: {
       affectedPages: repoDiff.affectedPages.length,
       draftedProposals: drafts.length,
+    },
+    providerTelemetry: {
+      totalAttempts,
+      totalDurationMs,
+      timedOutDrafts,
+      usage: {
+        inputTokens: totalInputTokens,
+        outputTokens: totalOutputTokens,
+        totalTokens,
+        estimatedCostUsd: hasEstimatedCost
+          ? Number(totalEstimatedCostUsd.toFixed(6))
+          : null,
+      },
     },
   });
 

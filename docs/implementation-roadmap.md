@@ -25,12 +25,13 @@ sources:
   - ../packages/cli/src/pr.ts
   - ../packages/cli/src/review.ts
   - ../packages/cli/src/scan.ts
+  - ../packages/cli/src/status.ts
   - ../packages/cli/src/update.ts
   - ../.github/workflows/ci.yml
   - dyknow/.state/repo-map.json
   - dyknow/.state/repo-diff.json
   - dyknow/.state/update-proposals.json
-last_reviewed: 2026-05-23
+last_reviewed: 2026-05-24
 confidence: medium
 ---
 
@@ -80,14 +81,14 @@ These items underpin every later phase. Land them once; reuse everywhere.
 ### Config system
 - [x] `dyknow.config.json` JSON Schema.
 - [x] Config loader + validator with helpful errors.
-- [ ] `dyknow init` command (interactive prompts, stack detection, sensible defaults).
+- [x] `dyknow init` command (interactive prompts, stack detection, sensible defaults).
 - [x] Default ignore patterns enforced regardless of user config (`.env`, `secrets/**`, etc.).
 
 ### Scanner
 - [x] File reader honoring `allowedSources` / `ignoredSources`.
 - [x] Secret-pattern detection in scanned files (warn, never include).
-- [ ] Basic AST/text parsers for: Markdown, JSON, YAML, OpenAPI, package files (package.json, pyproject.toml, etc.).
-- [ ] Route/endpoint extraction for at least one stack (e.g., Next.js or Express).
+- [x] Broaden AST/text parsers for Markdown, JSON, YAML, and OpenAPI beyond the current package-manifest slice (`package.json`, `pyproject.toml`, `requirements*.txt`).
+- [x] Route/endpoint extraction for at least one stack (e.g., Next.js or Express).
 - [x] Dependency extraction.
 - [x] `dyknow scan` command — produces repo map.
 
@@ -99,19 +100,19 @@ These items underpin every later phase. Land them once; reuse everywhere.
 
 ### LLM runner
 - [x] LLM provider abstraction (interface for local model, BYO key, vendor).
-- [ ] At least one provider implementation (BYO key recommended for MVP).
-- [ ] Token/cost accounting per call.
-- [ ] Retry + timeout policy.
-- [ ] Local-only mode that hard-fails if a remote provider is selected.
+- [x] At least one provider implementation (BYO key recommended for MVP).
+- [x] Token/cost accounting per call.
+- [x] Retry + timeout policy.
+- [x] Local-only mode that hard-fails if a remote provider is selected.
 
 ### Drafting engine
 - [x] Prompt templates per page type (overview, feature map, architecture, setup, AGENTS.md).
 - [x] `dyknow update` command — drafts updates for each affected page.
 - [x] Per-update output: what changed, why, source files cited, exact proposed text, confidence, risk.
-- [ ] High-risk flag enforcement (never auto-apply).
+- [x] High-risk flag enforcement (never auto-apply).
 
 ### Review flow
-- [ ] `dyknow review` — CLI walk-through of pending updates (approve / reject / edit / regenerate / skip).
+- [x] `dyknow review` — CLI walk-through of pending updates (approve / reject / edit / regenerate / skip).
 - [x] Edit-in-editor for proposed text.
 - [x] Persist review decisions to snapshot.
 - [x] Persist one edited proposal text back into the review snapshot.
@@ -130,14 +131,14 @@ These items underpin every later phase. Land them once; reuse everywhere.
 - [x] `dyknow log` — pretty-print recent audit entries.
 
 ### Initial maintained pages
-- [ ] Product Overview generator.
-- [ ] Feature Map generator.
-- [ ] Architecture Summary generator.
-- [ ] Setup Guide generator.
-- [ ] AGENTS.md generator.
+- [x] Product Overview generator.
+- [x] Feature Map generator.
+- [x] Architecture Summary generator.
+- [x] Setup Guide generator.
+- [x] AGENTS.md generator.
 
 ### Dogfood
-- [ ] Run DyKnow Local on this docs repo and verify it can maintain its own pages.
+- [x] Run DyKnow Local on this docs repo and verify it can maintain its own pages.
 - [ ] Run DyKnow Local on Teambotics, LTBBuddy, Code2Motion, EasyBuddy, StoryTellr, NikBot repos.
 - [ ] Collect findings, file issues, iterate.
 

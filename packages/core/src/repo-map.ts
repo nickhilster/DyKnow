@@ -6,6 +6,8 @@ export const RepoFileKindSchema = z.enum([
   "json",
   "markdown",
   "plaintext",
+  "python",
+  "toml",
   "typescript",
   "yaml",
   "unknown",
@@ -34,6 +36,16 @@ export const DependencyRecordSchema = z.object({
   version: z.string().min(1),
 });
 
+export const RepoRouteKindSchema = z.enum(["api", "page"]);
+
+export const RepoRouteSchema = z.object({
+  framework: z.string().min(1),
+  kind: RepoRouteKindSchema,
+  path: z.string().min(1),
+  handler: z.string().min(1),
+  methods: z.array(z.string().min(1)).default([]),
+});
+
 export const RepoFileSummarySchema = z.object({
   path: z.string().min(1),
   kind: RepoFileKindSchema,
@@ -41,6 +53,9 @@ export const RepoFileSummarySchema = z.object({
   lineCount: z.number().int().nonnegative(),
   signals: z.array(RepoFileSignalSchema),
   dependencies: z.array(DependencyRecordSchema),
+  routes: z.array(RepoRouteSchema).default([]),
+  headings: z.array(z.string().min(1)).default([]),
+  topLevelKeys: z.array(z.string().min(1)).default([]),
 });
 
 export const RepoMapWarningCodeSchema = z.enum([
@@ -68,6 +83,8 @@ export type RepoFileKind = z.infer<typeof RepoFileKindSchema>;
 export type RepoFileSignal = z.infer<typeof RepoFileSignalSchema>;
 export type DependencySection = z.infer<typeof DependencySectionSchema>;
 export type DependencyRecord = z.infer<typeof DependencyRecordSchema>;
+export type RepoRouteKind = z.infer<typeof RepoRouteKindSchema>;
+export type RepoRoute = z.infer<typeof RepoRouteSchema>;
 export type RepoFileSummary = z.infer<typeof RepoFileSummarySchema>;
 export type RepoMapWarningCode = z.infer<typeof RepoMapWarningCodeSchema>;
 export type RepoMapWarning = z.infer<typeof RepoMapWarningSchema>;

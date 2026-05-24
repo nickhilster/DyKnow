@@ -294,12 +294,80 @@ function createDefaultMaintainedPages() {
   ] satisfies DyknowConfig["pages"];
 }
 
+function createBaseAllowedSources(): string[] {
+  return [
+    "README.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    ".github/**",
+    "docs/**",
+    "packages/**",
+    "package.json",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "tsconfig*.json",
+    "biome.json",
+  ];
+}
+
+export type InitialStackProfile =
+  | "generic"
+  | "nextjs"
+  | "express"
+  | "python";
+
+function createStackAwareAllowedSources(
+  stackProfile: InitialStackProfile,
+): string[] {
+  const baseSources = createBaseAllowedSources();
+
+  if (stackProfile === "nextjs") {
+    return dedupePatterns([
+      ...baseSources,
+      "app/**",
+      "src/**",
+      "pages/**",
+      "public/**",
+      "next.config.*",
+      "middleware.*",
+    ]);
+  }
+
+  if (stackProfile === "express") {
+    return dedupePatterns([
+      ...baseSources,
+      "src/**",
+      "server/**",
+      "routes/**",
+      "api/**",
+    ]);
+  }
+
+  if (stackProfile === "python") {
+    return dedupePatterns([
+      ...baseSources,
+      "src/**",
+      "app/**",
+      "api/**",
+      "pyproject.toml",
+      "requirements*.txt",
+      "poetry.lock",
+    ]);
+  }
+
+  return baseSources;
+}
+
 export function createInitialDyknowConfig(options?: {
   approvalRequired?: boolean;
+  allowedSources?: string[];
   llmProvider?: LlmProvider;
   mode?: DyknowConfig["mode"];
   projectName?: string;
   publishTargets?: string[];
+  stackProfile?: InitialStackProfile;
 }): DyknowConfig {
   const mode = options?.mode ?? "local-only";
   const llmProvider =
@@ -308,19 +376,9 @@ export function createInitialDyknowConfig(options?: {
   const result = validateDyknowConfig({
     projectName: options?.projectName ?? "DyKnow",
     mode,
-    allowedSources: [
-      "README.md",
-      "AGENTS.md",
-      "CLAUDE.md",
-      "CHANGELOG.md",
-      "CONTRIBUTING.md",
-      ".github/**",
-      "docs/**",
-      "packages/**",
-      "package.json",
-      "tsconfig*.json",
-      "biome.json",
-    ],
+    allowedSources:
+      options?.allowedSources ??
+      createStackAwareAllowedSources(options?.stackProfile ?? "generic"),
     ignoredSources: [],
     pages: createDefaultMaintainedPages(),
     approvalRequired: options?.approvalRequired ?? true,

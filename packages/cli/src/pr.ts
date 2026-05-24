@@ -28,6 +28,7 @@ function getGhCommand(): string {
 }
 
 export type PrOptions = {
+  allowHighRisk: boolean;
   base: string;
   branch?: string;
   inputPath: string;
@@ -176,6 +177,7 @@ export function buildPrBody(options: {
 
 export function parsePrOptions(args: readonly string[]): PrOptions {
   let base = DEFAULT_PR_BASE_BRANCH;
+  let allowHighRisk = false;
   let branch: string | undefined;
   let inputPath = DEFAULT_UPDATE_OUTPUT_PATH;
   let message = DEFAULT_COMMIT_MESSAGE;
@@ -209,6 +211,11 @@ export function parsePrOptions(args: readonly string[]): PrOptions {
 
       branch = value;
       index += 1;
+      continue;
+    }
+
+    if (argument === "--allow-high-risk") {
+      allowHighRisk = true;
       continue;
     }
 
@@ -252,13 +259,14 @@ export function parsePrOptions(args: readonly string[]): PrOptions {
   }
 
   if (branch) {
-    return { base, branch, inputPath, message, title };
+    return { allowHighRisk, base, branch, inputPath, message, title };
   }
 
-  return { base, inputPath, message, title };
+  return { allowHighRisk, base, inputPath, message, title };
 }
 
 export async function createPrResult(options: {
+  allowHighRisk?: boolean;
   cwd: string;
   base: string;
   branch?: string;
@@ -311,6 +319,7 @@ export async function createPrResult(options: {
     cwd: rootPath,
     inputPath: options.inputPath,
     message: options.message,
+    ...(options.allowHighRisk ? { allowHighRisk: options.allowHighRisk } : {}),
   });
 
   await runGit(rootPath, ["push", "--set-upstream", "origin", branch]);

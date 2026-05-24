@@ -70,6 +70,204 @@ export const UpdateProposalSchema = z.object({
   requiresHumanReview: z.boolean(),
 });
 
+// ---------------------------------------------------------------------------
+// Risk classifier
+// ---------------------------------------------------------------------------
+
+/**
+ * A single rule in the risk classifier. A proposal is stamped `high` when
+ * `minSignals` or more of the searchable fields (page title, output path,
+ * matched source paths, current page content) contain the keyword.
+ *
+ * Rules are additive: the *highest* risk level that fires across all rules wins.
+ */
+export const RiskClassifierRuleSchema = z.object({
+  /** Human-readable label for the rule category (e.g. "pricing"). */
+  category: z.string().min(1),
+  /** Keywords to search for (case-insensitive, substring match). */
+  keywords: z.array(z.string().min(1)).min(1),
+  /**
+   * Risk level to assign when this rule fires.
+   * Default: "high". Rules with `risk: "medium"` act as tie-breakers when no
+   * high-risk rule fires.
+   */
+  risk: RiskLevelSchema.default("high"),
+  /**
+   * Minimum number of searchable fields that must contain at least one keyword
+   * for the rule to fire. Default: 1 (any signal is enough).
+   */
+  minSignals: z.number().int().positive().default(1),
+});
+
+export type RiskClassifierRule = z.infer<typeof RiskClassifierRuleSchema>;
+
+/**
+ * The canonical DyKnow risk classifier ruleset.
+ *
+ * High-risk categories require `--allow-high-risk` to publish.
+ * Medium-risk categories flag the proposal for careful review but do not block
+ * publication.
+ *
+ * To propose a change to this rubric, open a PR with:
+ * - The new or modified rule
+ * - A justification referencing the harm model it addresses
+ * - A test case that exercises the rule
+ */
+export const RISK_CLASSIFIER_RULES: readonly RiskClassifierRule[] = [
+  {
+    category: "pricing",
+    keywords: [
+      "pricing",
+      "price",
+      "cost",
+      "billing",
+      "subscription",
+      "invoice",
+      "payment",
+      "charge",
+      "fee",
+      "tier",
+    ],
+    risk: "high",
+    minSignals: 1,
+  },
+  {
+    category: "legal",
+    keywords: [
+      "legal",
+      "liability",
+      "indemnity",
+      "warranty",
+      "disclaimer",
+      "terms of service",
+      "terms-of-service",
+      "terms of use",
+      "terms-of-use",
+      "privacy policy",
+      "privacy-policy",
+      "gdpr",
+      "ccpa",
+      "dmca",
+      "intellectual property",
+      "copyright",
+    ],
+    risk: "high",
+    minSignals: 1,
+  },
+  {
+    category: "compliance",
+    keywords: [
+      "compliance",
+      "regulatory",
+      "regulation",
+      "hipaa",
+      "sox",
+      "pci",
+      "iso 27001",
+      "soc 2",
+      "soc2",
+      "fedramp",
+      "audit",
+      "certified",
+      "certification",
+    ],
+    risk: "high",
+    minSignals: 1,
+  },
+  {
+    category: "security",
+    keywords: [
+      "security",
+      "vulnerability",
+      "cve",
+      "exploit",
+      "penetration",
+      "pentest",
+      "authentication",
+      "authorization",
+      "credential",
+      "secret",
+      "token",
+      "api key",
+      "password",
+      "encryption",
+      "zero-day",
+    ],
+    risk: "high",
+    minSignals: 2,
+  },
+  {
+    category: "customer-commitment",
+    keywords: [
+      "sla",
+      "service level",
+      "uptime",
+      "availability",
+      "enterprise commitment",
+      "enterprise commitments",
+      "guaranteed",
+      "guarantee",
+      "refund",
+    ],
+    risk: "high",
+    minSignals: 1,
+  },
+  {
+    category: "pii",
+    keywords: [
+      "personal data",
+      "personally identifiable",
+      "pii",
+      "health data",
+      "medical",
+      "financial data",
+      "date of birth",
+      "social security",
+      "passport",
+      "driver's license",
+    ],
+    risk: "high",
+    minSignals: 1,
+  },
+] as const;
+
+// ---------------------------------------------------------------------------
+// Confidence scoring rubric
+// ---------------------------------------------------------------------------
+
+/**
+ * The confidence score on a proposal reflects how well the evidence supports
+ * the drafted update. Providers must populate this field; the rubric below
+ * defines the local-stub heuristic and documents the semantics expected from
+ * remote providers.
+ *
+ * | Level  | Meaning                                                          |
+ * |--------|------------------------------------------------------------------|
+ * | high   | 3+ matched source paths, or strong primary-source overlap        |
+ * | medium | 2 matched source paths, or existing page content available       |
+ * | low    | Single matched source path, no existing content to validate      |
+ *
+ * Remote providers (BYO key, vendor-hosted) must map their internal confidence
+ * signal to one of these three values in the JSON schema they return.
+ */
+export const CONFIDENCE_SCORING_RUBRIC = {
+  high: {
+    description: "3 or more matched source paths, or strong primary-source overlap.",
+    minMatchedSources: 3,
+  },
+  medium: {
+    description: "2 matched source paths, or existing page content available.",
+    minMatchedSources: 2,
+  },
+  low: {
+    description: "Single matched source path, no existing content to validate against.",
+    minMatchedSources: 1,
+  },
+} as const satisfies Record<
+  z.infer<typeof ConfidenceLevelSchema>,
+  { description: string; minMatchedSources: number }
+>;
+
 export const AuditLogEntrySchema = z.object({
   action: z.string().min(1, "Audit entries need an action."),
   actor: z.string().min(1, "Audit entries need an actor."),

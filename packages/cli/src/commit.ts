@@ -4,6 +4,8 @@ import { dirname, resolve } from "node:path";
 import { promisify } from "node:util";
 
 import {
+  DEFAULT_REPO_DIFF_OUTPUT_PATH,
+  DEFAULT_REPO_MAP_OUTPUT_PATH,
   DEFAULT_UPDATE_OUTPUT_PATH,
   type UpdateDraftBatch,
   UpdateDraftBatchSchema,
@@ -25,6 +27,7 @@ const execFileAsync = promisify(execFile);
 export const DEFAULT_COMMIT_MESSAGE = "docs: apply approved dyknow updates";
 
 export type CommitOptions = {
+  allowHighRisk: boolean;
   inputPath: string;
   message: string;
 };
@@ -34,6 +37,15 @@ export type CommitResult = {
   inputPath: string;
   publishedProposals: number;
 };
+
+function getHighRiskPageIds(
+  drafts: readonly UpdateDraftBatch["drafts"][number][],
+) {
+  return drafts
+    .filter((draft) => draft.proposal.risk === "high")
+    .map((draft) => draft.proposal.pageId)
+    .sort((left, right) => left.localeCompare(right));
+}
 
 type PendingAuditEntry = {
   action: string;
@@ -68,13 +80,19 @@ function parseUpdateBatch(
   }
 }
 
-async function runGit(cwd: string, args: readonly string[]): Promise<string> {
+async function runGit(
+  cwd: string,
+  args: readonly string[],
+  options?: {
+    trimOutput?: boolean;
+  },
+): Promise<string> {
   const result = await execFileAsync("git", [...args], {
     cwd,
     encoding: "utf8",
   });
 
-  return result.stdout.trim();
+  return options?.trimOutput === false ? result.stdout : result.stdout.trim();
 }
 
 function parseStatusPaths(status: string): string[] {
@@ -112,7 +130,9 @@ async function ensureCommitableWorktree(
     "--porcelain=v1",
     "-z",
     "--untracked-files=all",
-  ]);
+  ], {
+    trimOutput: false,
+  });
   const disallowedPaths = parseStatusPaths(status).filter(
     (path) => !allowedPaths.has(path),
   );
@@ -127,6 +147,7 @@ async function ensureCommitableWorktree(
 export function parseCommitOptions(args: readonly string[]): CommitOptions {
   let inputPath = DEFAULT_UPDATE_OUTPUT_PATH;
   let message = DEFAULT_COMMIT_MESSAGE;
+  let allowHighRisk = false;
 
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
@@ -159,14 +180,20 @@ export function parseCommitOptions(args: readonly string[]): CommitOptions {
       continue;
     }
 
+    if (argument === "--allow-high-risk") {
+      allowHighRisk = true;
+      continue;
+    }
+
     throw new Error(`Unknown commit option: ${argument}`);
   }
 
-  return { inputPath, message };
+  return { allowHighRisk, inputPath, message };
 }
 
 export async function createCommitResult(options: {
   additionalAuditEntries?: readonly PendingAuditEntry[];
+  allowHighRisk?: boolean;
   cwd: string;
   inputPath: string;
   message: string;
@@ -178,9 +205,15 @@ export async function createCommitResult(options: {
     "Commit input path",
   );
   const inputPathRelative = formatRelativePath(rootPath, inputPath);
+  const allowedStatePaths = new Set([
+    inputPathRelative,
+    DEFAULT_REPO_DIFF_OUTPUT_PATH,
+    DEFAULT_REPO_MAP_OUTPUT_PATH,
+    DEFAULT_AUDIT_LOG_PATH,
+  ]);
   let snapshotText: string;
 
-  await ensureCommitableWorktree(rootPath, new Set([inputPathRelative]));
+  await ensureCommitableWorktree(rootPath, allowedStatePaths);
 
   try {
     snapshotText = await readFile(inputPath, "utf8");
@@ -207,6 +240,14 @@ export async function createCommitResult(options: {
   if (approvedDrafts.length === 0) {
     throw new Error(
       `No approved update proposals were found in ${formatRelativePath(rootPath, inputPath)}. Run dyknow review --approve first.`,
+    );
+  }
+
+  const highRiskPageIds = getHighRiskPageIds(approvedDrafts);
+
+  if (highRiskPageIds.length > 0 && !options.allowHighRisk) {
+    throw new Error(
+      `Approved high-risk update proposals require --allow-high-risk before publish. Affected pages: ${highRiskPageIds.join(", ")}.`,
     );
   }
 

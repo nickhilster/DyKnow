@@ -321,4 +321,206 @@ describe("dyknow scan", () => {
       }),
     ]);
   });
+
+  it("extracts route metadata for Next.js and Express-style handlers", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-scan-"));
+
+    await mkdir(join(root, "app", "blog", "[slug]"), { recursive: true });
+    await mkdir(join(root, "src", "pages", "api", "users"), {
+      recursive: true,
+    });
+    await mkdir(join(root, "src", "routes"), { recursive: true });
+
+    await writeFile(join(root, "README.md"), "# Fixture\n", "utf8");
+    await writeFile(
+      join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "fixture",
+          dependencies: {
+            next: "^16.0.0",
+            express: "^5.0.0",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(
+      join(root, "app", "blog", "[slug]", "page.tsx"),
+      "export default function Page() { return null; }\n",
+      "utf8",
+    );
+    await writeFile(
+      join(root, "src", "pages", "api", "users", "index.ts"),
+      "export default function handler() { return null; }\n",
+      "utf8",
+    );
+    await writeFile(
+      join(root, "src", "routes", "users.ts"),
+      [
+        'router.get("/users", listUsers);',
+        'router.post("/users", createUser);',
+      ].join("\n"),
+      "utf8",
+    );
+
+    await runCli(["init", "--project-name", "Fixture"], { cwd: root });
+
+    const exitCode = await runCli(["scan"], { cwd: root });
+    const repoMapText = await readFile(
+      join(root, DEFAULT_REPO_MAP_OUTPUT_PATH),
+      "utf8",
+    );
+    const repoMap = RepoMapSchema.parse(JSON.parse(repoMapText));
+    const nextPageFile = repoMap.files.find(
+      (file) => file.path === "app/blog/[slug]/page.tsx",
+    );
+    const nextApiFile = repoMap.files.find(
+      (file) => file.path === "src/pages/api/users/index.ts",
+    );
+    const expressRouteFile = repoMap.files.find(
+      (file) => file.path === "src/routes/users.ts",
+    );
+
+    expect(exitCode).toBe(0);
+    expect(nextPageFile?.routes).toEqual([
+      expect.objectContaining({
+        framework: "nextjs-app",
+        kind: "page",
+        path: "/blog/:slug",
+      }),
+    ]);
+    expect(nextApiFile?.routes).toEqual([
+      expect.objectContaining({
+        framework: "nextjs-pages",
+        kind: "api",
+        path: "/users",
+        methods: ["ANY"],
+      }),
+    ]);
+    expect(expressRouteFile?.routes).toEqual([
+      expect.objectContaining({
+        framework: "express",
+        kind: "api",
+        path: "/users",
+        methods: ["GET", "POST"],
+      }),
+    ]);
+  });
+
+  it("extracts Python dependency manifests from pyproject and requirements files", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-scan-"));
+
+    await mkdir(join(root, "src"), { recursive: true });
+    await writeFile(join(root, "README.md"), "# Fixture\n", "utf8");
+    await writeFile(
+      join(root, "pyproject.toml"),
+      [
+        '[project]',
+        'dependencies = ["fastapi>=0.115", "pydantic>=2.0"]',
+        "",
+        "[tool.poetry.group.dev.dependencies]",
+        'pytest = "^8.3.0"',
+      ].join("\n"),
+      "utf8",
+    );
+    await writeFile(
+      join(root, "requirements-dev.txt"),
+      ["ruff>=0.6", "mypy>=1.10"].join("\n"),
+      "utf8",
+    );
+
+    await runCli(["init", "--project-name", "Fixture"], { cwd: root });
+
+    const exitCode = await runCli(["scan"], { cwd: root });
+    const repoMapText = await readFile(
+      join(root, DEFAULT_REPO_MAP_OUTPUT_PATH),
+      "utf8",
+    );
+    const repoMap = RepoMapSchema.parse(JSON.parse(repoMapText));
+    const pyprojectFile = repoMap.files.find(
+      (file) => file.path === "pyproject.toml",
+    );
+    const requirementsFile = repoMap.files.find(
+      (file) => file.path === "requirements-dev.txt",
+    );
+
+    expect(exitCode).toBe(0);
+    expect(pyprojectFile?.dependencies).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: "fastapi",
+          section: "dependencies",
+          version: ">=0.115",
+        }),
+        expect.objectContaining({
+          name: "pytest",
+          section: "devDependencies",
+        }),
+      ]),
+    );
+    expect(requirementsFile?.dependencies).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: "ruff",
+          section: "devDependencies",
+          version: ">=0.6",
+        }),
+      ]),
+    );
+  });
+
+  it("extracts markdown headings and OpenAPI routes from source documents", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-scan-"));
+
+    await mkdir(join(root, "docs"), { recursive: true });
+    await mkdir(join(root, "docs", "api"), { recursive: true });
+    await writeFile(
+      join(root, "README.md"),
+      ["# Fixture", "", "## Overview", "", "### CLI"].join("\n"),
+      "utf8",
+    );
+    await writeFile(
+      join(root, "docs", "api", "openapi.yaml"),
+      [
+        "openapi: 3.1.0",
+        "info:",
+        "  title: Fixture API",
+        "paths:",
+        "  /users:",
+        "    get:",
+        "      summary: List users",
+        "    post:",
+        "      summary: Create user",
+      ].join("\n"),
+      "utf8",
+    );
+
+    await runCli(["init", "--project-name", "Fixture"], { cwd: root });
+
+    const exitCode = await runCli(["scan"], { cwd: root });
+    const repoMapText = await readFile(
+      join(root, DEFAULT_REPO_MAP_OUTPUT_PATH),
+      "utf8",
+    );
+    const repoMap = RepoMapSchema.parse(JSON.parse(repoMapText));
+    const readmeFile = repoMap.files.find((file) => file.path === "README.md");
+    const openApiFile = repoMap.files.find(
+      (file) => file.path === "docs/api/openapi.yaml",
+    );
+
+    expect(exitCode).toBe(0);
+    expect(readmeFile?.headings).toEqual(["Fixture", "Overview", "CLI"]);
+    expect(openApiFile?.topLevelKeys).toContain("openapi");
+    expect(openApiFile?.routes).toEqual([
+      expect.objectContaining({
+        framework: "openapi",
+        kind: "api",
+        path: "/users",
+        methods: ["GET", "POST"],
+      }),
+    ]);
+  });
 });

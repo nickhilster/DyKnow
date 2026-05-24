@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import {
   AuditLogEntrySchema,
+  CONFIDENCE_SCORING_RUBRIC,
   PageDefinitionSchema,
+  RISK_CLASSIFIER_RULES,
   SourceMapEntrySchema,
   UpdateProposalSchema,
 } from "../src/index.js";
@@ -58,5 +60,77 @@ describe("shared engine contracts", () => {
 
     expect(proposal.reviewState).toBe("Needs review");
     expect(auditLogEntry.outputsAffected).toEqual(["AGENTS.md"]);
+  });
+});
+
+describe("risk classifier ruleset", () => {
+  it("has at least one rule for each documented high-risk category", () => {
+    const expectedCategories = [
+      "pricing",
+      "legal",
+      "compliance",
+      "security",
+      "customer-commitment",
+      "pii",
+    ];
+
+    for (const category of expectedCategories) {
+      expect(
+        RISK_CLASSIFIER_RULES.some((rule) => rule.category === category),
+        `Expected a risk classifier rule for category "${category}"`,
+      ).toBe(true);
+    }
+  });
+
+  it("all rules assign a valid risk level", () => {
+    const validLevels = new Set(["low", "medium", "high"]);
+
+    for (const rule of RISK_CLASSIFIER_RULES) {
+      expect(
+        validLevels.has(rule.risk),
+        `Rule "${rule.category}" has invalid risk level "${rule.risk}"`,
+      ).toBe(true);
+    }
+  });
+
+  it("all rules have at least one non-empty keyword", () => {
+    for (const rule of RISK_CLASSIFIER_RULES) {
+      expect(
+        rule.keywords.length,
+        `Rule "${rule.category}" must have at least one keyword`,
+      ).toBeGreaterThan(0);
+
+      for (const keyword of rule.keywords) {
+        expect(
+          keyword.trim().length,
+          `Rule "${rule.category}" has an empty keyword`,
+        ).toBeGreaterThan(0);
+      }
+    }
+  });
+});
+
+describe("confidence scoring rubric", () => {
+  it("defines high, medium, and low levels", () => {
+    expect(CONFIDENCE_SCORING_RUBRIC.high).toBeDefined();
+    expect(CONFIDENCE_SCORING_RUBRIC.medium).toBeDefined();
+    expect(CONFIDENCE_SCORING_RUBRIC.low).toBeDefined();
+  });
+
+  it("minMatchedSources is strictly ordered high > medium >= low", () => {
+    expect(CONFIDENCE_SCORING_RUBRIC.high.minMatchedSources).toBeGreaterThan(
+      CONFIDENCE_SCORING_RUBRIC.medium.minMatchedSources,
+    );
+    expect(
+      CONFIDENCE_SCORING_RUBRIC.medium.minMatchedSources,
+    ).toBeGreaterThanOrEqual(CONFIDENCE_SCORING_RUBRIC.low.minMatchedSources);
+  });
+
+  it("each level has a non-empty description", () => {
+    for (const level of ["high", "medium", "low"] as const) {
+      expect(
+        CONFIDENCE_SCORING_RUBRIC[level].description.trim().length,
+      ).toBeGreaterThan(0);
+    }
   });
 });
