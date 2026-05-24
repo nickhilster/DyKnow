@@ -233,7 +233,7 @@ function formatEmptyAuditReport(options: {
       ? options.reportPaths.join(" and ")
       : options.inputPath;
 
-  return `No audit entries found in ${scopeLabel} for source=${options.source} and action=${options.action}.`;
+  return `No audit entries found in ${scopeLabel}${formatFilterLabel(options.source, options.action)}.`;
 }
 
 function formatAuditReportHeader(options: {
@@ -243,12 +243,21 @@ function formatAuditReportHeader(options: {
   source: LogSource;
   action: LogActionFilter;
 }) {
-  const filterLabel =
-    options.source === "all" && options.action === "all"
-      ? ""
-      : ` for source=${options.source} and action=${options.action}`;
+  return `Recent audit entries from ${options.sourceLabels.join(" and ")}${formatFilterLabel(options.source, options.action)} (showing ${options.shownEntries} of ${options.totalEntries}):`;
+}
 
-  return `Recent audit entries from ${options.sourceLabels.join(" and ")}${filterLabel} (showing ${options.shownEntries} of ${options.totalEntries}):`;
+function formatFilterLabel(source: LogSource, action: LogActionFilter): string {
+  const filters: string[] = [];
+
+  if (source !== "all") {
+    filters.push(`source=${source}`);
+  }
+
+  if (action !== "all") {
+    filters.push(`action=${action}`);
+  }
+
+  return filters.length > 0 ? ` for ${filters.join(" and ")}` : "";
 }
 
 function getOrderedSourceLabels(
