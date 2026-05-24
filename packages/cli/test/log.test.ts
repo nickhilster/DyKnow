@@ -655,6 +655,29 @@ describe("dyknow log", () => {
       `Recent audit entries from ${customInputPath} for action=publish (showing 1 of 1):`,
     );
     expect(stdout[0]).not.toContain("source=runtime");
+
+    stdout.length = 0;
+    stderr.length = 0;
+
+    const sourceAllExitCode = await runCli(
+      ["log", "--input", customInputPath, "--source", "all"],
+      {
+        cwd: root,
+        stdout: (message) => {
+          stdout.push(message);
+        },
+        stderr: (message) => {
+          stderr.push(message);
+        },
+      },
+    );
+
+    expect(sourceAllExitCode).toBe(0);
+    expect(stderr).toEqual([]);
+    expect(stdout[0]).toContain(
+      `Recent audit entries from ${customInputPath} (showing 1 of 1):`,
+    );
+    expect(stdout[0]).not.toContain("source=");
   });
 
   it("rejects absolute log input paths", async () => {
