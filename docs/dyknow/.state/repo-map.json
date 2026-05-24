@@ -92,8 +92,8 @@
     {
       "path": ".github/workflows/ci.yml",
       "kind": "yaml",
-      "size": 530,
-      "lineCount": 33,
+      "size": 680,
+      "lineCount": 36,
       "signals": [
         "openapi",
         "config"
@@ -265,8 +265,8 @@
     {
       "path": "docs/setup-guide.md",
       "kind": "markdown",
-      "size": 11616,
-      "lineCount": 310,
+      "size": 14547,
+      "lineCount": 362,
       "signals": [
         "documentation"
       ],
@@ -295,8 +295,8 @@
     {
       "path": "docs/trust-and-security.md",
       "kind": "markdown",
-      "size": 3271,
-      "lineCount": 121,
+      "size": 5952,
+      "lineCount": 169,
       "signals": [
         "documentation"
       ],
@@ -354,8 +354,8 @@
     {
       "path": "packages/cli/src/audit.ts",
       "kind": "typescript",
-      "size": 2337,
-      "lineCount": 89,
+      "size": 2979,
+      "lineCount": 106,
       "signals": [
         "source-code"
       ],
@@ -374,8 +374,8 @@
     {
       "path": "packages/cli/src/commit.ts",
       "kind": "typescript",
-      "size": 6266,
-      "lineCount": 248,
+      "size": 7405,
+      "lineCount": 294,
       "signals": [
         "source-code"
       ],
@@ -384,8 +384,8 @@
     {
       "path": "packages/cli/src/diff.ts",
       "kind": "typescript",
-      "size": 3956,
-      "lineCount": 157,
+      "size": 4180,
+      "lineCount": 170,
       "signals": [
         "source-code"
       ],
@@ -394,8 +394,8 @@
     {
       "path": "packages/cli/src/index.ts",
       "kind": "typescript",
-      "size": 12962,
-      "lineCount": 470,
+      "size": 14976,
+      "lineCount": 548,
       "signals": [
         "source-code"
       ],
@@ -404,8 +404,8 @@
     {
       "path": "packages/cli/src/log.ts",
       "kind": "typescript",
-      "size": 11093,
-      "lineCount": 428,
+      "size": 11456,
+      "lineCount": 441,
       "signals": [
         "source-code"
       ],
@@ -414,8 +414,8 @@
     {
       "path": "packages/cli/src/pr.ts",
       "kind": "typescript",
-      "size": 8907,
-      "lineCount": 367,
+      "size": 8990,
+      "lineCount": 366,
       "signals": [
         "source-code"
       ],
@@ -424,8 +424,8 @@
     {
       "path": "packages/cli/src/review.ts",
       "kind": "typescript",
-      "size": 19105,
-      "lineCount": 757,
+      "size": 19427,
+      "lineCount": 778,
       "signals": [
         "source-code"
       ],
@@ -434,8 +434,18 @@
     {
       "path": "packages/cli/src/scan.ts",
       "kind": "typescript",
-      "size": 7279,
-      "lineCount": 308,
+      "size": 10407,
+      "lineCount": 404,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": []
+    },
+    {
+      "path": "packages/cli/src/security.ts",
+      "kind": "typescript",
+      "size": 6465,
+      "lineCount": 266,
       "signals": [
         "source-code"
       ],
@@ -444,8 +454,8 @@
     {
       "path": "packages/cli/src/update.ts",
       "kind": "typescript",
-      "size": 5494,
-      "lineCount": 227,
+      "size": 5941,
+      "lineCount": 254,
       "signals": [
         "source-code"
       ],
@@ -454,8 +464,8 @@
     {
       "path": "packages/cli/test/commit.test.ts",
       "kind": "typescript",
-      "size": 5660,
-      "lineCount": 178,
+      "size": 9758,
+      "lineCount": 311,
       "signals": [
         "source-code"
       ],
@@ -484,8 +494,8 @@
     {
       "path": "packages/cli/test/log.test.ts",
       "kind": "typescript",
-      "size": 19812,
-      "lineCount": 611,
+      "size": 21448,
+      "lineCount": 660,
       "signals": [
         "source-code"
       ],
@@ -494,8 +504,8 @@
     {
       "path": "packages/cli/test/pr.test.ts",
       "kind": "typescript",
-      "size": 12666,
-      "lineCount": 394,
+      "size": 16374,
+      "lineCount": 504,
       "signals": [
         "source-code"
       ],
@@ -504,8 +514,8 @@
     {
       "path": "packages/cli/test/review.test.ts",
       "kind": "typescript",
-      "size": 18480,
-      "lineCount": 598,
+      "size": 22871,
+      "lineCount": 723,
       "signals": [
         "source-code"
       ],
@@ -514,8 +524,8 @@
     {
       "path": "packages/cli/test/scan.test.ts",
       "kind": "typescript",
-      "size": 1949,
-      "lineCount": 65,
+      "size": 9576,
+      "lineCount": 325,
       "signals": [
         "source-code"
       ],
@@ -524,8 +534,8 @@
     {
       "path": "packages/cli/test/update.test.ts",
       "kind": "typescript",
-      "size": 5125,
-      "lineCount": 174,
+      "size": 8183,
+      "lineCount": 277,
       "signals": [
         "source-code"
       ],
@@ -561,8 +571,8 @@
     {
       "path": "packages/core/src/config-schema.ts",
       "kind": "typescript",
-      "size": 4183,
-      "lineCount": 181,
+      "size": 5213,
+      "lineCount": 220,
       "signals": [
         "config",
         "source-code"
@@ -572,8 +582,8 @@
     {
       "path": "packages/core/src/config.ts",
       "kind": "typescript",
-      "size": 6207,
-      "lineCount": 250,
+      "size": 10577,
+      "lineCount": 390,
       "signals": [
         "config",
         "source-code"
@@ -613,8 +623,8 @@
     {
       "path": "packages/core/src/repo-map.ts",
       "kind": "typescript",
-      "size": 1878,
-      "lineCount": 68,
+      "size": 2050,
+      "lineCount": 75,
       "signals": [
         "source-code"
       ],
@@ -643,8 +653,8 @@
     {
       "path": "packages/core/test/config-schema.test.ts",
       "kind": "typescript",
-      "size": 1168,
-      "lineCount": 38,
+      "size": 1792,
+      "lineCount": 53,
       "signals": [
         "config",
         "source-code"
@@ -654,8 +664,8 @@
     {
       "path": "packages/core/test/config.test.ts",
       "kind": "typescript",
-      "size": 2252,
-      "lineCount": 88,
+      "size": 6263,
+      "lineCount": 230,
       "signals": [
         "config",
         "source-code"
@@ -745,6 +755,6 @@
   ],
   "outputPath": "docs/dyknow/.state/repo-map.json",
   "rootPath": "C:\\DEV\\DyKnow",
-  "scannedAt": "2026-05-24T01:06:51.552Z",
+  "scannedAt": "2026-05-24T03:47:02.619Z",
   "warnings": []
 }
