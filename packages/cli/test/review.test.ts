@@ -351,6 +351,88 @@ describe("dyknow review", () => {
     expect(stderr[0]).toContain("shell control operators");
   });
 
+  it("rejects editor .cmd wrappers on Windows", async () => {
+    if (process.platform !== "win32") {
+      return;
+    }
+
+    const root = await mkdtemp(join(tmpdir(), "dyknow-review-"));
+    const tools = await mkdtemp(join(tmpdir(), "dyknow-review-tools-"));
+    const originalPath = process.env.PATH ?? "";
+
+    await mkdir(join(root, "docs", "dyknow", ".state"), { recursive: true });
+    await writeFile(
+      join(root, DEFAULT_UPDATE_OUTPUT_PATH),
+      `${JSON.stringify(
+        {
+          draftedAt: "2026-05-23T18:00:00.000Z",
+          rootPath: root,
+          configPath: "dyknow.config.json",
+          repoDiffPath: "docs/dyknow/.state/repo-diff.json",
+          outputPath: DEFAULT_UPDATE_OUTPUT_PATH,
+          providerId: "local",
+          drafts: [
+            {
+              affectedPage: {
+                pageId: "product-overview",
+                outputPath: "docs/product-overview.md",
+                matchedSourcePaths: ["README.md"],
+                reasons: ["changed-file"],
+              },
+              proposal: {
+                pageId: "product-overview",
+                summary:
+                  "Review Product Overview for 1 changed source path(s).",
+                why: "Product Overview is affected because DyKnow detected changed file across 1 configured source path(s).",
+                sources: ["README.md"],
+                proposedText: "Draft text",
+                confidence: "low",
+                risk: "medium",
+                reviewState: "Needs review",
+                requiresHumanReview: true,
+              },
+            },
+          ],
+          summary: {
+            affectedPages: 1,
+            draftedProposals: 1,
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    await writeFile(
+      join(tools, "fake-editor.cmd"),
+      ["@echo off", "exit /b 0"].join("\r\n"),
+      "utf8",
+    );
+
+    process.env.PATH = `${tools};${originalPath}`;
+    process.env.DYKNOW_EDITOR_COMMAND = "fake-editor";
+
+    try {
+      const stderr: string[] = [];
+      const exitCode = await runCli(
+        ["review", "--edit", "--page", "product-overview", "--editor"],
+        {
+          cwd: root,
+          stderr: (message) => {
+            stderr.push(message);
+          },
+        },
+      );
+
+      expect(exitCode).toBe(1);
+      expect(stderr[0]).toContain("Review editor command");
+      expect(stderr[0]).toContain("native executable");
+      expect(stderr[0]).toContain(".cmd or .bat wrapper");
+    } finally {
+      process.env.PATH = originalPath;
+    }
+  });
+
   it("skips a targeted proposal without mutating the snapshot", async () => {
     const root = await mkdtemp(join(tmpdir(), "dyknow-review-"));
 
