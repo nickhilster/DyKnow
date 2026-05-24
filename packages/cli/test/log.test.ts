@@ -305,7 +305,7 @@ describe("dyknow log", () => {
     expect(stdout[0]).toContain("publish:pr-opened by copilot");
     expect(stdout[0]).not.toContain("publish:pr-prepared by copilot");
     expect(stdout[0]).toContain(
-      "Recent audit entries from .git/dyknow/runtime-audit-log.jsonl (showing 1 of 1):",
+      "Recent audit entries from .git/dyknow/runtime-audit-log.jsonl for source=runtime and action=all (showing 1 of 1):",
     );
     expect(stdout[0]).not.toContain(
       "Recent audit entries from docs/dyknow/.state/audit-log.jsonl and .git/dyknow/runtime-audit-log.jsonl",
@@ -381,5 +381,8 @@ describe("dyknow log", () => {
     expect(stdout[0]).toContain("publish:pr-opened by copilot");
     expect(stdout[0]).toContain("publish:pr-prepared by copilot");
     expect(stdout[0]).not.toContain("review:approve by copilot");
+    expect(stdout[0]).toContain(
+      "Recent audit entries from .git/dyknow/runtime-audit-log.jsonl and docs/dyknow/.state/audit-log.jsonl for source=all and action=publish (showing 2 of 2):",
+    );
   });
 });
