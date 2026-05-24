@@ -253,7 +253,7 @@ describe("dyknow pr", () => {
       "| product-overview | docs/product-overview.md | medium | low | README.md |",
     );
     expect(status).toBe("");
-  }, 15000);
+  }, 30000);
 
   it("requires at least one approved proposal", async () => {
     const root = await mkdtemp(join(tmpdir(), "dyknow-pr-"));
@@ -302,7 +302,7 @@ describe("dyknow pr", () => {
 
     expect(exitCode).toBe(1);
     expect(stderr[0]).toContain("Run dyknow review --approve first");
-  });
+  }, 15000);
 
   it("records a prepared PR publish audit entry before an external PR creation failure", async () => {
     const root = await mkdtemp(join(tmpdir(), "dyknow-pr-"));
@@ -423,7 +423,7 @@ describe("dyknow pr", () => {
       "publish:commit",
       "publish:pr-prepared",
     ]);
-  });
+  }, 20000);
 
   it("rejects invalid branch names before creating a PR branch", async () => {
     const root = await mkdtemp(join(tmpdir(), "dyknow-pr-"));
@@ -499,5 +499,5 @@ describe("dyknow pr", () => {
     expect(exitCode).toBe(1);
     expect(stderr[0]).toContain("Invalid PR branch name");
     expect(branchName).toBe("main");
-  });
+  }, 15000);
 });

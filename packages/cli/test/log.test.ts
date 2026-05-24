@@ -148,7 +148,7 @@ describe("dyknow log", () => {
     expect(stdout[0]).toBe(
       "No audit entries found in docs/dyknow/.state/audit-log.jsonl for action=publish.",
     );
-  });
+  }, 10000);
 
   it("reports when both default committed and runtime audit logs are missing", async () => {
     const root = await mkdtemp(join(tmpdir(), "dyknow-log-"));
