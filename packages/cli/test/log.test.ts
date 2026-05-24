@@ -146,7 +146,7 @@ describe("dyknow log", () => {
     expect(exitCode).toBe(0);
     expect(stderr).toEqual([]);
     expect(stdout[0]).toBe(
-      "No audit entries found in docs/dyknow/.state/audit-log.jsonl and .git/dyknow/runtime-audit-log.jsonl for action=publish.",
+      "No audit entries found in docs/dyknow/.state/audit-log.jsonl for action=publish.",
     );
   });
 

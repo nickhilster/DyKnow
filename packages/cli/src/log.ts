@@ -375,6 +375,9 @@ export async function createAuditLogReport(options: {
       options.source === "all" ||
       report.source === options.source,
   );
+  const existingRelevantReportPaths = relevantReports
+    .filter((report) => report.exists)
+    .map((report) => report.inputPath);
 
   if (entries.length === 0) {
     const hasExistingRelevantReport = relevantReports.some(
@@ -388,7 +391,7 @@ export async function createAuditLogReport(options: {
             inputPath: options.inputPath,
             source: options.source,
             action: options.action,
-            reportPaths,
+            reportPaths: existingRelevantReportPaths,
             supportsSourceFiltering,
           })
         : formatMissingAuditReport(reportPaths, options.inputPath),
