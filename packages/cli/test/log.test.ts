@@ -783,6 +783,30 @@ describe("dyknow log", () => {
       `Recent audit entries from ${customInputPath} (showing 1 of 1):`,
     );
     expect(stdout[0]).not.toContain("source=");
+
+    stdout.length = 0;
+    stderr.length = 0;
+
+    const committedWarning = `Ignoring --source committed for custom audit log input ${customInputPath}. Source filtering only applies to the default merged log view.`;
+    const sourceCommittedExitCode = await runCli(
+      ["log", "--input", customInputPath, "--source", "committed"],
+      {
+        cwd: root,
+        stdout: (message) => {
+          stdout.push(message);
+        },
+        stderr: (message) => {
+          stderr.push(message);
+        },
+      },
+    );
+
+    expect(sourceCommittedExitCode).toBe(0);
+    expect(stderr).toEqual([committedWarning]);
+    expect(stdout[0]).toContain(
+      `Recent audit entries from ${customInputPath} (showing 1 of 1):`,
+    );
+    expect(stdout[0]).not.toContain("source=committed");
   });
 
   it("rejects absolute log input paths", async () => {
