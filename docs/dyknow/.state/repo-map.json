@@ -404,8 +404,8 @@
     {
       "path": "packages/cli/src/log.ts",
       "kind": "typescript",
-      "size": 9259,
-      "lineCount": 367,
+      "size": 10020,
+      "lineCount": 393,
       "signals": [
         "source-code"
       ],
@@ -484,8 +484,8 @@
     {
       "path": "packages/cli/test/log.test.ts",
       "kind": "typescript",
-      "size": 15161,
-      "lineCount": 455,
+      "size": 17114,
+      "lineCount": 526,
       "signals": [
         "source-code"
       ],
@@ -745,6 +745,6 @@
   ],
   "outputPath": "docs/dyknow/.state/repo-map.json",
   "rootPath": "C:\\DEV\\DyKnow",
-  "scannedAt": "2026-05-24T00:14:50.749Z",
+  "scannedAt": "2026-05-24T00:38:00.399Z",
   "warnings": []
 }
