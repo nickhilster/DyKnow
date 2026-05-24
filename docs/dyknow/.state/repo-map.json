@@ -10,7 +10,13 @@
         "documentation",
         "config"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Constraints",
+        "Approach"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": ".github/agents/dyknow-local-builder.agent.md",
@@ -21,7 +27,13 @@
         "documentation",
         "config"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Constraints",
+        "Approach"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": ".github/instructions/docs-wiki.instructions.md",
@@ -32,7 +44,12 @@
         "documentation",
         "config"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "DyKnow Wiki Maintenance"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": ".github/instructions/phase0-build.instructions.md",
@@ -43,7 +60,12 @@
         "documentation",
         "config"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "DyKnow Phase 0 Build"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": ".github/instructions/raw-sources.instructions.md",
@@ -54,7 +76,12 @@
         "documentation",
         "config"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "DyKnow Raw Sources"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": ".github/instructions/trust-boundaries.instructions.md",
@@ -65,7 +92,12 @@
         "documentation",
         "config"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "DyKnow Trust Boundaries"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": ".github/skills/dyknow-build-slice/SKILL.md",
@@ -76,7 +108,15 @@
         "documentation",
         "config"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "DyKnow Build Slice",
+        "When to Use",
+        "Procedure",
+        "Output"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": ".github/skills/dyknow-page-maintenance/SKILL.md",
@@ -87,29 +127,58 @@
         "documentation",
         "config"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "DyKnow Page Maintenance",
+        "When to Use",
+        "Procedure",
+        "Output"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": ".github/workflows/ci.yml",
       "kind": "yaml",
-      "size": 680,
+      "size": 685,
       "lineCount": 36,
       "signals": [
         "openapi",
         "config"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": [
+        "jobs",
+        "name",
+        "on"
+      ]
     },
     {
       "path": "AGENTS.md",
       "kind": "markdown",
-      "size": 12757,
-      "lineCount": 162,
+      "size": 14419,
+      "lineCount": 166,
       "signals": [
         "documentation",
         "agent-context"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Summary",
+        "External hubs",
+        "Project purpose",
+        "Architecture overview (current)",
+        "Development commands",
+        "Coding standards",
+        "Documentation conventions",
+        "Do-not-touch",
+        "Product terminology",
+        "Known constraints"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "CHANGELOG.md",
@@ -119,7 +188,18 @@
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Changelog",
+        "[Unreleased]",
+        "Added",
+        "Changed",
+        "2026-05-23 — Documentation bootstrap",
+        "Added",
+        "Notes"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "CLAUDE.md",
@@ -130,7 +210,22 @@
         "documentation",
         "agent-context"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "CLAUDE.md — Wiki Maintainer Schema",
+        "1. Three-layer model",
+        "2. Page conventions",
+        "3. Core operations",
+        "Ingest",
+        "Query",
+        "Lint",
+        "4. Navigation files",
+        "5. What not to do",
+        "6. Confidence and risk",
+        "7. Project-specific knowledge"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "CONTRIBUTING.md",
@@ -140,17 +235,43 @@
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Contributing to DyKnow",
+        "Before you start",
+        "What you can change",
+        "Page conventions",
+        "Workflow",
+        "Adding a new raw source",
+        "Updating an existing wiki page",
+        "Creating a new wiki page",
+        "Deleting a wiki page",
+        "Pull request expectations",
+        "Running the lint checklist",
+        "When code lands",
+        "Questions"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "README.md",
       "kind": "markdown",
-      "size": 8340,
-      "lineCount": 87,
+      "size": 9619,
+      "lineCount": 88,
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "DyKnow",
+        "Repo layout",
+        "How this documentation works",
+        "Code bootstrap",
+        "Quick starts"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "biome.json",
@@ -160,7 +281,15 @@
       "signals": [
         "config"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": [
+        "$schema",
+        "files",
+        "formatter",
+        "javascript"
+      ]
     },
     {
       "path": "docs/architecture.md",
@@ -170,17 +299,49 @@
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Summary",
+        "DyKnow Cloud — components",
+        "DyKnow Local — components",
+        "Shared engine",
+        "Trust-relevant boundaries",
+        "Cross-references",
+        "Open questions"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "docs/feature-map.md",
       "kind": "markdown",
-      "size": 7596,
-      "lineCount": 119,
+      "size": 8415,
+      "lineCount": 121,
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Summary",
+        "DyKnow Cloud",
+        "Source connectors",
+        "Cloud workflow",
+        "DyKnow Local",
+        "Forms",
+        "What it scans (when permitted)",
+        "What it ignores by default",
+        "Local CLI commands",
+        "VS Code extension surfaces",
+        "Output types",
+        "Public-facing",
+        "Internal",
+        "Developer",
+        "Machine-readable",
+        "Cross-references",
+        "Open questions"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "docs/glossary.md",
@@ -190,17 +351,75 @@
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Summary",
+        "Core terms",
+        "Wiki-internal terms",
+        "Cross-references"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "docs/implementation-roadmap.md",
       "kind": "markdown",
-      "size": 13760,
-      "lineCount": 321,
+      "size": 13820,
+      "lineCount": 322,
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Summary",
+        "Phase 0 — Foundations (cross-cutting)",
+        "Shared engine contracts",
+        "Repo & tooling",
+        "Output templates",
+        "Phase 1 — DyKnow Local CLI (MVP 1)",
+        "Config system",
+        "Scanner",
+        "Snapshot & change detection",
+        "LLM runner",
+        "Drafting engine",
+        "Review flow",
+        "Commit / PR",
+        "Audit",
+        "Initial maintained pages",
+        "Dogfood",
+        "Quality bar before exiting Phase 1",
+        "Phase 2 — VS Code extension (MVP 2)",
+        "Scaffolding",
+        "Sidebar views",
+        "Actions",
+        "Polish",
+        "Quality bar",
+        "Phase 3 — Public demo",
+        "Demo repo",
+        "Recorded walkthrough",
+        "Assets",
+        "Phase 4 — DyKnow Cloud Lite",
+        "Backend foundation",
+        "Connector framework",
+        "Initial connectors",
+        "Monitoring & drafting",
+        "DyKnow Hub",
+        "Publishing layer",
+        "Audit & governance",
+        "Billing & ops",
+        "Dogfood",
+        "Quality bar",
+        "Phase 5 — Commercial pilots",
+        "Pilot offer",
+        "Onboarding playbook",
+        "Sales collateral",
+        "Customer success",
+        "Quality bar before exiting Phase 5",
+        "Cross-references",
+        "Open questions"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "docs/index.md",
@@ -210,7 +429,17 @@
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Documentation Index",
+        "Product",
+        "Technical",
+        "Trust and governance",
+        "Reference",
+        "Wiki operations"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "docs/lint.md",
@@ -220,17 +449,36 @@
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Summary",
+        "A. Structural checks",
+        "B. Freshness checks",
+        "C. Consistency checks",
+        "D. Source backing",
+        "E. Cross-reference health",
+        "F. Sensitive content",
+        "G. Log hygiene",
+        "How to run a lint pass",
+        "Open questions"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "docs/log.md",
       "kind": "markdown",
-      "size": 23624,
-      "lineCount": 197,
+      "size": 28490,
+      "lineCount": 229,
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Wiki Log"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "docs/messaging.md",
@@ -240,7 +488,23 @@
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Summary",
+        "One-liners",
+        "Audience pitches",
+        "DyKnow Cloud",
+        "DyKnow Local",
+        "Developer-first wedge",
+        "Executive wedge",
+        "Differentiation",
+        "Adjacent categories (and why DyKnow is not them)",
+        "Strategic thesis",
+        "Cross-references",
+        "Open questions"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "docs/product-overview.md",
@@ -250,7 +514,21 @@
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Summary",
+        "The problem",
+        "The concept: Dynamic Knowledge Pages",
+        "The two surfaces",
+        "DyKnow Cloud",
+        "DyKnow Local",
+        "Who DyKnow is for",
+        "Why now",
+        "Cross-references",
+        "Open questions"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "docs/roadmap.md",
@@ -260,17 +538,47 @@
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Summary",
+        "Phase 1 — Internal prototype (DyKnow Local CLI)",
+        "Phase 2 — VS Code extension prototype",
+        "Phase 3 — Public demo",
+        "Phase 4 — DyKnow Cloud Lite",
+        "Phase 5 — Commercial pilots",
+        "Risks and mitigations",
+        "Cross-references",
+        "Open questions"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "docs/setup-guide.md",
       "kind": "markdown",
-      "size": 14547,
-      "lineCount": 362,
+      "size": 16518,
+      "lineCount": 409,
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Summary",
+        "Prerequisites",
+        "Step 1 — Initialize",
+        "Example config",
+        "Step 2 — Scan",
+        "Step 3 — Detect changes",
+        "Step 4 — Draft updates",
+        "Step 5 — Review",
+        "Step 6 — Inspect the audit trail",
+        "Step 7 — Generate a status report",
+        "Step 8 — Commit or publish",
+        "Cross-references",
+        "Open questions"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "docs/sources/README.md",
@@ -280,7 +588,16 @@
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Raw Sources",
+        "Current sources",
+        "External project hubs",
+        "How to add a source",
+        "Source authority hierarchy"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "docs/sources/dyknow_local_whitepaper.md",
@@ -290,17 +607,145 @@
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "DyKnow Whitepaper",
+        "Dynamic Knowledge Pages, Repo-Native Context, and Local-First Product Truth",
+        "Working Version",
+        "1. The Problem",
+        "Products change. Knowledge drifts.",
+        "Static content cannot keep up with dynamic products.",
+        "2. The Core Concept",
+        "What is DyKnow?",
+        "3. Why This Is Not a Blog",
+        "4. Product Family",
+        "DyKnow Cloud",
+        "DyKnow Local",
+        "5. The Trust Model",
+        "Trust principles",
+        "6. DyKnow Cloud: Connector Strategy",
+        "Priority connectors",
+        "Website and CMS sources",
+        "Documentation and knowledge sources",
+        "Product management sources",
+        "Support and feedback sources",
+        "Sales and CRM sources",
+        "Communication sources",
+        "Design and product spec sources",
+        "7. DyKnow Local: Repo-Native Architecture",
+        "Core forms",
+        "What DyKnow Local scans",
+        "What DyKnow Local ignores",
+        "8. DyKnow Local Workflow",
+        "Step 1: Initialize",
+        "Step 2: Scan",
+        "Step 3: Detect changes",
+        "Step 4: Draft updates",
+        "Step 5: Review",
+        "Step 6: Commit or publish",
+        "9. VS Code Extension Experience",
+        "Sidebar sections",
+        "DyKnow Map",
+        "Changed Knowledge",
+        "Stale Pages",
+        "Suggested Updates",
+        "Source Evidence",
+        "Agent Context",
+        "User experience goal",
+        "10. AI Agent Context as a Key Wedge",
+        "AGENTS.md",
+        "Product Context",
+        "Feature Map",
+        "Architecture Summary",
+        "11. Human-in-the-Loop Governance",
+        "Review states",
+        "Confidence and risk",
+        "12. Security and Privacy Requirements",
+        "Required controls",
+        "Sensitive content detection",
+        "Default posture",
+        "13. Output Types",
+        "Public-facing outputs",
+        "Internal outputs",
+        "Developer outputs",
+        "Machine-readable outputs",
+        "14. Product Architecture",
+        "DyKnow Cloud architecture",
+        "DyKnow Local architecture",
+        "Shared engine",
+        "15. MVP Scope",
+        "MVP 1: DyKnow Local CLI",
+        "MVP 2: VS Code Extension",
+        "MVP 3: DyKnow Cloud Lite",
+        "16. Commercial Packaging",
+        "DyKnow Cloud pricing",
+        "Starter",
+        "Growth",
+        "Enterprise",
+        "DyKnow Local pricing",
+        "Free / Open Source",
+        "Pro",
+        "Team",
+        "Enterprise",
+        "17. Target Customers",
+        "Best early customers for DyKnow Cloud",
+        "Best early customers for DyKnow Local",
+        "Best internal first customer",
+        "18. Competitive Positioning",
+        "Adjacent categories",
+        "Differentiation",
+        "19. Messaging",
+        "One-liner",
+        "Stronger positioning",
+        "DyKnow Cloud pitch",
+        "DyKnow Local pitch",
+        "Developer-first wedge",
+        "Executive wedge",
+        "20. Risks and Open Questions",
+        "Risk: Too broad too early",
+        "Risk: Trust barrier",
+        "Risk: Low perceived value",
+        "Risk: Accuracy and liability",
+        "Risk: Integration complexity",
+        "21. Recommended Build Path",
+        "Phase 1: Internal prototype",
+        "Phase 2: VS Code extension prototype",
+        "Phase 3: Public demo",
+        "Phase 4: DyKnow Cloud Lite",
+        "Phase 5: Commercial pilots",
+        "22. The Strategic Thesis",
+        "23. Summary"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "docs/trust-and-security.md",
       "kind": "markdown",
-      "size": 5952,
+      "size": 6120,
       "lineCount": 169,
       "signals": [
         "documentation"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Summary",
+        "Trust principles",
+        "Required controls",
+        "Human-in-the-loop governance",
+        "Review states",
+        "Per-update metadata",
+        "High-risk content",
+        "Sensitive content detection",
+        "Repo-local guardrails",
+        "CI enforcement",
+        "External command contract",
+        "Default posture",
+        "Cross-references",
+        "Open questions"
+      ],
+      "topLevelKeys": []
     },
     {
       "path": "package.json",
@@ -332,6 +777,18 @@
           "section": "devDependencies",
           "version": "^3.2.4"
         }
+      ],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": [
+        "devDependencies",
+        "engines",
+        "name",
+        "private",
+        "scripts",
+        "type",
+        "version",
+        "workspaces"
       ]
     },
     {
@@ -349,17 +806,33 @@
           "section": "dependencies",
           "version": "file:../core"
         }
+      ],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": [
+        "bin",
+        "dependencies",
+        "exports",
+        "files",
+        "main",
+        "name",
+        "type",
+        "types",
+        "version"
       ]
     },
     {
       "path": "packages/cli/src/audit.ts",
       "kind": "typescript",
-      "size": 2979,
+      "size": 3084,
       "lineCount": 106,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/src/bin.ts",
@@ -369,177 +842,268 @@
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/src/commit.ts",
       "kind": "typescript",
-      "size": 7405,
-      "lineCount": 294,
+      "size": 8433,
+      "lineCount": 333,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/src/diff.ts",
       "kind": "typescript",
-      "size": 4180,
+      "size": 4349,
       "lineCount": 170,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/src/index.ts",
       "kind": "typescript",
-      "size": 14976,
-      "lineCount": 548,
+      "size": 21680,
+      "lineCount": 793,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/src/log.ts",
       "kind": "typescript",
-      "size": 11456,
+      "size": 11896,
       "lineCount": 441,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/src/pr.ts",
       "kind": "typescript",
-      "size": 8990,
-      "lineCount": 366,
+      "size": 9277,
+      "lineCount": 375,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/src/review.ts",
       "kind": "typescript",
-      "size": 19427,
-      "lineCount": 778,
+      "size": 23837,
+      "lineCount": 962,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/src/scan.ts",
       "kind": "typescript",
-      "size": 10407,
-      "lineCount": 404,
+      "size": 23312,
+      "lineCount": 893,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/src/security.ts",
       "kind": "typescript",
-      "size": 6465,
+      "size": 6730,
       "lineCount": 266,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "packages/cli/src/status.ts",
+      "kind": "typescript",
+      "size": 16463,
+      "lineCount": 617,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/src/update.ts",
       "kind": "typescript",
-      "size": 5941,
-      "lineCount": 254,
+      "size": 7842,
+      "lineCount": 313,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/test/commit.test.ts",
       "kind": "typescript",
-      "size": 9758,
-      "lineCount": 311,
+      "size": 12886,
+      "lineCount": 411,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/test/diff.test.ts",
       "kind": "typescript",
-      "size": 4705,
-      "lineCount": 168,
+      "size": 6600,
+      "lineCount": 225,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/test/init.test.ts",
       "kind": "typescript",
-      "size": 1865,
-      "lineCount": 70,
+      "size": 3160,
+      "lineCount": 117,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/test/log.test.ts",
       "kind": "typescript",
-      "size": 27821,
-      "lineCount": 857,
+      "size": 30762,
+      "lineCount": 922,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/test/pr.test.ts",
       "kind": "typescript",
-      "size": 16374,
-      "lineCount": 504,
+      "size": 31787,
+      "lineCount": 984,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/test/review.test.ts",
       "kind": "typescript",
-      "size": 22871,
-      "lineCount": 723,
+      "size": 30473,
+      "lineCount": 960,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/test/scan.test.ts",
       "kind": "typescript",
-      "size": 9576,
-      "lineCount": 325,
+      "size": 15883,
+      "lineCount": 527,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [
+        {
+          "framework": "express",
+          "kind": "api",
+          "path": "/users",
+          "handler": "packages/cli/test/scan.test.ts",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        }
+      ],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "packages/cli/test/status.test.ts",
+      "kind": "typescript",
+      "size": 5174,
+      "lineCount": 161,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/test/update.test.ts",
       "kind": "typescript",
-      "size": 8183,
-      "lineCount": 277,
+      "size": 13177,
+      "lineCount": 442,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/cli/tsconfig.json",
@@ -549,7 +1113,15 @@
       "signals": [
         "config"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": [
+        "compilerOptions",
+        "extends",
+        "include",
+        "references"
+      ]
     },
     {
       "path": "packages/core/package.json",
@@ -566,29 +1138,47 @@
           "section": "dependencies",
           "version": "^3.24.4"
         }
+      ],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": [
+        "dependencies",
+        "exports",
+        "files",
+        "main",
+        "name",
+        "type",
+        "types",
+        "version"
       ]
     },
     {
       "path": "packages/core/src/config-schema.ts",
       "kind": "typescript",
-      "size": 5213,
+      "size": 5432,
       "lineCount": 220,
       "signals": [
         "config",
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/src/config.ts",
       "kind": "typescript",
-      "size": 10577,
-      "lineCount": 390,
+      "size": 12048,
+      "lineCount": 448,
       "signals": [
         "config",
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/src/contracts.ts",
@@ -598,7 +1188,10 @@
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/src/index.ts",
@@ -608,37 +1201,49 @@
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/src/repo-diff.ts",
       "kind": "typescript",
-      "size": 9850,
-      "lineCount": 350,
+      "size": 10834,
+      "lineCount": 382,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/src/repo-map.ts",
       "kind": "typescript",
-      "size": 2050,
-      "lineCount": 75,
+      "size": 2673,
+      "lineCount": 92,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/src/update-runner.ts",
       "kind": "typescript",
-      "size": 5604,
-      "lineCount": 180,
+      "size": 19557,
+      "lineCount": 658,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/src/update-templates.ts",
@@ -648,29 +1253,38 @@
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/test/config-schema.test.ts",
       "kind": "typescript",
-      "size": 1792,
+      "size": 1844,
       "lineCount": 53,
       "signals": [
         "config",
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/test/config.test.ts",
       "kind": "typescript",
-      "size": 6263,
+      "size": 6492,
       "lineCount": 230,
       "signals": [
         "config",
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/test/contracts.test.ts",
@@ -680,7 +1294,10 @@
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/test/repo-diff.test.ts",
@@ -690,7 +1307,10 @@
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/test/repo-map.test.ts",
@@ -700,17 +1320,23 @@
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/test/update-runner.test.ts",
       "kind": "typescript",
-      "size": 2182,
-      "lineCount": 79,
+      "size": 8243,
+      "lineCount": 293,
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/test/update-templates.test.ts",
@@ -720,7 +1346,10 @@
       "signals": [
         "source-code"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
     },
     {
       "path": "packages/core/tsconfig.json",
@@ -730,7 +1359,14 @@
       "signals": [
         "config"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": [
+        "compilerOptions",
+        "extends",
+        "include"
+      ]
     },
     {
       "path": "tsconfig.base.json",
@@ -740,7 +1376,12 @@
       "signals": [
         "config"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": [
+        "compilerOptions"
+      ]
     },
     {
       "path": "tsconfig.json",
@@ -750,11 +1391,23 @@
       "signals": [
         "config"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": [
+        "files",
+        "references"
+      ]
     }
   ],
   "outputPath": "docs/dyknow/.state/repo-map.json",
   "rootPath": "C:\\DEV\\DyKnow",
-  "scannedAt": "2026-05-24T08:34:50.613Z",
-  "warnings": []
+  "scannedAt": "2026-05-24T18:28:20.552Z",
+  "warnings": [
+    {
+      "code": "secret-pattern",
+      "message": "Potential sensitive content detected by credential-assignment.",
+      "path": "packages/core/test/update-runner.test.ts"
+    }
+  ]
 }

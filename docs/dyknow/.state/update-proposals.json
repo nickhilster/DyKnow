@@ -1,5 +1,5 @@
 {
-  "draftedAt": "2026-05-24T08:34:51.101Z",
+  "draftedAt": "2026-05-24T18:28:21.510Z",
   "rootPath": "C:\\DEV\\DyKnow",
   "configPath": "dyknow.config.json",
   "repoDiffPath": "docs/dyknow/.state/repo-diff.json",
@@ -9,5 +9,16 @@
   "summary": {
     "affectedPages": 0,
     "draftedProposals": 0
+  },
+  "providerTelemetry": {
+    "totalAttempts": 0,
+    "totalDurationMs": 0,
+    "timedOutDrafts": 0,
+    "usage": {
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "totalTokens": 0,
+      "estimatedCostUsd": null
+    }
   }
 }
