@@ -28,6 +28,10 @@ export type AuditLogReport = {
   totalEntries: number;
 };
 
+export function supportsLogSourceFiltering(inputPath: string): boolean {
+  return inputPath === DEFAULT_REVIEW_AUDIT_LOG_PATH;
+}
+
 type ReportAuditEntry = {
   entry: AuditLogEntry;
   inputPath: string;
@@ -324,8 +328,7 @@ export async function createAuditLogReport(options: {
   source: LogSource;
   action: LogActionFilter;
 }): Promise<AuditLogReport> {
-  const supportsSourceFiltering =
-    options.inputPath === DEFAULT_REVIEW_AUDIT_LOG_PATH;
+  const supportsSourceFiltering = supportsLogSourceFiltering(options.inputPath);
   const reports = [
     await readAuditEntries({
       inputPath: options.inputPath,
