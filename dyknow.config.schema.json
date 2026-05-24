@@ -31,7 +31,8 @@
       "minItems": 1,
       "items": {
         "type": "string",
-        "minLength": 1
+        "minLength": 1,
+        "pattern": "^(?![A-Za-z]:[\\\\/])(?![\\\\/])(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))[^\\u0000\\r\\n]+$"
       }
     },
     "ignoredSources": {
@@ -47,7 +48,8 @@
       ],
       "items": {
         "type": "string",
-        "minLength": 1
+        "minLength": 1,
+        "pattern": "^(?![A-Za-z]:[\\\\/])(?![\\\\/])(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))[^\\u0000\\r\\n]+$"
       }
     },
     "pages": {
@@ -75,7 +77,8 @@
           },
           "outputPath": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "pattern": "^(?![A-Za-z]:[\\\\/])(?![\\\\/])(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))(?!docs[\\\\/]sources(?:[\\\\/]|$))(?!\\.git(?:[\\\\/]|$))[^\\u0000\\r\\n]+$"
           },
           "audience": {
             "type": "string",
@@ -86,7 +89,8 @@
             "minItems": 1,
             "items": {
               "type": "string",
-              "minLength": 1
+              "minLength": 1,
+              "pattern": "^(?![A-Za-z]:[\\\\/])(?![\\\\/])(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))[^\\u0000\\r\\n]+$"
             }
           },
           "reviewRules": {
@@ -116,6 +120,34 @@
       "items": {
         "type": "string",
         "minLength": 1
+      }
+    },
+    "dependencyPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "default": {
+        "allow": [],
+        "deny": []
+      },
+      "properties": {
+        "allow": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$"
+          }
+        },
+        "deny": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$"
+          }
+        }
       }
     }
   },
@@ -170,7 +202,11 @@
       ],
       "approvalRequired": true,
       "llmProvider": "local",
-      "publishTargets": []
+      "publishTargets": [],
+      "dependencyPolicy": {
+        "allow": [],
+        "deny": []
+      }
     }
   ],
   "$comment": "dyknow.config.json should reference this schema via its $schema property."

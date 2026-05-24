@@ -43,8 +43,14 @@ export const RepoFileSummarySchema = z.object({
   dependencies: z.array(DependencyRecordSchema),
 });
 
+export const RepoMapWarningCodeSchema = z.enum([
+  "dependency-policy",
+  "parse-error",
+  "secret-pattern",
+]);
+
 export const RepoMapWarningSchema = z.object({
-  code: z.enum(["parse-error", "secret-pattern"]),
+  code: RepoMapWarningCodeSchema,
   message: z.string().min(1),
   path: z.string().min(1),
 });
@@ -63,5 +69,6 @@ export type RepoFileSignal = z.infer<typeof RepoFileSignalSchema>;
 export type DependencySection = z.infer<typeof DependencySectionSchema>;
 export type DependencyRecord = z.infer<typeof DependencyRecordSchema>;
 export type RepoFileSummary = z.infer<typeof RepoFileSummarySchema>;
+export type RepoMapWarningCode = z.infer<typeof RepoMapWarningCodeSchema>;
 export type RepoMapWarning = z.infer<typeof RepoMapWarningSchema>;
 export type RepoMap = z.infer<typeof RepoMapSchema>;

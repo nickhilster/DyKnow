@@ -12,6 +12,11 @@ import {
 
 import { appendAuditEntries, resolveRuntimeAuditPath } from "./audit.js";
 import { DEFAULT_COMMIT_MESSAGE, createCommitResult } from "./commit.js";
+import {
+  assertValidGitBranchName,
+  resolveWorkspacePath,
+  runConfiguredCommand,
+} from "./security.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -71,30 +76,13 @@ function parseUpdateBatch(
   }
 }
 
-async function runCommand(
-  command: string,
-  cwd: string,
-  args: readonly string[],
-) {
-  if (/\.(cmd|bat)$/i.test(command)) {
-    const result = await execFileAsync("cmd.exe", ["/c", command, ...args], {
-      cwd,
-      encoding: "utf8",
-    });
-
-    return result.stdout.trim();
-  }
-
-  const result = await execFileAsync(command, [...args], {
+async function runGit(cwd: string, args: readonly string[]) {
+  const result = await execFileAsync("git", [...args], {
     cwd,
     encoding: "utf8",
   });
 
   return result.stdout.trim();
-}
-
-async function runGit(cwd: string, args: readonly string[]) {
-  return runCommand("git", cwd, args);
 }
 
 async function readApprovedDrafts(options: {
@@ -106,7 +94,11 @@ async function readApprovedDrafts(options: {
   inputPathRelative: string;
 }> {
   const rootPath = resolve(options.cwd);
-  const inputPath = resolve(rootPath, options.inputPath);
+  const inputPath = await resolveWorkspacePath(
+    rootPath,
+    options.inputPath,
+    "PR input path",
+  );
   const inputPathRelative = formatRelativePath(rootPath, inputPath);
   let snapshotText: string;
 
@@ -276,6 +268,7 @@ export async function createPrResult(options: {
   now?: Date;
 }): Promise<PrResult> {
   const rootPath = resolve(options.cwd);
+  await assertValidGitBranchName(rootPath, options.base, "base branch name");
   const currentBranch = await runGit(rootPath, ["branch", "--show-current"]);
 
   if (currentBranch !== options.base) {
@@ -290,6 +283,7 @@ export async function createPrResult(options: {
   });
   const branch =
     options.branch ?? createDefaultBranchName(options.now ?? new Date());
+  await assertValidGitBranchName(rootPath, branch, "PR branch name");
   const body = buildPrBody({ approvedDrafts, batch });
 
   await runGit(rootPath, ["checkout", "-b", branch]);
@@ -321,18 +315,23 @@ export async function createPrResult(options: {
 
   await runGit(rootPath, ["push", "--set-upstream", "origin", branch]);
 
-  const url = await runCommand(getGhCommand(), rootPath, [
-    "pr",
-    "create",
-    "--base",
-    options.base,
-    "--head",
-    branch,
-    "--title",
-    options.title,
-    "--body",
-    body,
-  ]);
+  const url = await runConfiguredCommand({
+    args: [
+      "pr",
+      "create",
+      "--base",
+      options.base,
+      "--head",
+      branch,
+      "--title",
+      options.title,
+      "--body",
+      body,
+    ],
+    commandText: getGhCommand(),
+    cwd: rootPath,
+    label: "GitHub CLI command",
+  });
 
   const runtimeAuditPath = await resolveRuntimeAuditPath(rootPath);
 

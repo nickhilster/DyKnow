@@ -30,3 +30,6 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Security scan
+        run: node packages/cli/dist/bin.js scan --fail-on dependency-policy --fail-on parse-error --fail-on secret-pattern

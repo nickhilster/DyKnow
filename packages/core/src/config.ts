@@ -15,7 +15,36 @@ export const DEFAULT_IGNORED_SOURCE_PATTERNS = [
   "logs/**",
 ] as const;
 
+export const REPO_LOCAL_GLOB_PATTERN =
+  "^(?![A-Za-z]:[\\\\/])(?![\\\\/])(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))[^\\u0000\\r\\n]+$";
+export const REPO_LOCAL_OUTPUT_PATH_PATTERN =
+  "^(?![A-Za-z]:[\\\\/])(?![\\\\/])(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))(?!docs[\\\\/]sources(?:[\\\\/]|$))(?!\\.git(?:[\\\\/]|$))[^\\u0000\\r\\n]+$";
+export const DEPENDENCY_POLICY_PACKAGE_PATTERN =
+  "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$";
+
 export const LlmProviderSchema = z.enum(["local", "byo-key", "vendor-hosted"]);
+export const DependencyPolicySchema = z.object({
+  allow: z
+    .array(
+      z
+        .string()
+        .regex(
+          new RegExp(DEPENDENCY_POLICY_PACKAGE_PATTERN, "u"),
+          "Dependency policy entries must be valid lowercase package names.",
+        ),
+    )
+    .default([]),
+  deny: z
+    .array(
+      z
+        .string()
+        .regex(
+          new RegExp(DEPENDENCY_POLICY_PACKAGE_PATTERN, "u"),
+          "Dependency policy entries must be valid lowercase package names.",
+        ),
+    )
+    .default([]),
+});
 
 export const DyknowConfigSchema = z
   .object({
@@ -31,6 +60,10 @@ export const DyknowConfigSchema = z
     approvalRequired: z.boolean().default(true),
     llmProvider: LlmProviderSchema,
     publishTargets: z.array(z.string().min(1)).default([]),
+    dependencyPolicy: DependencyPolicySchema.default({
+      allow: [],
+      deny: [],
+    }),
   })
   .superRefine((config, ctx) => {
     if (config.mode === "local-only" && config.llmProvider !== "local") {
@@ -48,9 +81,85 @@ export const DyknowConfigSchema = z
         message: "Local-only mode cannot define publish targets.",
       });
     }
+
+    for (const [index, pattern] of config.allowedSources.entries()) {
+      if (!isRepoRelativePattern(pattern)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["allowedSources", index],
+          message: "Source patterns must stay within the repository root.",
+        });
+      }
+    }
+
+    for (const [index, pattern] of config.ignoredSources.entries()) {
+      if (!isRepoRelativePattern(pattern)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["ignoredSources", index],
+          message: "Source patterns must stay within the repository root.",
+        });
+      }
+    }
+
+    const seenOutputPaths = new Map<string, number>();
+
+    for (const [index, page] of config.pages.entries()) {
+      if (!isRepoRelativePattern(page.outputPath)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["pages", index, "outputPath"],
+          message: "Output paths must stay within the repository root.",
+        });
+      }
+
+      if (isProtectedOutputPath(page.outputPath)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["pages", index, "outputPath"],
+          message:
+            'Output paths cannot target protected paths such as "docs/sources/**" or ".git/**".',
+        });
+      }
+
+      const normalizedOutputPath = normalizeConfigPath(page.outputPath);
+
+      if (seenOutputPaths.has(normalizedOutputPath)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["pages", index, "outputPath"],
+          message: "Output paths must be unique across maintained pages.",
+        });
+      } else {
+        seenOutputPaths.set(normalizedOutputPath, index);
+      }
+
+      for (const [sourceIndex, pattern] of page.sources.entries()) {
+        if (!isRepoRelativePattern(pattern)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["pages", index, "sources", sourceIndex],
+            message: "Source patterns must stay within the repository root.",
+          });
+        }
+      }
+    }
+
+    const allowedDependencies = new Set(config.dependencyPolicy.allow);
+
+    for (const [index, packageName] of config.dependencyPolicy.deny.entries()) {
+      if (allowedDependencies.has(packageName)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["dependencyPolicy", "deny", index],
+          message: `Dependency policy entries cannot be both allowed and denied for package "${packageName}".`,
+        });
+      }
+    }
   });
 
 export type LlmProvider = z.infer<typeof LlmProviderSchema>;
+export type DependencyPolicy = z.infer<typeof DependencyPolicySchema>;
 export type DyknowConfig = z.infer<typeof DyknowConfigSchema>;
 
 export type ValidationResult =
@@ -62,6 +171,37 @@ export type ValidationResult =
       success: false;
       errors: string[];
     };
+
+function normalizeConfigPath(value: string): string {
+  return value.replaceAll("\\", "/").toLowerCase();
+}
+
+function isRepoRelativePattern(value: string): boolean {
+  if (/[\0\r\n]/u.test(value)) {
+    return false;
+  }
+
+  if (
+    value.startsWith("/") ||
+    value.startsWith("\\") ||
+    /^[A-Za-z]:[\\/]/u.test(value)
+  ) {
+    return false;
+  }
+
+  return !value.replaceAll("\\", "/").split("/").includes("..");
+}
+
+function isProtectedOutputPath(value: string): boolean {
+  const normalized = normalizeConfigPath(value);
+
+  return (
+    normalized === ".git" ||
+    normalized.startsWith(".git/") ||
+    normalized === "docs/sources" ||
+    normalized.startsWith("docs/sources/")
+  );
+}
 
 function dedupePatterns(patterns: readonly string[]): string[] {
   const seen = new Set<string>();

@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -40,6 +42,10 @@ describe("DyKnow config validation", () => {
       ...DEFAULT_IGNORED_SOURCE_PATTERNS,
       "tmp/**",
     ]);
+    expect(result.data.dependencyPolicy).toEqual({
+      allow: [],
+      deny: [],
+    });
   });
 
   it("rejects remote behavior when local-only mode is selected", () => {
@@ -83,5 +89,141 @@ describe("DyKnow config validation", () => {
     expect(() => parseDyknowConfig("{")).toThrowError(
       /Invalid DyKnow config JSON:/,
     );
+  });
+
+  it("rejects source patterns and output paths that escape the repository root", () => {
+    const result = validateDyknowConfig({
+      projectName: "DyKnow",
+      mode: "connected",
+      allowedSources: ["../secrets/**", "docs/**"],
+      ignoredSources: ["C:/outside/**"],
+      pages: [
+        {
+          id: "agent-context",
+          title: "AI Agent Context",
+          outputPath: "../AGENTS.md",
+          audience: "agent",
+          sources: ["../../private/**", "docs/**"],
+          reviewRules: {
+            approvalRequired: true,
+          },
+        },
+      ],
+      approvalRequired: true,
+      llmProvider: "local",
+      publishTargets: [],
+    });
+
+    expect(result.success).toBe(false);
+
+    if (result.success) {
+      return;
+    }
+
+    expect(result.errors).toContain(
+      "allowedSources.0: Source patterns must stay within the repository root.",
+    );
+    expect(result.errors).toContain(
+      "ignoredSources.0: Source patterns must stay within the repository root.",
+    );
+    expect(result.errors).toContain(
+      "pages.0.outputPath: Output paths must stay within the repository root.",
+    );
+    expect(result.errors).toContain(
+      "pages.0.sources.0: Source patterns must stay within the repository root.",
+    );
+  });
+
+  it("rejects duplicate maintained outputs and protected raw-source targets", () => {
+    const result = validateDyknowConfig({
+      projectName: "DyKnow",
+      mode: "connected",
+      allowedSources: ["README.md", "docs/**"],
+      ignoredSources: [],
+      pages: [
+        {
+          id: "product-overview",
+          title: "Product Overview",
+          outputPath: "docs/sources/raw-copy.md",
+          audience: "mixed",
+          sources: ["README.md"],
+          reviewRules: {
+            approvalRequired: true,
+          },
+        },
+        {
+          id: "feature-map",
+          title: "Feature Map",
+          outputPath: "docs/sources/raw-copy.md",
+          audience: "mixed",
+          sources: ["docs/**"],
+          reviewRules: {
+            approvalRequired: true,
+          },
+        },
+      ],
+      approvalRequired: true,
+      llmProvider: "local",
+      publishTargets: [],
+    });
+
+    expect(result.success).toBe(false);
+
+    if (result.success) {
+      return;
+    }
+
+    expect(result.errors).toContain(
+      'pages.0.outputPath: Output paths cannot target protected paths such as "docs/sources/**" or ".git/**".',
+    );
+    expect(result.errors).toContain(
+      "pages.1.outputPath: Output paths must be unique across maintained pages.",
+    );
+  });
+
+  it("rejects overlapping dependency allow and deny rules", () => {
+    const result = validateDyknowConfig({
+      projectName: "DyKnow",
+      mode: "connected",
+      allowedSources: ["README.md", "docs/**"],
+      ignoredSources: [],
+      pages: [
+        {
+          id: "agent-context",
+          title: "AI Agent Context",
+          outputPath: "AGENTS.md",
+          audience: "agent",
+          sources: ["README.md", "docs/**"],
+          reviewRules: {
+            approvalRequired: true,
+          },
+        },
+      ],
+      approvalRequired: true,
+      llmProvider: "local",
+      publishTargets: [],
+      dependencyPolicy: {
+        allow: ["zod"],
+        deny: ["zod"],
+      },
+    });
+
+    expect(result.success).toBe(false);
+
+    if (result.success) {
+      return;
+    }
+
+    expect(result.errors).toContain(
+      'dependencyPolicy.deny.0: Dependency policy entries cannot be both allowed and denied for package "zod".',
+    );
+  });
+
+  it("ships a checked-in starter dependency deny list for this repo", async () => {
+    const configText = await readFile("dyknow.config.json", "utf8");
+    const config = parseDyknowConfig(configText);
+
+    expect(config.dependencyPolicy.allow).toContain("@dyknow/core");
+    expect(config.dependencyPolicy.deny).toContain("left-pad");
   });
 });

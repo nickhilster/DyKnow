@@ -1,8 +1,11 @@
 import {
   DEFAULT_IGNORED_SOURCE_PATTERNS,
+  DEPENDENCY_POLICY_PACKAGE_PATTERN,
   DYKNOW_CONFIG_FILE_NAME,
   DYKNOW_CONFIG_SCHEMA_FILE_NAME,
   LlmProviderSchema,
+  REPO_LOCAL_GLOB_PATTERN,
+  REPO_LOCAL_OUTPUT_PATH_PATTERN,
 } from "./config.js";
 import { AudienceSchema } from "./contracts.js";
 
@@ -30,6 +33,7 @@ function buildPageDefinitionSchema() {
       outputPath: {
         type: "string",
         minLength: 1,
+        pattern: REPO_LOCAL_OUTPUT_PATH_PATTERN,
       },
       audience: {
         type: "string",
@@ -41,6 +45,7 @@ function buildPageDefinitionSchema() {
         items: {
           type: "string",
           minLength: 1,
+          pattern: REPO_LOCAL_GLOB_PATTERN,
         },
       },
       reviewRules: {
@@ -92,6 +97,7 @@ export function buildDyknowConfigJsonSchema() {
         items: {
           type: "string",
           minLength: 1,
+          pattern: REPO_LOCAL_GLOB_PATTERN,
         },
       },
       ignoredSources: {
@@ -100,6 +106,7 @@ export function buildDyknowConfigJsonSchema() {
         items: {
           type: "string",
           minLength: 1,
+          pattern: REPO_LOCAL_GLOB_PATTERN,
         },
       },
       pages: {
@@ -121,6 +128,34 @@ export function buildDyknowConfigJsonSchema() {
         items: {
           type: "string",
           minLength: 1,
+        },
+      },
+      dependencyPolicy: {
+        type: "object",
+        additionalProperties: false,
+        default: {
+          allow: [],
+          deny: [],
+        },
+        properties: {
+          allow: {
+            type: "array",
+            default: [],
+            items: {
+              type: "string",
+              minLength: 1,
+              pattern: DEPENDENCY_POLICY_PACKAGE_PATTERN,
+            },
+          },
+          deny: {
+            type: "array",
+            default: [],
+            items: {
+              type: "string",
+              minLength: 1,
+              pattern: DEPENDENCY_POLICY_PACKAGE_PATTERN,
+            },
+          },
         },
       },
     },
@@ -169,6 +204,10 @@ export function buildDyknowConfigJsonSchema() {
         approvalRequired: true,
         llmProvider: "local",
         publishTargets: [],
+        dependencyPolicy: {
+          allow: [],
+          deny: [],
+        },
       },
     ],
     $comment: `${DYKNOW_CONFIG_FILE_NAME} should reference this schema via its $schema property.`,

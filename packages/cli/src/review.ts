@@ -1,4 +1,3 @@
-import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   appendFile,
@@ -11,7 +10,6 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, relative, resolve } from "node:path";
 import { join } from "node:path";
-import { promisify } from "node:util";
 
 import {
   AuditLogEntrySchema,
@@ -27,6 +25,12 @@ import {
   parseDyknowConfig,
 } from "@dyknow/core";
 
+import {
+  assertAffectedPageMatchesConfiguredPage,
+  resolveWorkspacePath,
+  runConfiguredCommand,
+} from "./security.js";
+
 const REVIEW_DECISION_STATES = ["Approved", "Rejected", "Escalated"] as const;
 const REVIEW_MUTATION_STATES = [...REVIEW_DECISION_STATES, "Edited"] as const;
 const REVIEW_ACTION_STATES = [
@@ -39,7 +43,6 @@ type ReviewDecision = (typeof REVIEW_DECISION_STATES)[number];
 type ReviewMutationState = (typeof REVIEW_MUTATION_STATES)[number];
 type ReviewActionState = (typeof REVIEW_ACTION_STATES)[number];
 
-const execFileAsync = promisify(execFile);
 const DEFAULT_REVIEW_AUDIT_LOG_PATH = "docs/dyknow/.state/audit-log.jsonl";
 
 export type ReviewOptions = {
@@ -96,7 +99,11 @@ async function appendReviewAuditEntries(options: {
   outputPath: string;
   rootPath: string;
 }) {
-  const auditPath = resolve(options.rootPath, options.auditPath);
+  const auditPath = await resolveWorkspacePath(
+    options.rootPath,
+    options.auditPath,
+    "Review audit log path",
+  );
   const timestamp = new Date().toISOString();
   const actor = getAuditActor();
   const entries = options.drafts.map((draft) => {
@@ -216,26 +223,6 @@ function getReviewEditorCommand(): string {
   return process.env.DYKNOW_EDITOR_COMMAND ?? process.env.EDITOR ?? "";
 }
 
-async function runCommand(
-  command: string,
-  cwd: string,
-  args: readonly string[],
-) {
-  if (/\.(cmd|bat)$/i.test(command)) {
-    await execFileAsync("cmd.exe", ["/c", command, ...args], {
-      cwd,
-      encoding: "utf8",
-    });
-
-    return;
-  }
-
-  await execFileAsync(command, [...args], {
-    cwd,
-    encoding: "utf8",
-  });
-}
-
 async function editProposalTextInEditor(options: {
   cwd: string;
   initialText: string;
@@ -255,7 +242,12 @@ async function editProposalTextInEditor(options: {
 
   try {
     await writeFile(draftPath, options.initialText, "utf8");
-    await runCommand(editorCommand, options.cwd, [draftPath]);
+    await runConfiguredCommand({
+      args: [draftPath],
+      commandText: editorCommand,
+      cwd: options.cwd,
+      label: "Review editor command",
+    });
     return await readFile(draftPath, "utf8");
   } finally {
     await rm(workingDirectory, { force: true, recursive: true });
@@ -267,10 +259,15 @@ async function regenerateDraft(options: {
   rootPath: string;
   updateBatch: UpdateDraftBatch;
 }) {
-  const configPath = resolve(options.rootPath, options.updateBatch.configPath);
-  const repoDiffPath = resolve(
+  const configPath = await resolveWorkspacePath(
+    options.rootPath,
+    options.updateBatch.configPath,
+    "Review config path",
+  );
+  const repoDiffPath = await resolveWorkspacePath(
     options.rootPath,
     options.updateBatch.repoDiffPath,
+    "Review repo diff path",
   );
   const configText = await readFile(configPath, "utf8");
   const config = parseDyknowConfig(configText);
@@ -289,6 +286,12 @@ async function regenerateDraft(options: {
     );
   }
 
+  assertAffectedPageMatchesConfiguredPage(
+    page,
+    options.draft.affectedPage,
+    "Update proposal draft",
+  );
+
   const affectedPage = repoDiff.affectedPages.find(
     (candidate) => candidate.pageId === options.draft.proposal.pageId,
   );
@@ -299,7 +302,17 @@ async function regenerateDraft(options: {
     );
   }
 
-  const pagePath = resolve(options.rootPath, page.outputPath);
+  assertAffectedPageMatchesConfiguredPage(
+    page,
+    affectedPage,
+    "Repo diff affected page",
+  );
+
+  const pagePath = await resolveWorkspacePath(
+    options.rootPath,
+    page.outputPath,
+    "Page output path",
+  );
   let currentContent = "";
 
   try {
@@ -543,8 +556,16 @@ export async function createReviewUpdateBatch(options: {
   pageIds: readonly string[];
 }): Promise<ReviewResult> {
   const rootPath = resolve(options.cwd);
-  const inputPath = resolve(rootPath, options.inputPath);
-  const outputPath = resolve(rootPath, options.outputPath);
+  const inputPath = await resolveWorkspacePath(
+    rootPath,
+    options.inputPath,
+    "Review input path",
+  );
+  const outputPath = await resolveWorkspacePath(
+    rootPath,
+    options.outputPath,
+    "Review output path",
+  );
   let snapshotText: string;
 
   try {

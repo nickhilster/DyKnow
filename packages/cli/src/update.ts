@@ -16,6 +16,11 @@ import {
 
 import { DYKNOW_CONFIG_FILE_NAME } from "@dyknow/core";
 
+import {
+  assertAffectedPageMatchesConfiguredPage,
+  resolveWorkspacePath,
+} from "./security.js";
+
 export type UpdateOptions = {
   configPath: string;
   diffPath: string;
@@ -57,7 +62,11 @@ async function readCurrentContent(
   rootPath: string,
   outputPath: string,
 ): Promise<string> {
-  const pagePath = resolve(rootPath, outputPath);
+  const pagePath = await resolveWorkspacePath(
+    rootPath,
+    outputPath,
+    "Page output path",
+  );
 
   try {
     return await readFile(pagePath, "utf8");
@@ -142,9 +151,21 @@ export async function createUpdateDraftBatch(options: {
   outputPath: string;
 }): Promise<UpdateDraftBatch> {
   const rootPath = resolve(options.cwd);
-  const configPath = resolve(rootPath, options.configPath);
-  const diffPath = resolve(rootPath, options.diffPath);
-  const outputPath = resolve(rootPath, options.outputPath);
+  const configPath = await resolveWorkspacePath(
+    rootPath,
+    options.configPath,
+    "Update config path",
+  );
+  const diffPath = await resolveWorkspacePath(
+    rootPath,
+    options.diffPath,
+    "Update diff path",
+  );
+  const outputPath = await resolveWorkspacePath(
+    rootPath,
+    options.outputPath,
+    "Update output path",
+  );
   const configText = await readFile(configPath, "utf8");
   const config = parseDyknowConfig(configText);
   const provider = createUpdateProvider(config.llmProvider);
@@ -183,6 +204,12 @@ export async function createUpdateDraftBatch(options: {
         `Repo diff referenced unknown page "${affectedPage.pageId}". Regenerate dyknow diff with the current config.`,
       );
     }
+
+    assertAffectedPageMatchesConfiguredPage(
+      page,
+      affectedPage,
+      "Repo diff affected page",
+    );
 
     const currentContent = await readCurrentContent(rootPath, page.outputPath);
     const proposal = await draftUpdateProposal({
