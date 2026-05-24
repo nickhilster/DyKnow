@@ -656,4 +656,49 @@ describe("dyknow log", () => {
     );
     expect(stdout[0]).not.toContain("source=runtime");
   });
+
+  it("rejects absolute log input paths", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-log-"));
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+    const absoluteInputPath = join(root, "outside-audit-log.jsonl");
+
+    const exitCode = await runCli(["log", "--input", absoluteInputPath], {
+      cwd: root,
+      stdout: (message) => {
+        stdout.push(message);
+      },
+      stderr: (message) => {
+        stderr.push(message);
+      },
+    });
+
+    expect(exitCode).toBe(1);
+    expect(stdout).toEqual([]);
+    expect(stderr).toEqual([
+      `Audit log input path must stay within the workspace root. Received ${absoluteInputPath}.`,
+    ]);
+  });
+
+  it("rejects log input paths that escape the workspace root", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-log-"));
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+
+    const exitCode = await runCli(["log", "--input", "../outside.jsonl"], {
+      cwd: root,
+      stdout: (message) => {
+        stdout.push(message);
+      },
+      stderr: (message) => {
+        stderr.push(message);
+      },
+    });
+
+    expect(exitCode).toBe(1);
+    expect(stdout).toEqual([]);
+    expect(stderr).toEqual([
+      "Audit log input path must stay within the workspace root. Received ../outside.jsonl.",
+    ]);
+  });
 });
