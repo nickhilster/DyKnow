@@ -553,6 +553,71 @@ describe("dyknow log", () => {
     expect(stdout[0]).not.toContain(".git/dyknow/runtime-audit-log.jsonl");
   });
 
+  it("ignores runtime audit paths that escape the git directory", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-log-"));
+    const tools = await mkdtemp(join(tmpdir(), "dyknow-log-tools-"));
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+    const originalPath = process.env.PATH ?? "";
+
+    await mkdir(join(root, "docs", "dyknow", ".state"), { recursive: true });
+    await writeFile(
+      join(root, "docs", "dyknow", ".state", "audit-log.jsonl"),
+      `${JSON.stringify({
+        action: "publish:pr-prepared",
+        actor: "copilot",
+        sourcesRead: ["README.md"],
+        outputsAffected: ["docs/product-overview.md"],
+        timestamp: "2026-05-23T20:05:00.000Z",
+        hash: "22222222",
+      })}\n`,
+      "utf8",
+    );
+    await writeFile(
+      join(tools, "git.cmd"),
+      [
+        "@echo off",
+        'if "%1"=="rev-parse" (',
+        '  if "%2"=="--absolute-git-dir" (',
+        "    echo .git",
+        "    exit /b 0",
+        "  )",
+        '  if "%2"=="--git-path" (',
+        "    echo ..\\outside-runtime-audit-log.jsonl",
+        "    exit /b 0",
+        "  )",
+        ")",
+        "exit /b 1",
+      ].join("\r\n"),
+      "utf8",
+    );
+
+    process.env.PATH = `${tools};${originalPath}`;
+
+    try {
+      const exitCode = await runCli(["log", "--source", "all"], {
+        cwd: root,
+        stdout: (message) => {
+          stdout.push(message);
+        },
+        stderr: (message) => {
+          stderr.push(message);
+        },
+      });
+
+      expect(exitCode).toBe(0);
+      expect(stderr).toEqual([]);
+      expect(stdout[0]).toContain("publish:pr-prepared by copilot");
+      expect(stdout[0]).toContain(
+        "Recent audit entries from docs/dyknow/.state/audit-log.jsonl (showing 1 of 1):",
+      );
+      expect(stdout[0]).not.toContain("outside-runtime-audit-log.jsonl");
+      expect(stdout[0]).not.toContain(".git/dyknow/runtime-audit-log.jsonl");
+    } finally {
+      process.env.PATH = originalPath;
+    }
+  });
+
   it("can filter the default log view down to publish entries only", async () => {
     const root = await mkdtemp(join(tmpdir(), "dyknow-log-"));
     const stdout: string[] = [];
