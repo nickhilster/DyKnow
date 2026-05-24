@@ -251,6 +251,26 @@ function formatAuditReportHeader(options: {
   return `Recent audit entries from ${options.sourceLabels.join(" and ")}${filterLabel} (showing ${options.shownEntries} of ${options.totalEntries}):`;
 }
 
+function getOrderedSourceLabels(
+  entries: readonly ReportAuditEntry[],
+): string[] {
+  const sourceOrder: Record<Exclude<LogSource, "all">, number> = {
+    committed: 0,
+    runtime: 1,
+  };
+
+  return [
+    ...new Map(
+      entries
+        .slice()
+        .sort(
+          (left, right) => sourceOrder[left.source] - sourceOrder[right.source],
+        )
+        .map((entry) => [entry.inputPath, entry.inputPath]),
+    ).values(),
+  ];
+}
+
 export async function createAuditLogReport(options: {
   cwd: string;
   inputPath: string;
@@ -317,9 +337,7 @@ export async function createAuditLogReport(options: {
       right.entry.timestamp.localeCompare(left.entry.timestamp),
     )
     .slice(0, options.limit);
-  const sourceLabels = [
-    ...new Set(shownEntries.map((entry) => entry.inputPath)),
-  ];
+  const sourceLabels = getOrderedSourceLabels(shownEntries);
   const header = formatAuditReportHeader({
     sourceLabels,
     shownEntries: shownEntries.length,
