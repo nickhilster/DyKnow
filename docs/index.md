@@ -24,6 +24,10 @@ Catalog of every Dynamic Knowledge Page in this wiki. Keep entries to one line. 
 - [Glossary](glossary.md) — canonical terms and concepts.
 - [Sources](sources/) — pointers to raw source material.
 
+## Agent handoffs
+
+- [Phase 2 VS Code Extension Handoff](handoff-phase2-vscode.md) — context and task list for finishing Phase 2 (diff viewer, evidence panel, settings UI, vsce publish).
+
 ## Wiki operations
 
 - [Log](log.md) — append-only record of ingest/update/create/lint/delete actions.
