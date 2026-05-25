@@ -206,6 +206,12 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-25 | update | docs/handoff-phase3-demo.md | Linked the Phase 3 change script from the execution details.
 2026-05-25 | update | docs/phase3-demo-checklist.md | Linked the staged change script so the next demo-prep slice is explicit.
 2026-05-25 | update | docs/index.md | Added the Phase 3 demo change script page to the handoff catalog.
+2026-05-25 | create | docs/phase3-demo-recording-runbook.md | Added the exact CLI recording order, review pattern, and artifact checklist for the first public demo pass.
+2026-05-25 | update | docs/handoff-phase3-demo.md | Linked the recording runbook from the Phase 3 handoff artifact list.
+2026-05-25 | update | docs/phase3-demo-checklist.md | Linked the recording runbook so the planned command order is explicit.
+2026-05-25 | update | docs/index.md | Added the Phase 3 demo recording runbook page to the handoff catalog.
+2026-05-25 | create | docs/handoff-phase3-codex.md | Added a focused takeover handoff for the next Codex operator continuing Phase 3 execution.
+2026-05-25 | update | docs/index.md | Added the Phase 3 Codex takeover handoff page to the handoff catalog.
 2026-05-23 | update | packages/cli/src/log.ts | Added per-entry source log labels so merged committed and runtime audit output stays traceable.
 2026-05-23 | update | README.md | Documented that dyknow log now labels each rendered entry with its source audit file.
 2026-05-23 | update | AGENTS.md | Updated agent context to note per-entry source labels in dyknow log output.

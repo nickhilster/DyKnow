@@ -32,6 +32,8 @@ Catalog of every Dynamic Knowledge Page in this wiki. Keep entries to one line. 
 - [Phase 3 Demo Repo Selection](phase3-demo-repo-selection.md) — chosen first-demo repo shape, rationale, and baseline plan.
 - [Phase 3 Demo Baseline Plan](phase3-demo-baseline-plan.md) — proposed bootstrap commands, starter layout, and baseline verification steps for the demo repo.
 - [Phase 3 Demo Change Script](phase3-demo-change-script.md) — planned feature, route, and setup drift changes that drive the first walkthrough.
+- [Phase 3 Demo Recording Runbook](phase3-demo-recording-runbook.md) — exact recording order, review path, and capture checklist for the first CLI demo.
+- [Phase 3 Codex Takeover Handoff](handoff-phase3-codex.md) — current PR, artifacts, constraints, and next moves for the next Codex operator.
 
 ## Wiki operations
 
