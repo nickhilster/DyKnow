@@ -1,5 +1,13 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# AI Agent Context
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+Use this repository as a minimal Next.js sandbox for DyKnow Phase 3 demo runs.
+
+## Current source map (stale baseline)
+
+- `src/app/page.tsx` contains the main landing page.
+- `src/app/api/feedback/route.ts` contains the only backend route.
+
+## Working rules
+
+- Keep docs under `docs/` concise and source-backed.
+- Keep demo changes small and easy to narrate.
