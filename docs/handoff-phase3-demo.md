@@ -22,6 +22,12 @@ Phase 2 closure is complete, and the next useful move is to stand up a reproduci
 
 Use a dedicated public sandbox repo for the first demo, not an existing dogfood repo. The selected repo shape is a small TypeScript Next.js app so the walkthrough leans on route and manifest metadata DyKnow already extracts today.
 
+Current concrete target:
+
+- Repo: `nickhilster/dyknow-demo-app`
+- Baseline tag: `phase3-demo-baseline`
+- Intentionally stale starting files: `README.md`, `docs/feature-map.md`, `docs/setup-guide.md`, `docs/architecture.md`, and `AGENTS.md`
+
 ## Scope for the next slice
 
 1. Pick the demo repository and capture baseline assumptions.
@@ -48,8 +54,13 @@ Use a dedicated public sandbox repo for the first demo, not an existing dogfood 
 
 ## Open questions
 
-- What exact GitHub repo name and owner should host the dedicated demo sandbox?
 - Should the first recorded walkthrough prioritize CLI or VS Code as the lead narrative?
+
+## Next execution details
+
+1. Create `nickhilster/dyknow-demo-app` from a small Next.js TypeScript starter on `main`.
+2. Author stale baseline docs and tag that commit as `phase3-demo-baseline`.
+3. Stage the feature addition, route rename, and dependency or setup drift on top of that baseline.
 
 ## Cross-references
 

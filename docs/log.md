@@ -195,6 +195,9 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-25 | update | docs/handoff-phase3-demo.md | Resolved the repo-type decision toward a dedicated public sandbox and linked the selection page.
 2026-05-25 | update | docs/phase3-demo-checklist.md | Added the selected demo-repo direction and linked the detailed repo-selection page.
 2026-05-25 | update | docs/index.md | Added the Phase 3 demo repo selection page to the handoff catalog.
+2026-05-25 | update | docs/phase3-demo-repo-selection.md | Locked the first demo repo to nickhilster/dyknow-demo-app with baseline tag and stale starting files.
+2026-05-25 | update | docs/handoff-phase3-demo.md | Added the concrete Phase 3 demo repo target, baseline tag, and next execution details.
+2026-05-25 | update | docs/phase3-demo-checklist.md | Replaced the remaining repo-selection placeholder with the concrete demo repo target and stale baseline files.
 2026-05-23 | update | packages/cli/src/log.ts | Added per-entry source log labels so merged committed and runtime audit output stays traceable.
 2026-05-23 | update | README.md | Documented that dyknow log now labels each rendered entry with its source audit file.
 2026-05-23 | update | AGENTS.md | Updated agent context to note per-entry source labels in dyknow log output.

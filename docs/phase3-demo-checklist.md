@@ -15,20 +15,23 @@ The Phase 3 handoff becomes easier to execute when it is split into a small set 
 
 Current decision: the first public demo should use a dedicated TypeScript Next.js sandbox repo rather than an existing dogfood repo. See [Phase 3 Demo Repo Selection](phase3-demo-repo-selection.md).
 
+Current concrete target: `nickhilster/dyknow-demo-app` with the baseline tag `phase3-demo-baseline`.
+
 ## Issue checklist
 
 1. Select the first demo repository.
-   - Confirm whether the demo should use a fresh dedicated repo or one of the existing dogfood repos.
-   - Record the rationale, the branch or tag to use as the baseline, and the files that will intentionally change.
+   - Use `nickhilster/dyknow-demo-app` on `main`.
+   - Record the rationale, the baseline tag `phase3-demo-baseline`, and the files that will intentionally start stale.
    - Exit criterion: the demo repo choice is documented and reproducible.
 
 2. Capture the baseline snapshot.
-   - Create or identify a tagged starting point.
+   - Create or identify the tagged starting point `phase3-demo-baseline`.
    - Record the exact commit, branch name, and any required bootstrap steps.
    - Exit criterion: another contributor can clone the repo and match the same baseline state.
 
 3. Prepare the stale-to-fresh change set.
    - Identify at least one stale doc or page that will visibly change during the demo.
+   - Start with `README.md`, `docs/feature-map.md`, `docs/setup-guide.md`, `docs/architecture.md`, and `AGENTS.md` as the stale baseline set.
    - Stage the source edits that drive the scan/diff/update flow.
    - Exit criterion: the demo change script is repeatable and creates meaningful output.
 
@@ -49,7 +52,6 @@ Current decision: the first public demo should use a dedicated TypeScript Next.j
 
 ## Open questions
 
-- What exact GitHub repo name and owner should host the dedicated demo sandbox?
 - Should the first recording lead with the CLI or the VS Code extension?
 - Does the demo smoke command need to run inside the demo repo only, or should it also validate the DyKnow repo itself?
 

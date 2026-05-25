@@ -20,6 +20,13 @@ Use a dedicated public demo repo for Phase 3.
 
 The first repo should be a small Next.js-flavored TypeScript app because the current DyKnow scanner already extracts package-manifest data plus lightweight Next.js route metadata. That keeps the demo aligned with implemented capabilities instead of relying on a repo shape the current CLI does not highlight as clearly.
 
+The concrete starting target is:
+
+- GitHub owner: `nickhilster`
+- Repository name: `dyknow-demo-app`
+- Default branch: `main`
+- Baseline tag: `phase3-demo-baseline`
+
 ## Why this direction
 
 - A public demo is a pitch asset, so the repo should be safe to record and share without carrying internal dogfood history or unrelated product context.
@@ -29,14 +36,27 @@ The first repo should be a small Next.js-flavored TypeScript app because the cur
 
 ## Baseline plan
 
-- Create a new dedicated demo repository under the DyKnow or Teambotics GitHub space.
+- Create a new dedicated demo repository at `nickhilster/dyknow-demo-app`.
 - Start from a small Next.js TypeScript app with a few recognizable routes and one lightweight API or server-backed interaction.
 - Include stale starting docs that DyKnow can visibly improve:
   - `README.md`
   - `docs/feature-map.md`
   - `docs/setup-guide.md`
   - `AGENTS.md`
-- After the stale baseline is in place, cut an explicit baseline tag before the staged source changes are introduced.
+- Also include one stale route-oriented overview page at `docs/architecture.md` so a route rename can show up in both the structural scan output and the maintained docs.
+- After the stale baseline is in place, cut the `phase3-demo-baseline` tag on `main` before the staged source changes are introduced.
+
+## Stale starting files
+
+The demo baseline should intentionally leave these files behind the source truth:
+
+- `README.md` — outdated feature summary and run steps
+- `docs/feature-map.md` — missing the newly added feature and stale route names
+- `docs/setup-guide.md` — outdated bootstrap or dependency instructions
+- `docs/architecture.md` — stale route and data-flow description
+- `AGENTS.md` — stale project context for the app capabilities and key files
+
+This keeps the walkthrough focused on files DyKnow already presents well as maintained knowledge artifacts.
 
 ## Planned staged changes
 
@@ -57,9 +77,8 @@ This keeps the before-and-after story obvious in both the CLI and VS Code flows.
 
 ## Open questions
 
-- What exact GitHub repo name and owner should host the dedicated demo sandbox?
 - Should the first recorded narrative lead with the CLI or the VS Code extension?
-- Which baseline tag name should the recording script standardize on?
+- Should the repo be created directly under `nickhilster` first and moved later if a DyKnow organization namespace is created?
 
 ## Cross-references
 
