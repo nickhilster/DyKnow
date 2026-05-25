@@ -20,6 +20,7 @@ import {
 } from "@dyknow/core";
 
 import { createCommitResult, parseCommitOptions } from "./commit.js";
+import { runDemoSmoke } from "./demo-smoke.js";
 import { createRepoDiff, parseDiffOptions } from "./diff.js";
 import {
   createAuditLogReport,
@@ -403,6 +404,7 @@ function formatHelp(): string {
     "- dyknow status [--output <path>]",
     "- dyknow commit [--input <path>] [--message <text>] [--allow-high-risk]",
     "- dyknow pr [--input <path>] [--base <branch>] [--branch <name>] [--message <text>] [--title <text>] [--allow-high-risk]",
+    "- dyknow demo-smoke [--workspace <path>] [--config <path>] [--handoff <path>] [--checklist <path>] [--index <path>] [--log <path>]",
     "",
     `Default repo diff output: ${DEFAULT_REPO_DIFF_OUTPUT_PATH}`,
     `Default update output: ${DEFAULT_UPDATE_OUTPUT_PATH}`,
@@ -776,6 +778,10 @@ export async function runCli(
 
   if (command === "pr") {
     return handlePr(commandArgs, context);
+  }
+
+  if (command === "demo-smoke") {
+    return runDemoSmoke(commandArgs, context);
   }
 
   if (

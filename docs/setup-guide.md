@@ -38,6 +38,7 @@ This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`,
 - An LLM access method: local model, BYO API key, or vendor-hosted provider.
 - Permission to write to a `docs/dyknow/` directory and (optionally) open pull requests.
 - In this repository's current bootstrap, run `npm run build` before invoking `node packages/cli/dist/bin.js ...` directly.
+- Optional: Python 3.10+ and `graphifyy` if you want to inspect this repo with Graphify's knowledge-graph analysis.
 
 ## Step 1 — Initialize
 
@@ -74,6 +75,9 @@ The config defines:
 - Output formats
 - Publishing targets
 - Dependency allow and deny rules
+
+### Optional external analysis
+You can also use Graphify separately to build an interactive knowledge graph from this repository's code, docs, and related artifacts. Install it with `pip install graphifyy && graphify install`, then run `graphify .` from the repo root or use the convenience script `npm run graphify` if Python and `graphifyy` are available.
 
 The current implementation also enforces a few repo-safety rules at config-parse time:
 

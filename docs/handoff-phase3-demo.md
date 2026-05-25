@@ -12,6 +12,11 @@ confidence: high
 
 Phase 2 closure is complete, and the next useful move is to stand up a reproducible public demo workflow that proves the end-to-end value proposition with minimal setup friction.
 
+## Immediate next artifacts
+
+- [Phase 3 Demo Checklist](phase3-demo-checklist.md) — concrete issue list for demo repo selection, baseline capture, staged changes, and recording prep.
+- `npm run demo:smoke` — CI-ready smoke command scaffold that validates the handoff pages and runs the non-interactive `scan -> diff -> update` path.
+
 ## Scope for the next slice
 
 1. Pick the demo repository and capture baseline assumptions.
@@ -43,6 +48,7 @@ Phase 2 closure is complete, and the next useful move is to stand up a reproduci
 
 ## Cross-references
 
+- [Phase 3 Demo Checklist](phase3-demo-checklist.md)
 - [Implementation Roadmap](implementation-roadmap.md)
 - [Roadmap](roadmap.md)
 - [Setup Guide](setup-guide.md)

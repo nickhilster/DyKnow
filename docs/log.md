@@ -257,3 +257,6 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-24 | update | docs/implementation-roadmap.md | Marked the final Phase 2 quality-bar checkbox complete using acceptance artifacts plus manual walkthrough evidence.
 2026-05-25 | create | docs/handoff-phase3-demo.md | Added a focused Phase 3 kickoff handoff for demo repository selection and scripted walkthrough setup.
 2026-05-25 | update | docs/index.md | Added the Phase 3 handoff page to Agent handoffs for discoverable next-slice execution.
+2026-05-25 | create | docs/phase3-demo-checklist.md | Added a concrete Phase 3 demo checklist with issue-by-issue acceptance criteria.
+2026-05-25 | update | docs/handoff-phase3-demo.md | Linked the new Phase 3 demo checklist and smoke command scaffold into the handoff.
+2026-05-25 | update | docs/index.md | Added the Phase 3 demo checklist to Agent handoffs for easier navigation.

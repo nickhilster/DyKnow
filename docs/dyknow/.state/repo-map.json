@@ -140,8 +140,8 @@
     {
       "path": ".github/workflows/ci.yml",
       "kind": "yaml",
-      "size": 1402,
-      "lineCount": 63,
+      "size": 2412,
+      "lineCount": 86,
       "signals": [
         "openapi",
         "config"
@@ -402,6 +402,26 @@
       "topLevelKeys": []
     },
     {
+      "path": "docs/handoff-phase3-demo.md",
+      "kind": "markdown",
+      "size": 2281,
+      "lineCount": 56,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Immediate next artifacts",
+        "Scope for the next slice",
+        "Deliverables",
+        "Acceptance criteria",
+        "Open questions",
+        "Cross-references"
+      ],
+      "topLevelKeys": []
+    },
+    {
       "path": "docs/implementation-roadmap.md",
       "kind": "markdown",
       "size": 14156,
@@ -464,8 +484,8 @@
     {
       "path": "docs/index.md",
       "kind": "markdown",
-      "size": 1787,
-      "lineCount": 39,
+      "size": 2078,
+      "lineCount": 41,
       "signals": [
         "documentation"
       ],
@@ -509,8 +529,8 @@
     {
       "path": "docs/log.md",
       "kind": "markdown",
-      "size": 34809,
-      "lineCount": 258,
+      "size": 35476,
+      "lineCount": 263,
       "signals": [
         "documentation"
       ],
@@ -544,6 +564,23 @@
         "Strategic thesis",
         "Cross-references",
         "Open questions"
+      ],
+      "topLevelKeys": []
+    },
+    {
+      "path": "docs/phase3-demo-checklist.md",
+      "kind": "markdown",
+      "size": 2757,
+      "lineCount": 60,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Issue checklist",
+        "Open questions",
+        "Cross-references"
       ],
       "topLevelKeys": []
     },
@@ -791,8 +828,8 @@
     {
       "path": "package.json",
       "kind": "json",
-      "size": 629,
-      "lineCount": 28,
+      "size": 691,
+      "lineCount": 29,
       "signals": [
         "package-manifest",
         "config"
@@ -912,6 +949,19 @@
       "topLevelKeys": []
     },
     {
+      "path": "packages/cli/src/demo-smoke.ts",
+      "kind": "typescript",
+      "size": 6711,
+      "lineCount": 256,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
       "path": "packages/cli/src/diff.ts",
       "kind": "typescript",
       "size": 4349,
@@ -927,8 +977,8 @@
     {
       "path": "packages/cli/src/index.ts",
       "kind": "typescript",
-      "size": 21680,
-      "lineCount": 793,
+      "size": 21952,
+      "lineCount": 799,
       "signals": [
         "source-code"
       ],
@@ -1623,8 +1673,8 @@
     }
   ],
   "outputPath": "docs/dyknow/.state/repo-map.json",
-  "rootPath": "C:\\DEV\\DyKnow",
-  "scannedAt": "2026-05-25T04:02:01.591Z",
+  "rootPath": "c:\\DEV\\DyKnow",
+  "scannedAt": "2026-05-25T04:59:48.647Z",
   "warnings": [
     {
       "code": "secret-pattern",

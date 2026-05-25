@@ -11,10 +11,12 @@
   ],
   "scripts": {
     "build": "tsc -b && npm run build --workspace=packages/vscode-extension",
+    "demo:smoke": "node packages/cli/dist/bin.js demo-smoke",
     "format": "biome format . --write",
     "lint": "biome check .",
     "test": "vitest run",
-    "typecheck": "tsc -b --pretty false"
+    "typecheck": "tsc -b --pretty false",
+    "graphify": "python -m graphifyy ."
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
