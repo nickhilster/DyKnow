@@ -255,3 +255,5 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-24 | update | docs/implementation-roadmap.md | Marked Phase 2 DyKnow Map, Stale Pages, and per-update inline action parity complete; linked acceptance artifact status for the quality bar.
 2026-05-24 | create | docs/dyknow/.state/phase2-manual-walkthrough.md | Recorded manual first-time-user walkthrough evidence: VSIX install, scan/diff/update flow, and review approval action.
 2026-05-24 | update | docs/implementation-roadmap.md | Marked the final Phase 2 quality-bar checkbox complete using acceptance artifacts plus manual walkthrough evidence.
+2026-05-25 | create | docs/handoff-phase3-demo.md | Added a focused Phase 3 kickoff handoff for demo repository selection and scripted walkthrough setup.
+2026-05-25 | update | docs/index.md | Added the Phase 3 handoff page to Agent handoffs for discoverable next-slice execution.
