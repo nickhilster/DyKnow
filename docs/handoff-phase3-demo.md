@@ -15,6 +15,7 @@ Phase 2 closure is complete, and the next useful move is to stand up a reproduci
 ## Immediate next artifacts
 
 - [Phase 3 Demo Repo Selection](phase3-demo-repo-selection.md) — selected direction for the first public demo repo, plus rationale and baseline expectations.
+- [Phase 3 Demo Baseline Plan](phase3-demo-baseline-plan.md) — proposed bootstrap commands, starter files, and baseline verification steps for `dyknow-demo-app`.
 - [Phase 3 Demo Checklist](phase3-demo-checklist.md) — concrete issue list for demo repo selection, baseline capture, staged changes, and recording prep.
 - `npm run demo:smoke` — CI-ready smoke command scaffold that validates the handoff pages and runs the non-interactive `scan -> diff -> update` path.
 
@@ -64,6 +65,7 @@ Current concrete target:
 
 ## Cross-references
 
+- [Phase 3 Demo Baseline Plan](phase3-demo-baseline-plan.md)
 - [Phase 3 Demo Repo Selection](phase3-demo-repo-selection.md)
 - [Phase 3 Demo Checklist](phase3-demo-checklist.md)
 - [Implementation Roadmap](implementation-roadmap.md)

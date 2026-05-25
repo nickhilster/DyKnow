@@ -17,6 +17,8 @@ Current decision: the first public demo should use a dedicated TypeScript Next.j
 
 Current concrete target: `nickhilster/dyknow-demo-app` with the baseline tag `phase3-demo-baseline`.
 
+Working bootstrap plan: use the proposed commands and starter file set in [Phase 3 Demo Baseline Plan](phase3-demo-baseline-plan.md).
+
 ## Issue checklist
 
 1. Select the first demo repository.
@@ -57,6 +59,7 @@ Current concrete target: `nickhilster/dyknow-demo-app` with the baseline tag `ph
 
 ## Cross-references
 
+- [Phase 3 Demo Baseline Plan](phase3-demo-baseline-plan.md)
 - [Phase 3 Demo Repo Selection](phase3-demo-repo-selection.md)
 - [Phase 3 Public Demo Handoff](handoff-phase3-demo.md)
 - [Implementation Roadmap](implementation-roadmap.md)
