@@ -14,8 +14,13 @@ Phase 2 closure is complete, and the next useful move is to stand up a reproduci
 
 ## Immediate next artifacts
 
+- [Phase 3 Demo Repo Selection](phase3-demo-repo-selection.md) — selected direction for the first public demo repo, plus rationale and baseline expectations.
 - [Phase 3 Demo Checklist](phase3-demo-checklist.md) — concrete issue list for demo repo selection, baseline capture, staged changes, and recording prep.
 - `npm run demo:smoke` — CI-ready smoke command scaffold that validates the handoff pages and runs the non-interactive `scan -> diff -> update` path.
+
+## Current direction
+
+Use a dedicated public sandbox repo for the first demo, not an existing dogfood repo. The selected repo shape is a small TypeScript Next.js app so the walkthrough leans on route and manifest metadata DyKnow already extracts today.
 
 ## Scope for the next slice
 
@@ -43,11 +48,12 @@ Phase 2 closure is complete, and the next useful move is to stand up a reproduci
 
 ## Open questions
 
-- Which existing repo is the best first public demo candidate: a dedicated demo repo or one of the existing dogfood repos?
+- What exact GitHub repo name and owner should host the dedicated demo sandbox?
 - Should the first recorded walkthrough prioritize CLI or VS Code as the lead narrative?
 
 ## Cross-references
 
+- [Phase 3 Demo Repo Selection](phase3-demo-repo-selection.md)
 - [Phase 3 Demo Checklist](phase3-demo-checklist.md)
 - [Implementation Roadmap](implementation-roadmap.md)
 - [Roadmap](roadmap.md)

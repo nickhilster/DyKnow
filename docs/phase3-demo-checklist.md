@@ -13,6 +13,8 @@ confidence: high
 
 The Phase 3 handoff becomes easier to execute when it is split into a small set of issues with clear exit criteria. This page is the working checklist for that demo-prep slice.
 
+Current decision: the first public demo should use a dedicated TypeScript Next.js sandbox repo rather than an existing dogfood repo. See [Phase 3 Demo Repo Selection](phase3-demo-repo-selection.md).
+
 ## Issue checklist
 
 1. Select the first demo repository.
@@ -47,12 +49,13 @@ The Phase 3 handoff becomes easier to execute when it is split into a small set 
 
 ## Open questions
 
-- Is the first demo repo a dedicated sandbox or an existing dogfood repo?
+- What exact GitHub repo name and owner should host the dedicated demo sandbox?
 - Should the first recording lead with the CLI or the VS Code extension?
 - Does the demo smoke command need to run inside the demo repo only, or should it also validate the DyKnow repo itself?
 
 ## Cross-references
 
+- [Phase 3 Demo Repo Selection](phase3-demo-repo-selection.md)
 - [Phase 3 Public Demo Handoff](handoff-phase3-demo.md)
 - [Implementation Roadmap](implementation-roadmap.md)
 - [Roadmap](roadmap.md)

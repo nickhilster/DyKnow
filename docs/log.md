@@ -191,6 +191,10 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-24 | update | packages/cli/src/review.ts | Added an interactive review walkthrough on top of the existing review mutation and audit flow.
 2026-05-24 | update | packages/core/src/update-runner.ts | Added page-specific built-in local draft generators for the default maintained pages.
 2026-05-24 | update | docs/implementation-roadmap.md | Marked the BYO provider, interactive review walkthrough, and initial built-in page generators complete for the current Phase 1 slice.
+2026-05-25 | create | docs/phase3-demo-repo-selection.md | Recorded the selected dedicated Next.js sandbox direction for the first public demo repo.
+2026-05-25 | update | docs/handoff-phase3-demo.md | Resolved the repo-type decision toward a dedicated public sandbox and linked the selection page.
+2026-05-25 | update | docs/phase3-demo-checklist.md | Added the selected demo-repo direction and linked the detailed repo-selection page.
+2026-05-25 | update | docs/index.md | Added the Phase 3 demo repo selection page to the handoff catalog.
 2026-05-23 | update | packages/cli/src/log.ts | Added per-entry source log labels so merged committed and runtime audit output stays traceable.
 2026-05-23 | update | README.md | Documented that dyknow log now labels each rendered entry with its source audit file.
 2026-05-23 | update | AGENTS.md | Updated agent context to note per-entry source labels in dyknow log output.

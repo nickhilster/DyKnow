@@ -29,6 +29,7 @@ Catalog of every Dynamic Knowledge Page in this wiki. Keep entries to one line. 
 - [Phase 2 VS Code Extension Handoff](handoff-phase2-vscode.md) — context and task list for finishing Phase 2 (diff viewer, evidence panel, settings UI, vsce publish).
 - [Phase 3 Public Demo Handoff](handoff-phase3-demo.md) — next-slice plan for demo repo selection, scripted walkthrough, and reproducible execution evidence.
 - [Phase 3 Demo Checklist](phase3-demo-checklist.md) — issue-by-issue checklist for turning the handoff into a demo-prep sprint.
+- [Phase 3 Demo Repo Selection](phase3-demo-repo-selection.md) — chosen first-demo repo shape, rationale, and baseline plan.
 
 ## Wiki operations
 
