@@ -140,8 +140,8 @@
     {
       "path": ".github/workflows/ci.yml",
       "kind": "yaml",
-      "size": 685,
-      "lineCount": 36,
+      "size": 1402,
+      "lineCount": 63,
       "signals": [
         "openapi",
         "config"
@@ -230,8 +230,8 @@
     {
       "path": "CONTRIBUTING.md",
       "kind": "markdown",
-      "size": 4018,
-      "lineCount": 105,
+      "size": 6459,
+      "lineCount": 179,
       "signals": [
         "documentation"
       ],
@@ -247,9 +247,14 @@
         "Updating an existing wiki page",
         "Creating a new wiki page",
         "Deleting a wiki page",
+        "Commit message format",
+        "Allowed types",
+        "Examples",
+        "Breaking changes",
+        "CI enforcement",
         "Pull request expectations",
         "Running the lint checklist",
-        "When code lands",
+        "Code contributions",
         "Questions"
       ],
       "topLevelKeys": []
@@ -362,10 +367,45 @@
       "topLevelKeys": []
     },
     {
+      "path": "docs/handoff-phase2-vscode.md",
+      "kind": "markdown",
+      "size": 17402,
+      "lineCount": 472,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Summary",
+        "Repository layout",
+        "Branch",
+        "Build",
+        "From repo root",
+        "Extension only",
+        "Tests (core + cli only — extension has no unit tests yet)",
+        "What is already done",
+        "What is NOT done — remaining Phase 2 tasks",
+        "Task 1 — Diff viewer for proposed content",
+        "Task 2 — Source evidence webview panel",
+        "Task 3 — Settings UI for config overrides",
+        "Task 4 — Marketplace publish prep",
+        "Task 5 — Update implementation-roadmap.md",
+        "Key data shapes (copy-paste safe for type declarations)",
+        "`repo-diff.json` (read by ChangedKnowledgeProvider)",
+        "`update-proposals.json` (read by SuggestedUpdatesProvider)",
+        "CLI command reference (for `runCli` calls)",
+        "Commit message format",
+        "Coding standards",
+        "Cross-references"
+      ],
+      "topLevelKeys": []
+    },
+    {
       "path": "docs/implementation-roadmap.md",
       "kind": "markdown",
-      "size": 13820,
-      "lineCount": 322,
+      "size": 14156,
+      "lineCount": 324,
       "signals": [
         "documentation"
       ],
@@ -424,8 +464,8 @@
     {
       "path": "docs/index.md",
       "kind": "markdown",
-      "size": 1597,
-      "lineCount": 35,
+      "size": 1787,
+      "lineCount": 39,
       "signals": [
         "documentation"
       ],
@@ -437,6 +477,7 @@
         "Technical",
         "Trust and governance",
         "Reference",
+        "Agent handoffs",
         "Wiki operations"
       ],
       "topLevelKeys": []
@@ -468,8 +509,8 @@
     {
       "path": "docs/log.md",
       "kind": "markdown",
-      "size": 28490,
-      "lineCount": 229,
+      "size": 34809,
+      "lineCount": 258,
       "signals": [
         "documentation"
       ],
@@ -750,8 +791,8 @@
     {
       "path": "package.json",
       "kind": "json",
-      "size": 482,
-      "lineCount": 24,
+      "size": 629,
+      "lineCount": 28,
       "signals": [
         "package-manifest",
         "config"
@@ -761,6 +802,16 @@
           "name": "@biomejs/biome",
           "section": "devDependencies",
           "version": "^1.9.4"
+        },
+        {
+          "name": "@commitlint/cli",
+          "section": "devDependencies",
+          "version": "^21.0.1"
+        },
+        {
+          "name": "@commitlint/config-conventional",
+          "section": "devDependencies",
+          "version": "^21.0.1"
         },
         {
           "name": "@types/node",
@@ -850,8 +901,8 @@
     {
       "path": "packages/cli/src/commit.ts",
       "kind": "typescript",
-      "size": 8433,
-      "lineCount": 333,
+      "size": 8499,
+      "lineCount": 335,
       "signals": [
         "source-code"
       ],
@@ -915,8 +966,8 @@
     {
       "path": "packages/cli/src/review.ts",
       "kind": "typescript",
-      "size": 23837,
-      "lineCount": 962,
+      "size": 24401,
+      "lineCount": 976,
       "signals": [
         "source-code"
       ],
@@ -1183,8 +1234,8 @@
     {
       "path": "packages/core/src/contracts.ts",
       "kind": "typescript",
-      "size": 2996,
-      "lineCount": 97,
+      "size": 8282,
+      "lineCount": 295,
       "signals": [
         "source-code"
       ],
@@ -1196,8 +1247,21 @@
     {
       "path": "packages/core/src/index.ts",
       "kind": "typescript",
-      "size": 235,
-      "lineCount": 8,
+      "size": 274,
+      "lineCount": 9,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "packages/core/src/output-templates.ts",
+      "kind": "typescript",
+      "size": 14142,
+      "lineCount": 421,
       "signals": [
         "source-code"
       ],
@@ -1235,8 +1299,8 @@
     {
       "path": "packages/core/src/update-runner.ts",
       "kind": "typescript",
-      "size": 19557,
-      "lineCount": 658,
+      "size": 20726,
+      "lineCount": 674,
       "signals": [
         "source-code"
       ],
@@ -1289,8 +1353,21 @@
     {
       "path": "packages/core/test/contracts.test.ts",
       "kind": "typescript",
-      "size": 1802,
-      "lineCount": 63,
+      "size": 4042,
+      "lineCount": 137,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "packages/core/test/output-templates.test.ts",
+      "kind": "typescript",
+      "size": 11579,
+      "lineCount": 330,
       "signals": [
         "source-code"
       ],
@@ -1328,8 +1405,8 @@
     {
       "path": "packages/core/test/update-runner.test.ts",
       "kind": "typescript",
-      "size": 8243,
-      "lineCount": 293,
+      "size": 13224,
+      "lineCount": 474,
       "signals": [
         "source-code"
       ],
@@ -1369,6 +1446,154 @@
       ]
     },
     {
+      "path": "packages/vscode-extension/LICENSE",
+      "kind": "plaintext",
+      "size": 261,
+      "lineCount": 9,
+      "signals": [],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "packages/vscode-extension/README.md",
+      "kind": "markdown",
+      "size": 203,
+      "lineCount": 5,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "DyKnow for VS Code"
+      ],
+      "topLevelKeys": []
+    },
+    {
+      "path": "packages/vscode-extension/dyknow-0.1.0.vsix",
+      "kind": "unknown",
+      "size": 40087,
+      "lineCount": 0,
+      "signals": [],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "packages/vscode-extension/esbuild.mjs",
+      "kind": "unknown",
+      "size": 699,
+      "lineCount": 0,
+      "signals": [],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "packages/vscode-extension/package.json",
+      "kind": "json",
+      "size": 13355,
+      "lineCount": 425,
+      "signals": [
+        "package-manifest",
+        "config"
+      ],
+      "dependencies": [
+        {
+          "name": "@types/vscode",
+          "section": "devDependencies",
+          "version": "^1.100.0"
+        },
+        {
+          "name": "@vscode/vsce",
+          "section": "devDependencies",
+          "version": "^3.9.1"
+        },
+        {
+          "name": "esbuild",
+          "section": "devDependencies",
+          "version": "^0.27.7"
+        }
+      ],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": [
+        "activationEvents",
+        "categories",
+        "contributes",
+        "description",
+        "devDependencies",
+        "displayName",
+        "engines",
+        "license",
+        "main",
+        "name",
+        "private",
+        "publisher",
+        "repository",
+        "scripts",
+        "type",
+        "version"
+      ]
+    },
+    {
+      "path": "packages/vscode-extension/scripts/phase2-acceptance.mjs",
+      "kind": "unknown",
+      "size": 5697,
+      "lineCount": 0,
+      "signals": [],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "packages/vscode-extension/src/extension.ts",
+      "kind": "typescript",
+      "size": 49829,
+      "lineCount": 1743,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "packages/vscode-extension/tsconfig.json",
+      "kind": "json",
+      "size": 560,
+      "lineCount": 23,
+      "signals": [
+        "config"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": [
+        "compilerOptions",
+        "include"
+      ]
+    },
+    {
+      "path": "packages/vscode-extension/tsconfig.tsbuildinfo",
+      "kind": "unknown",
+      "size": 31452,
+      "lineCount": 0,
+      "signals": [
+        "config"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
       "path": "tsconfig.base.json",
       "kind": "json",
       "size": 551,
@@ -1386,23 +1611,20 @@
     {
       "path": "tsconfig.json",
       "kind": "json",
-      "size": 129,
-      "lineCount": 12,
+      "size": 359,
+      "lineCount": 15,
       "signals": [
         "config"
       ],
       "dependencies": [],
       "routes": [],
       "headings": [],
-      "topLevelKeys": [
-        "files",
-        "references"
-      ]
+      "topLevelKeys": []
     }
   ],
   "outputPath": "docs/dyknow/.state/repo-map.json",
   "rootPath": "C:\\DEV\\DyKnow",
-  "scannedAt": "2026-05-24T18:28:20.552Z",
+  "scannedAt": "2026-05-25T04:02:01.591Z",
   "warnings": [
     {
       "code": "secret-pattern",

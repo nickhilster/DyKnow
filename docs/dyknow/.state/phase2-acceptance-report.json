@@ -1,0 +1,57 @@
+{
+  "generatedAt": "2026-05-25T03:48:11.981Z",
+  "checks": {
+    "manifest": {
+      "views": [
+        "dyknow.map",
+        "dyknow.changedKnowledge",
+        "dyknow.stalePages",
+        "dyknow.suggestedUpdates",
+        "dyknow.agentContext"
+      ],
+      "commands": [
+        "dyknow.scan",
+        "dyknow.diff",
+        "dyknow.update",
+        "dyknow.approveProposal",
+        "dyknow.skipProposal",
+        "dyknow.rejectProposal",
+        "dyknow.regenerateProposal",
+        "dyknow.editProposal",
+        "dyknow.markSourceIrrelevant",
+        "dyknow.showEvidence",
+        "dyknow.commit",
+        "dyknow.regeneratePending",
+        "dyknow.rejectPending",
+        "dyknow.regenerateSelected",
+        "dyknow.rejectSelected",
+        "dyknow.openPr",
+        "dyknow.refreshViews"
+      ],
+      "missingViews": [],
+      "missingCommands": [],
+      "telemetryOptInDefaultFalse": true
+    },
+    "build": {
+      "ok": true,
+      "output": {
+        "command": "C:\\Program Files\\nodejs\\node.exe c:\\DEV\\DyKnow\\packages\\vscode-extension\\esbuild.mjs",
+        "durationMs": 145,
+        "stdout": "",
+        "stderr": "dist\\extension.js      41.0kb\n  dist\\extension.js.map  75.9kb\n\nDone in 23ms"
+      }
+    },
+    "package": {
+      "ok": true,
+      "output": {
+        "command": "C:\\Program Files\\nodejs\\node.exe c:\\DEV\\DyKnow\\node_modules\\@vscode\\vsce\\vsce package --no-dependencies",
+        "durationMs": 1339,
+        "stdout": "INFO  Files included in the VSIX:\ndyknow-0.1.0.vsix\n├─ [Content_Types].xml \n├─ extension.vsixmanifest \n└─ extension/\n   ├─ LICENSE.txt [0.25 KB]\n   ├─ package.json [13.04 KB]\n   ├─ readme.md [0.2 KB]\n   ├─ dist/\n   │  ├─ extension.cjs [15.12 KB]\n   │  ├─ extension.cjs.map [26.51 KB]\n   │  ├─ extension.d.ts [0.19 KB]\n   │  ├─ extension.d.ts.map [0.24 KB]\n   │  ├─ extension.js [41 KB]\n   │  └─ extension.js.map [75.92 KB]\n   └─ scripts/\n      └─ phase2-acceptance.mjs [5.56 KB]\n\n DONE  Packaged: c:\\DEV\\DyKnow\\packages\\vscode-extension\\dyknow-0.1.0.vsix (12 files, 39.15 KB)",
+        "stderr": ""
+      }
+    },
+    "vsixExists": true
+  },
+  "qualityBarStatus": "provisionally-pass-pending-manual-first-time-user-walkthrough",
+  "overallPass": true
+}

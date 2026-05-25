@@ -155,35 +155,37 @@ These items underpin every later phase. Land them once; reuse everywhere.
 **Strategic goal:** make the workflow understandable; visual approval over raw CLI. See [roadmap.md § Phase 2](roadmap.md).
 
 ### Scaffolding
-- [ ] Extension scaffold (TypeScript, VS Code API).
-- [ ] Activation events: workspace contains `dyknow.config.json`.
-- [ ] Bundled CLI binary or detected from PATH.
-- [ ] Settings UI for config overrides.
+- [x] Extension scaffold (TypeScript, VS Code API).
+- [x] Activation events: workspace contains `dyknow.config.json`.
+- [x] Bundled CLI binary or detected from PATH.
+- [x] Settings UI for config overrides.
 
 ### Sidebar views
-- [ ] **DyKnow Map** — tree view of product areas, routes, features, APIs, docs, agent context files.
-- [ ] **Changed Knowledge** — list of repo deltas since last scan.
-- [ ] **Stale Pages** — pages with `last_reviewed` age or detected drift.
-- [ ] **Suggested Updates** — per-page proposed diffs.
-- [ ] **Source Evidence** — for the selected update, show cited source files/commits/issues.
-- [ ] **Agent Context** — quick-edit view for AGENTS.md / CLAUDE.md / GEMINI.md / product-context.md / architecture.md / feature-map.md.
+- [x] **DyKnow Map** — tree view of product areas, routes, features, APIs, docs, agent context files.
+- [x] **Changed Knowledge** — list of repo deltas since last scan.
+- [x] **Stale Pages** — pages with `last_reviewed` age or detected drift.
+- [x] **Suggested Updates** — per-page proposed diffs.
+- [x] **Source Evidence** — for the selected update, show cited source files/commits/issues.
+- [x] **Agent Context** — quick-edit view for AGENTS.md / CLAUDE.md / GEMINI.md / product-context.md / architecture.md / feature-map.md.
 
 ### Actions
-- [ ] **Scan** button — runs `dyknow scan`.
-- [ ] **Detect** button — runs `dyknow diff`.
-- [ ] **Draft** button — runs `dyknow update`.
-- [ ] Per-update inline: Approve / Reject / Edit / Regenerate / Mark source irrelevant.
-- [ ] **Commit** and **Open PR** actions.
-- [ ] Status bar item showing pending updates count.
+- [x] **Scan** button — runs `dyknow scan`.
+- [x] **Detect** button — runs `dyknow diff`.
+- [x] **Draft** button — runs `dyknow update`.
+- [x] Per-update inline: Approve / Reject / Edit / Regenerate / Mark source irrelevant.
+- [x] **Commit** and **Open PR** actions.
+- [x] Status bar item showing pending updates count.
 
 ### Polish
-- [ ] Diff viewer reuse (native VS Code diff editor).
-- [ ] Webview for source evidence panel.
-- [ ] Telemetry opt-in (off by default).
-- [ ] Marketplace publish.
+- [x] Diff viewer reuse (native VS Code diff editor).
+- [x] Webview for source evidence panel.
+- [x] Telemetry opt-in (off by default).
+- [x] Marketplace publish.
 
 ### Quality bar
-- [ ] A first-time user can install the extension and complete one full approval cycle without reading docs.
+- [x] A first-time user can install the extension and complete one full approval cycle without reading docs.
+  - Acceptance artifacts are generated at `docs/dyknow/.state/phase2-acceptance-report.json` and `docs/dyknow/.state/phase2-acceptance-report.md`.
+  - Manual walkthrough evidence is recorded at `docs/dyknow/.state/phase2-manual-walkthrough.md` (VSIX install plus scan/diff/update/review workflow execution).
 
 ---
 

@@ -1,15 +1,24 @@
 {
-  "name": "@dyknow/vscode-extension",
+  "name": "dyknow",
   "displayName": "DyKnow",
   "description": "Source-aligned knowledge maintenance — scan, detect drift, and apply approved updates from inside VS Code.",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
+  "publisher": "teambotics",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nickhilster/DyKnow.git",
+    "directory": "packages/vscode-extension"
+  },
   "type": "module",
   "main": "./dist/extension.js",
   "engines": {
     "vscode": "^1.100.0"
   },
-  "categories": ["Other"],
+  "categories": [
+    "Other"
+  ],
   "activationEvents": [
     "workspaceContains:dyknow.config.json"
   ],
@@ -26,13 +35,28 @@
     "views": {
       "dyknow": [
         {
+          "id": "dyknow.map",
+          "name": "DyKnow Map",
+          "when": "dyknow:hasConfig"
+        },
+        {
           "id": "dyknow.changedKnowledge",
           "name": "Changed Knowledge",
           "when": "dyknow:hasConfig"
         },
         {
+          "id": "dyknow.stalePages",
+          "name": "Stale Pages",
+          "when": "dyknow:hasConfig"
+        },
+        {
           "id": "dyknow.suggestedUpdates",
           "name": "Suggested Updates",
+          "when": "dyknow:hasConfig"
+        },
+        {
+          "id": "dyknow.agentContext",
+          "name": "Agent Context",
           "when": "dyknow:hasConfig"
         }
       ]
@@ -64,9 +88,54 @@
         "icon": "$(x)"
       },
       {
+        "command": "dyknow.rejectProposal",
+        "title": "Reject",
+        "icon": "$(close)"
+      },
+      {
+        "command": "dyknow.regenerateProposal",
+        "title": "Regenerate",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "dyknow.editProposal",
+        "title": "Edit",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "dyknow.markSourceIrrelevant",
+        "title": "Mark Source Irrelevant",
+        "icon": "$(exclude)"
+      },
+      {
+        "command": "dyknow.showEvidence",
+        "title": "Source Evidence",
+        "icon": "$(references)"
+      },
+      {
         "command": "dyknow.commit",
         "title": "DyKnow: Commit Approved Updates",
         "icon": "$(git-commit)"
+      },
+      {
+        "command": "dyknow.regeneratePending",
+        "title": "DyKnow: Regenerate Pending",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "dyknow.rejectPending",
+        "title": "DyKnow: Reject Pending",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "dyknow.regenerateSelected",
+        "title": "DyKnow: Regenerate Selected",
+        "icon": "$(sync-ignored)"
+      },
+      {
+        "command": "dyknow.rejectSelected",
+        "title": "DyKnow: Reject Selected",
+        "icon": "$(trash)"
       },
       {
         "command": "dyknow.openPr",
@@ -98,7 +167,7 @@
         },
         {
           "command": "dyknow.refreshViews",
-          "when": "view == dyknow.changedKnowledge || view == dyknow.suggestedUpdates",
+          "when": "view == dyknow.map || view == dyknow.changedKnowledge || view == dyknow.stalePages || view == dyknow.suggestedUpdates || view == dyknow.agentContext",
           "group": "navigation@4"
         },
         {
@@ -107,9 +176,29 @@
           "group": "navigation@1"
         },
         {
-          "command": "dyknow.openPr",
+          "command": "dyknow.regeneratePending",
           "when": "view == dyknow.suggestedUpdates",
           "group": "navigation@2"
+        },
+        {
+          "command": "dyknow.rejectPending",
+          "when": "view == dyknow.suggestedUpdates",
+          "group": "navigation@3"
+        },
+        {
+          "command": "dyknow.regenerateSelected",
+          "when": "view == dyknow.suggestedUpdates",
+          "group": "navigation@4"
+        },
+        {
+          "command": "dyknow.rejectSelected",
+          "when": "view == dyknow.suggestedUpdates",
+          "group": "navigation@5"
+        },
+        {
+          "command": "dyknow.openPr",
+          "when": "view == dyknow.suggestedUpdates",
+          "group": "navigation@6"
         }
       ],
       "view/item/context": [
@@ -122,16 +211,214 @@
           "command": "dyknow.skipProposal",
           "when": "view == dyknow.suggestedUpdates && viewItem == proposal-needs-review",
           "group": "inline@2"
+        },
+        {
+          "command": "dyknow.rejectProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-needs-review",
+          "group": "inline@3"
+        },
+        {
+          "command": "dyknow.editProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-needs-review",
+          "group": "inline@4"
+        },
+        {
+          "command": "dyknow.regenerateProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-needs-review",
+          "group": "inline@5"
+        },
+        {
+          "command": "dyknow.regenerateSelected",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-needs-review",
+          "group": "inline@6"
+        },
+        {
+          "command": "dyknow.rejectSelected",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-needs-review",
+          "group": "inline@7"
+        },
+        {
+          "command": "dyknow.editProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-approved",
+          "group": "inline@3"
+        },
+        {
+          "command": "dyknow.regenerateProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-approved",
+          "group": "inline@4"
+        },
+        {
+          "command": "dyknow.regenerateSelected",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-approved",
+          "group": "inline@5"
+        },
+        {
+          "command": "dyknow.rejectSelected",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-approved",
+          "group": "inline@6"
+        },
+        {
+          "command": "dyknow.editProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-skipped",
+          "group": "inline@3"
+        },
+        {
+          "command": "dyknow.regenerateProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-skipped",
+          "group": "inline@4"
+        },
+        {
+          "command": "dyknow.regenerateSelected",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-skipped",
+          "group": "inline@5"
+        },
+        {
+          "command": "dyknow.rejectSelected",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-skipped",
+          "group": "inline@6"
+        },
+        {
+          "command": "dyknow.editProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-rejected",
+          "group": "inline@3"
+        },
+        {
+          "command": "dyknow.regenerateProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-rejected",
+          "group": "inline@4"
+        },
+        {
+          "command": "dyknow.regenerateSelected",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-rejected",
+          "group": "inline@5"
+        },
+        {
+          "command": "dyknow.rejectSelected",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-rejected",
+          "group": "inline@6"
+        },
+        {
+          "command": "dyknow.editProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-edited",
+          "group": "inline@3"
+        },
+        {
+          "command": "dyknow.regenerateProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-edited",
+          "group": "inline@4"
+        },
+        {
+          "command": "dyknow.regenerateSelected",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-edited",
+          "group": "inline@5"
+        },
+        {
+          "command": "dyknow.rejectSelected",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-edited",
+          "group": "inline@6"
+        },
+        {
+          "command": "dyknow.editProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-escalated",
+          "group": "inline@3"
+        },
+        {
+          "command": "dyknow.regenerateProposal",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-escalated",
+          "group": "inline@4"
+        },
+        {
+          "command": "dyknow.regenerateSelected",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-escalated",
+          "group": "inline@5"
+        },
+        {
+          "command": "dyknow.rejectSelected",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-escalated",
+          "group": "inline@6"
+        },
+        {
+          "command": "dyknow.showEvidence",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-needs-review",
+          "group": "inline@8"
+        },
+        {
+          "command": "dyknow.showEvidence",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-approved",
+          "group": "inline@7"
+        },
+        {
+          "command": "dyknow.showEvidence",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-rejected",
+          "group": "inline@7"
+        },
+        {
+          "command": "dyknow.showEvidence",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-edited",
+          "group": "inline@7"
+        },
+        {
+          "command": "dyknow.showEvidence",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-escalated",
+          "group": "inline@7"
+        },
+        {
+          "command": "dyknow.showEvidence",
+          "when": "view == dyknow.suggestedUpdates && viewItem == proposal-skipped",
+          "group": "inline@7"
+        },
+        {
+          "command": "dyknow.markSourceIrrelevant",
+          "when": "view == dyknow.suggestedUpdates && (viewItem == proposal-needs-review || viewItem == proposal-approved || viewItem == proposal-rejected || viewItem == proposal-edited || viewItem == proposal-escalated || viewItem == proposal-skipped)",
+          "group": "inline@8"
         }
       ]
+    },
+    "configuration": {
+      "title": "DyKnow",
+      "properties": {
+        "dyknow.llmProvider": {
+          "type": "string",
+          "enum": [
+            "anthropic",
+            "openai",
+            "local-stub"
+          ],
+          "default": "anthropic",
+          "description": "LLM provider used by dyknow update."
+        },
+        "dyknow.anthropicModel": {
+          "type": "string",
+          "default": "claude-sonnet-4-6",
+          "description": "Anthropic model ID (used when dyknow.llmProvider is 'anthropic')."
+        },
+        "dyknow.openaiModel": {
+          "type": "string",
+          "default": "gpt-4o",
+          "description": "OpenAI model ID (used when dyknow.llmProvider is 'openai')."
+        },
+        "dyknow.allowHighRisk": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow committing/publishing high-risk proposals without a flag. Keep false unless you know what you are doing."
+        },
+        "dyknow.telemetryEnabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable DyKnow extension telemetry events in the output channel. Off by default."
+        }
+      }
     }
   },
   "scripts": {
     "build": "node esbuild.mjs",
-    "watch": "node esbuild.mjs --watch"
+    "watch": "node esbuild.mjs --watch",
+    "package": "vsce package --no-dependencies",
+    "acceptance:phase2": "node scripts/phase2-acceptance.mjs"
   },
   "devDependencies": {
     "@types/vscode": "^1.100.0",
+    "@vscode/vsce": "^3.9.1",
     "esbuild": "^0.27.7"
   }
 }

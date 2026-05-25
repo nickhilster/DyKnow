@@ -10,7 +10,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "tsc -b && npm run build --workspace=@dyknow/vscode-extension",
+    "build": "tsc -b && npm run build --workspace=packages/vscode-extension",
     "format": "biome format . --write",
     "lint": "biome check .",
     "test": "vitest run",
