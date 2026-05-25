@@ -1,9 +1,15 @@
-import { spawn } from "node:child_process";
-import { access, readFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 
+import {
+  DEFAULT_REPO_MAP_OUTPUT_PATH,
+  parseDyknowConfig,
+} from "@dyknow/core";
+
+import { createRepoDiff } from "./diff.js";
 import { resolveWorkspacePath } from "./security.js";
+import { scanWorkspace } from "./scan.js";
+import { createUpdateDraftBatch } from "./update.js";
 
 export type DemoSmokeOptions = {
   checklistPath: string;
@@ -20,6 +26,10 @@ function defaultWriter(message: string) {
 
 function defaultErrorWriter(message: string) {
   console.error(message);
+}
+
+function toPortablePath(path: string) {
+  return path.replaceAll("\\", "/");
 }
 
 function parseDemoSmokeOptions(args: readonly string[]): DemoSmokeOptions {
@@ -136,34 +146,37 @@ async function assertFileContains(options: {
   }
 }
 
-async function runDyKnowCommand(options: {
-  command: string;
+async function runDemoSmokePipeline(options: {
+  configPath: string;
   workspacePath: string;
-  args: readonly string[];
 }) {
-  const binPath = resolve(
-    dirname(fileURLToPath(import.meta.url)),
-    "bin.js",
+  const configText = await readFile(options.configPath, "utf8");
+  const config = parseDyknowConfig(configText);
+  const repoMapOutputPath = resolve(
+    options.workspacePath,
+    DEFAULT_REPO_MAP_OUTPUT_PATH,
   );
 
-  await new Promise<void>((resolvePromise, rejectPromise) => {
-    const child = spawn(process.execPath, [binPath, options.command, ...options.args], {
-      cwd: options.workspacePath,
-      env: process.env,
-      stdio: "inherit",
-    });
+  const repoMap = await scanWorkspace({
+    config,
+    configPath: options.configPath,
+    outputPath: repoMapOutputPath,
+    rootPath: options.workspacePath,
+  });
+  await mkdir(dirname(repoMapOutputPath), { recursive: true });
+  await writeFile(repoMapOutputPath, `${JSON.stringify(repoMap, null, 2)}\n`, "utf8");
 
-    child.once("error", rejectPromise);
-    child.once("exit", (exitCode) => {
-      if (exitCode === 0) {
-        resolvePromise();
-        return;
-      }
-
-      rejectPromise(
-        new Error(`dyknow ${options.command} failed with exit code ${exitCode ?? "unknown"}.`),
-      );
-    });
+  await createRepoDiff({
+    cwd: options.workspacePath,
+    configPath: options.configPath,
+    outputPath: "docs/dyknow/.state/repo-diff.json",
+    snapshotPath: "docs/dyknow/.state/repo-map.json",
+  });
+  await createUpdateDraftBatch({
+    cwd: options.workspacePath,
+    configPath: options.configPath,
+    diffPath: "docs/dyknow/.state/repo-diff.json",
+    outputPath: "docs/dyknow/.state/update-proposals.json",
   });
 }
 
@@ -228,24 +241,13 @@ export async function runDemoSmoke(
       pattern: /\| create \| docs\/phase3-demo-checklist\.md \|/,
     });
 
-    await runDyKnowCommand({
-      command: "scan",
+    await runDemoSmokePipeline({
+      configPath,
       workspacePath,
-      args: ["--config", options.configPath],
-    });
-    await runDyKnowCommand({
-      command: "diff",
-      workspacePath,
-      args: ["--config", options.configPath],
-    });
-    await runDyKnowCommand({
-      command: "update",
-      workspacePath,
-      args: ["--config", options.configPath],
     });
 
     stdout(
-      `Phase 3 smoke path passed for ${relative(workspacePath, handoffPath)} and ${relative(workspacePath, checklistPath)}.`,
+      `Phase 3 smoke path passed for ${toPortablePath(relative(workspacePath, handoffPath))} and ${toPortablePath(relative(workspacePath, checklistPath))}.`,
     );
     return 0;
   } catch (error) {
