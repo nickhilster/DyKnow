@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DyKnow Execution Report</title>
+  <style>
+    :root {
+      --bg: #f5f7f4;
+      --panel: #ffffff;
+      --ink: #1f2a24;
+      --muted: #5c6c62;
+      --accent: #0f766e;
+      --accent-2: #d97706;
+      --line: #d9e2db;
+      --ok: #166534;
+      --warn: #92400e;
+      --todo: #1d4ed8;
+      --shadow: 0 14px 32px rgba(20, 35, 26, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% -5%, rgba(15, 118, 110, 0.12), transparent 34%),
+        radial-gradient(circle at 92% 0%, rgba(217, 119, 6, 0.1), transparent 28%),
+        var(--bg);
+      line-height: 1.5;
+    }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 26px 18px 48px;
+    }
+
+    .hero {
+      background: linear-gradient(140deg, #123a37 0%, #0f766e 72%);
+      color: #f2fbf9;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -64px;
+      top: -48px;
+      width: 240px;
+      height: 240px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+      letter-spacing: 0.2px;
+    }
+
+    .hero p {
+      margin: 0;
+      opacity: 0.95;
+      max-width: 840px;
+    }
+
+    .meta {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 999px;
+      padding: 5px 12px;
+    }
+
+    .grid {
+      margin-top: 18px;
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(12, 1fr);
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .span-8 { grid-column: span 8; }
+    .span-4 { grid-column: span 4; }
+    .span-12 { grid-column: span 12; }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+      color: #16342f;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      color: #27463f;
+    }
+
+    ul { margin: 0; padding-left: 18px; }
+    li { margin: 5px 0; }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .kpi {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: #fbfdfc;
+    }
+
+    .kpi .label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .kpi .value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #17342e;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #22423a;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      background: #f7fbf9;
+    }
+
+    .tag {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+
+    .tag.ok { background: #ecfdf3; color: var(--ok); border-color: #86efac; }
+    .tag.warn { background: #fff7ed; color: var(--warn); border-color: #fdba74; }
+    .tag.todo { background: #eff6ff; color: var(--todo); border-color: #93c5fd; }
+
+    .split {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .small {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .foot {
+      margin-top: 18px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 960px) {
+      .span-8, .span-4 { grid-column: span 12; }
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+      .split { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>DyKnow Project Execution Report</h1>
+      <p>This report consolidates current progress, implementation methods, and next priorities. It includes both a detailed technical report and a non-technical PM briefing for planning and stakeholder communication.</p>
+      <div class="meta">
+        <span class="chip">Date: 2026-05-24</span>
+        <span class="chip">Scope: Local CLI + VS Code Extension + Tracker Alignment</span>
+        <span class="chip">Status: Active Delivery</span>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card span-8">
+        <h2>Detailed Technical Report</h2>
+        <div class="kpi-row">
+          <div class="kpi"><span class="label">CLI Commands Implemented</span><span class="value">9</span></div>
+          <div class="kpi"><span class="label">Test Results</span><span class="value">147/147</span></div>
+          <div class="kpi"><span class="label">Extension Packaging</span><span class="value">VSIX Ready</span></div>
+          <div class="kpi"><span class="label">Phase 2 State</span><span class="value">Core MVP Advanced</span></div>
+        </div>
+
+        <h3 style="margin-top:14px;">What Has Been Done</h3>
+        <ul>
+          <li>Implemented and validated end-to-end local flow: init, scan, diff, update, review, commit, pr, log, status.</li>
+          <li>Added and hardened extension MVP capabilities: Changed Knowledge and Suggested Updates views, approve/skip actions, and pending-count status bar.</li>
+          <li>Added native proposal diff workflow in extension: current page content vs proposed text.</li>
+          <li>Added source evidence webview with proposal context and source references.</li>
+          <li>Added settings-driven behavior for provider/model override and optional high-risk commit flag forwarding.</li>
+          <li>Prepared and validated extension packaging path via dyknow-0.1.0.vsix generation and local install.</li>
+          <li>Synced project status narratives to Linear and Notion to match actual implementation state.</li>
+        </ul>
+
+        <h3 style="margin-top:14px;">How It Was Done</h3>
+        <ul>
+          <li>Delivery executed as vertical slices: implementation, manifest wiring, packaging prep, verification, external tracker sync.</li>
+          <li>Verification pipeline used builds and tests before packaging: workspace build, extension build, full test suite, and VSIX install check.</li>
+          <li>Data shape alignment in extension used proposal and affected-page fields required for diff/evidence UI.</li>
+          <li>Operational safety preserved through existing review states, explicit high-risk commit behavior, and append-only audit patterns.</li>
+        </ul>
+
+        <h3 style="margin-top:14px;">What Needs To Be Done</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Area</th>
+              <th>Remaining Work</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Phase 2 Views</td>
+              <td>Add DyKnow Map, Stale Pages, and Agent Context views.</td>
+              <td><span class="tag warn">High</span></td>
+            </tr>
+            <tr>
+              <td>Phase 2 Actions</td>
+              <td>Add reject/edit/regenerate/mark-source-irrelevant parity in extension UI.</td>
+              <td><span class="tag warn">High</span></td>
+            </tr>
+            <tr>
+              <td>Observability</td>
+              <td>Implement telemetry opt-in flow (off by default).</td>
+              <td><span class="tag todo">Medium</span></td>
+            </tr>
+            <tr>
+              <td>Adoption Quality Bar</td>
+              <td>Prove first-time user can complete full approval cycle without docs.</td>
+              <td><span class="tag warn">High</span></td>
+            </tr>
+            <tr>
+              <td>Phase 1 Completion</td>
+              <td>Finish broad dogfood matrix and formal quality metrics.</td>
+              <td><span class="tag todo">Medium</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="card span-4">
+        <h2>Non-Technical PM Report</h2>
+        <h3>Current Position</h3>
+        <ul>
+          <li>The project has moved from concept-heavy tracking into delivery-heavy execution.</li>
+          <li>Core local product workflow is implemented and working.</li>
+          <li>VS Code experience is now visibly usable for review tasks, not just CLI users.</li>
+        </ul>
+
+        <h3 style="margin-top:12px;">Business Meaning</h3>
+        <ul>
+          <li>DyKnow can now demonstrate real maintenance flow from detected drift to approved updates.</li>
+          <li>Team learning risk is lower because review and evidence are easier to consume in-editor.</li>
+          <li>Packaging progress reduces friction for internal onboarding and pilot demos.</li>
+        </ul>
+
+        <h3 style="margin-top:12px;">PM Focus Next</h3>
+        <ul>
+          <li>Close remaining Phase 2 parity gaps so demo narrative is complete.</li>
+          <li>Define acceptance criteria for first-time-user success and run guided trials.</li>
+          <li>Push final Phase 1 dogfood completion to de-risk demo and pilot phases.</li>
+        </ul>
+
+        <p class="small" style="margin-top:12px;">Plain-language summary: The foundation works, the product is becoming user-facing, and the next step is tightening usability and proof before outward-facing demo and pilot pushes.</p>
+      </article>
+
+      <article class="card span-12">
+        <h2>Execution Timeline Snapshot</h2>
+        <div class="split">
+          <div>
+            <h3>Completed / Advanced</h3>
+            <ul>
+              <li>Local CLI command surface implemented and tested.</li>
+              <li>Review + audit + publish safety mechanics operational.</li>
+              <li>Extension gained diff viewer, evidence panel, settings integration, and packaging readiness.</li>
+              <li>Notion Hub and Linear project documentation synchronized to current state.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Near-Term Sequence</h3>
+            <ul>
+              <li>Finish remaining Phase 2 views and actions.</li>
+              <li>Run first-time-user acceptance cycle and capture blockers.</li>
+              <li>Close residual Phase 1 quality tasks.</li>
+              <li>Start Phase 3 demo pipeline once quality bars are met.</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <p class="foot">Generated for project coordination and execution tracking. This report is intended for internal planning and stakeholder communication.</p>
+  </div>
+</body>
+</html>
