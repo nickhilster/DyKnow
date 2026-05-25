@@ -19,6 +19,8 @@ Current concrete target: `nickhilster/dyknow-demo-app` with the baseline tag `ph
 
 Working bootstrap plan: use the proposed commands and starter file set in [Phase 3 Demo Baseline Plan](phase3-demo-baseline-plan.md).
 
+Working staged change set: use the proposed source changes and stale-file targets in [Phase 3 Demo Change Script](phase3-demo-change-script.md).
+
 ## Issue checklist
 
 1. Select the first demo repository.
@@ -60,6 +62,7 @@ Working bootstrap plan: use the proposed commands and starter file set in [Phase
 ## Cross-references
 
 - [Phase 3 Demo Baseline Plan](phase3-demo-baseline-plan.md)
+- [Phase 3 Demo Change Script](phase3-demo-change-script.md)
 - [Phase 3 Demo Repo Selection](phase3-demo-repo-selection.md)
 - [Phase 3 Public Demo Handoff](handoff-phase3-demo.md)
 - [Implementation Roadmap](implementation-roadmap.md)

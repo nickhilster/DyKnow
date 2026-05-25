@@ -16,6 +16,7 @@ Phase 2 closure is complete, and the next useful move is to stand up a reproduci
 
 - [Phase 3 Demo Repo Selection](phase3-demo-repo-selection.md) — selected direction for the first public demo repo, plus rationale and baseline expectations.
 - [Phase 3 Demo Baseline Plan](phase3-demo-baseline-plan.md) — proposed bootstrap commands, starter files, and baseline verification steps for `dyknow-demo-app`.
+- [Phase 3 Demo Change Script](phase3-demo-change-script.md) — exact staged source changes and intentionally stale files for the first walkthrough.
 - [Phase 3 Demo Checklist](phase3-demo-checklist.md) — concrete issue list for demo repo selection, baseline capture, staged changes, and recording prep.
 - `npm run demo:smoke` — CI-ready smoke command scaffold that validates the handoff pages and runs the non-interactive `scan -> diff -> update` path.
 
@@ -61,11 +62,12 @@ Current concrete target:
 
 1. Create `nickhilster/dyknow-demo-app` from a small Next.js TypeScript starter on `main`.
 2. Author stale baseline docs and tag that commit as `phase3-demo-baseline`.
-3. Stage the feature addition, route rename, and dependency or setup drift on top of that baseline.
+3. Stage the feature addition, route rename, and dependency or setup drift defined in [Phase 3 Demo Change Script](phase3-demo-change-script.md) on top of that baseline.
 
 ## Cross-references
 
 - [Phase 3 Demo Baseline Plan](phase3-demo-baseline-plan.md)
+- [Phase 3 Demo Change Script](phase3-demo-change-script.md)
 - [Phase 3 Demo Repo Selection](phase3-demo-repo-selection.md)
 - [Phase 3 Demo Checklist](phase3-demo-checklist.md)
 - [Implementation Roadmap](implementation-roadmap.md)

@@ -31,6 +31,7 @@ Catalog of every Dynamic Knowledge Page in this wiki. Keep entries to one line. 
 - [Phase 3 Demo Checklist](phase3-demo-checklist.md) — issue-by-issue checklist for turning the handoff into a demo-prep sprint.
 - [Phase 3 Demo Repo Selection](phase3-demo-repo-selection.md) — chosen first-demo repo shape, rationale, and baseline plan.
 - [Phase 3 Demo Baseline Plan](phase3-demo-baseline-plan.md) — proposed bootstrap commands, starter layout, and baseline verification steps for the demo repo.
+- [Phase 3 Demo Change Script](phase3-demo-change-script.md) — planned feature, route, and setup drift changes that drive the first walkthrough.
 
 ## Wiki operations
 

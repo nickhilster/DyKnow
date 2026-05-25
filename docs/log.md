@@ -202,6 +202,10 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-25 | update | docs/handoff-phase3-demo.md | Linked the new baseline plan page from the Phase 3 handoff.
 2026-05-25 | update | docs/phase3-demo-checklist.md | Linked the baseline plan so the repo bootstrap path is explicit.
 2026-05-25 | update | docs/index.md | Added the Phase 3 demo baseline plan page to the handoff catalog.
+2026-05-25 | create | docs/phase3-demo-change-script.md | Added the proposed staged source changes and stale-file targets for the first public demo walkthrough.
+2026-05-25 | update | docs/handoff-phase3-demo.md | Linked the Phase 3 change script from the execution details.
+2026-05-25 | update | docs/phase3-demo-checklist.md | Linked the staged change script so the next demo-prep slice is explicit.
+2026-05-25 | update | docs/index.md | Added the Phase 3 demo change script page to the handoff catalog.
 2026-05-23 | update | packages/cli/src/log.ts | Added per-entry source log labels so merged committed and runtime audit output stays traceable.
 2026-05-23 | update | README.md | Documented that dyknow log now labels each rendered entry with its source audit file.
 2026-05-23 | update | AGENTS.md | Updated agent context to note per-entry source labels in dyknow log output.
