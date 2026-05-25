@@ -73,3 +73,13 @@ jobs:
             docs/dyknow/.state/phase2-acceptance-report.json
             docs/dyknow/.state/phase2-acceptance-report.md
           if-no-files-found: warn
+
+      - name: Phase 3 demo-readiness docs check
+        run: |
+          test -f docs/handoff-phase3-demo.md
+          rg -n "\[Phase 3 Public Demo Handoff\]\(handoff-phase3-demo\.md\)" docs/index.md
+          rg -n "\| create \| docs/handoff-phase3-demo\.md \|" docs/log.md
+          rg -n "^title: Phase 3 Public Demo Handoff$" docs/handoff-phase3-demo.md
+          rg -n "^purpose:" docs/handoff-phase3-demo.md
+          rg -n "^audience:" docs/handoff-phase3-demo.md
+          rg -n "^sources:" docs/handoff-phase3-demo.md
