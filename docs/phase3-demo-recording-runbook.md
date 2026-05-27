@@ -7,6 +7,10 @@ sources:
   - docs/phase3-demo-change-script.md
   - docs/phase3-demo-checklist.md
   - docs/handoff-phase3-demo.md
+  - packages/core/src/config.ts
+  - packages/cli/src/index.ts
+  - https://github.com/nickhilster/dyknow-demo-app
+  - https://github.com/nickhilster/dyknow-demo-app/tree/phase3-demo-staged-changes
   - docs/messaging.md
   - docs/setup-guide.md
   - AGENTS.md
@@ -15,6 +19,26 @@ confidence: medium
 ---
 
 This page turns the Phase 3 planning set into a recording-ready runbook. It assumes the first recording uses the `nickhilster/dyknow-demo-app` baseline and staged change script already defined in the linked pages.
+
+Current validated execution refs:
+
+- Baseline tag: `phase3-demo-baseline`
+- Baseline commit: `fee6467f40dc92904ae706f2fdb40446436ea5ea`
+- Staged demo branch: `phase3-demo-staged-changes`
+
+## Decisions locked for first public cut
+
+To keep the first public recording short and reproducible, use these decisions as defaults:
+
+1. Lead narrative: CLI first.
+2. `dyknow init`: do not include it in the main recording path; start from a preconfigured repo.
+3. Review page IDs: use the default maintained-page IDs from DyKnow init output:
+   - `product-overview`
+   - `feature-map`
+   - `architecture`
+   - `setup-guide`
+   - `agent-context`
+4. Ending scope: refreshed docs plus refreshed `AGENTS.md`; keep audit-log output as optional appendix footage.
 
 ## Recording goal
 
@@ -65,31 +89,33 @@ Suggested narration:
 
 > The source already changed, but the maintained knowledge pages still describe the old state.
 
-### 2. Initialize DyKnow if needed
+### 2. Verify DyKnow config (or initialize only if missing)
 
-If the repo does not already carry committed DyKnow config, run:
+For the main recording pass, assume the demo repo already includes committed `dyknow.config.json` and `dyknow.config.schema.json`.
+
+Only if those files are missing, run:
 
 ```bash
 dyknow init
 ```
 
-If the recording uses a direct local build of this repo's CLI, adapt to the equivalent built command path.
+If the recording uses a direct local build of this repo's CLI, use the equivalent built command path from this repository's setup guide.
 
 ### 3. Scan the repo
 
 ```bash
-dyknow scan
+node C:\DEV\DyKnow\packages\cli\dist\bin.js scan --output docs/dyknow/.state/repo-map-current.json
 ```
 
 Expected checkpoint:
 
-- the repo map writes successfully,
+- the current repo map writes successfully without overwriting the baseline snapshot,
 - route and package metadata are visible for the new feature and renamed route.
 
 ### 4. Detect changes
 
 ```bash
-dyknow diff
+node C:\DEV\DyKnow\packages\cli\dist\bin.js diff --snapshot docs/dyknow/.state/repo-map.json --output docs/dyknow/.state/repo-diff.json
 ```
 
 Expected checkpoint:
@@ -100,7 +126,7 @@ Expected checkpoint:
 ### 5. Draft updates
 
 ```bash
-dyknow update
+node C:\DEV\DyKnow\packages\cli\dist\bin.js update --diff docs/dyknow/.state/repo-diff.json --output docs/dyknow/.state/update-proposals.json
 ```
 
 Expected checkpoint:
@@ -115,12 +141,12 @@ Use at least one approval action and one non-approval action.
 Recommended pattern:
 
 ```bash
-dyknow review --approve --page feature-map
-dyknow review --regenerate --page setup-guide
-dyknow review --approve --page agent-context
+node C:\DEV\DyKnow\packages\cli\dist\bin.js review --approve --page feature-map --input docs/dyknow/.state/update-proposals.json
+node C:\DEV\DyKnow\packages\cli\dist\bin.js review --regenerate --page setup-guide --input docs/dyknow/.state/update-proposals.json
+node C:\DEV\DyKnow\packages\cli\dist\bin.js review --approve --page agent-context --input docs/dyknow/.state/update-proposals.json
 ```
 
-If the actual page IDs differ in the demo repo config, keep the action pattern but swap in the correct page IDs.
+Those IDs align with the default DyKnow config page set. If the demo repo intentionally customizes page IDs, keep the same action pattern but swap in the configured IDs.
 
 Expected checkpoint:
 
@@ -166,11 +192,10 @@ Store the first recording notes as a future page or artifact tied to the demo re
 
 After the CLI recording is stable, reuse the same baseline and staged change set for the VS Code recording. Keep the source changes identical when possible so the difference between the two recordings is the surface area, not the product story.
 
-## Open questions
+## Remaining open items
 
-- Should the first CLI recording show `dyknow init`, or should config already be present so the video stays focused on drift detection and review?
-- Which exact page IDs will the demo repo config assign to the maintained files?
-- Should the first public cut include audit-log output, or keep the ending focused only on refreshed docs and agent context?
+- Whether a later extended cut should include a short appendix that shows `dyknow log --source all --action all` after review actions.
+- Whether the VS Code follow-up cut should use `skip` instead of `regenerate` for its non-approval example.
 
 ## Cross-references
 

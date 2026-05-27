@@ -151,6 +151,7 @@ describe("dyknow status", () => {
     expect(report).toContain("<strong>Total Commits:</strong> 1");
     expect(report).toContain("Latest Commit:</strong> chore: fixture");
     expect(report).toContain('class="value">1</div>');
+    expect(report).toContain("Working Tree Changes");
     expect(report).toContain("Affected Pages in Current Repo Diff");
     expect(report).toContain("Draft Proposals in Current Update Batch");
     expect(report).toContain("Needs review");

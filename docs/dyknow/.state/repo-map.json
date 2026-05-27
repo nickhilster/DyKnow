@@ -262,8 +262,8 @@
     {
       "path": "README.md",
       "kind": "markdown",
-      "size": 9619,
-      "lineCount": 88,
+      "size": 9946,
+      "lineCount": 89,
       "signals": [
         "documentation"
       ],
@@ -402,10 +402,32 @@
       "topLevelKeys": []
     },
     {
+      "path": "docs/handoff-phase3-codex.md",
+      "kind": "markdown",
+      "size": 5233,
+      "lineCount": 99,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Current state",
+        "What is already done",
+        "Recommended next moves",
+        "Suggested execution approach",
+        "Current operator defaults",
+        "Known constraints",
+        "Remaining open items for the next operator",
+        "Cross-references"
+      ],
+      "topLevelKeys": []
+    },
+    {
       "path": "docs/handoff-phase3-demo.md",
       "kind": "markdown",
-      "size": 2281,
-      "lineCount": 56,
+      "size": 4318,
+      "lineCount": 87,
       "signals": [
         "documentation"
       ],
@@ -413,10 +435,12 @@
       "routes": [],
       "headings": [
         "Immediate next artifacts",
+        "Current direction",
         "Scope for the next slice",
         "Deliverables",
         "Acceptance criteria",
         "Open questions",
+        "Next execution details",
         "Cross-references"
       ],
       "topLevelKeys": []
@@ -484,8 +508,8 @@
     {
       "path": "docs/index.md",
       "kind": "markdown",
-      "size": 2078,
-      "lineCount": 41,
+      "size": 2812,
+      "lineCount": 46,
       "signals": [
         "documentation"
       ],
@@ -529,8 +553,8 @@
     {
       "path": "docs/log.md",
       "kind": "markdown",
-      "size": 35476,
-      "lineCount": 263,
+      "size": 39374,
+      "lineCount": 291,
       "signals": [
         "documentation"
       ],
@@ -568,17 +592,115 @@
       "topLevelKeys": []
     },
     {
-      "path": "docs/phase3-demo-checklist.md",
+      "path": "docs/phase3-demo-baseline-plan.md",
       "kind": "markdown",
-      "size": 2757,
-      "lineCount": 60,
+      "size": 4008,
+      "lineCount": 89,
       "signals": [
         "documentation"
       ],
       "dependencies": [],
       "routes": [],
       "headings": [
+        "Proposed bootstrap commands",
+        "Proposed baseline file set",
+        "Proposed stale baseline story",
+        "Proposed verification steps",
+        "Open questions",
+        "Cross-references"
+      ],
+      "topLevelKeys": []
+    },
+    {
+      "path": "docs/phase3-demo-change-script.md",
+      "kind": "markdown",
+      "size": 4678,
+      "lineCount": 125,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Change set overview",
+        "Proposed source changes",
+        "1. Add a visible feature",
+        "2. Rename one route",
+        "3. Update one setup detail",
+        "Files expected to start stale",
+        "Walkthrough checkpoints",
+        "Recommended review path",
+        "Open questions",
+        "Cross-references"
+      ],
+      "topLevelKeys": []
+    },
+    {
+      "path": "docs/phase3-demo-checklist.md",
+      "kind": "markdown",
+      "size": 4619,
+      "lineCount": 91,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Execution status (2026-05-25)",
         "Issue checklist",
+        "Open questions",
+        "Cross-references"
+      ],
+      "topLevelKeys": []
+    },
+    {
+      "path": "docs/phase3-demo-recording-runbook.md",
+      "kind": "markdown",
+      "size": 7562,
+      "lineCount": 207,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Decisions locked for first public cut",
+        "Recording goal",
+        "Recommended narrative order",
+        "Pre-recording checklist",
+        "CLI runbook",
+        "1. Show the stale state",
+        "2. Verify DyKnow config (or initialize only if missing)",
+        "3. Scan the repo",
+        "4. Detect changes",
+        "5. Draft updates",
+        "6. Review proposals",
+        "7. Show resulting artifacts",
+        "Expected capture artifacts",
+        "Suggested file for recording notes",
+        "VS Code follow-up",
+        "Remaining open items",
+        "Cross-references"
+      ],
+      "topLevelKeys": []
+    },
+    {
+      "path": "docs/phase3-demo-repo-selection.md",
+      "kind": "markdown",
+      "size": 4483,
+      "lineCount": 89,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Decision",
+        "Why this direction",
+        "Baseline plan",
+        "Stale starting files",
+        "Planned staged changes",
+        "Implications for the walkthrough",
         "Open questions",
         "Cross-references"
       ],
@@ -634,8 +756,8 @@
     {
       "path": "docs/setup-guide.md",
       "kind": "markdown",
-      "size": 16518,
-      "lineCount": 409,
+      "size": 17074,
+      "lineCount": 413,
       "signals": [
         "documentation"
       ],
@@ -645,6 +767,7 @@
         "Summary",
         "Prerequisites",
         "Step 1 — Initialize",
+        "Optional external analysis",
         "Example config",
         "Step 2 — Scan",
         "Step 3 — Detect changes",
@@ -828,8 +951,8 @@
     {
       "path": "package.json",
       "kind": "json",
-      "size": 691,
-      "lineCount": 29,
+      "size": 732,
+      "lineCount": 30,
       "signals": [
         "package-manifest",
         "config"
@@ -951,8 +1074,8 @@
     {
       "path": "packages/cli/src/demo-smoke.ts",
       "kind": "typescript",
-      "size": 6711,
-      "lineCount": 256,
+      "size": 6987,
+      "lineCount": 258,
       "signals": [
         "source-code"
       ],
@@ -1083,6 +1206,19 @@
       "kind": "typescript",
       "size": 12886,
       "lineCount": 411,
+      "signals": [
+        "source-code"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "packages/cli/test/demo-smoke.test.ts",
+      "kind": "typescript",
+      "size": 4000,
+      "lineCount": 131,
       "signals": [
         "source-code"
       ],
@@ -1673,8 +1809,8 @@
     }
   ],
   "outputPath": "docs/dyknow/.state/repo-map.json",
-  "rootPath": "c:\\DEV\\DyKnow",
-  "scannedAt": "2026-05-25T04:59:48.647Z",
+  "rootPath": "C:\\DEV\\DyKnow",
+  "scannedAt": "2026-05-25T18:34:05.647Z",
   "warnings": [
     {
       "code": "secret-pattern",

@@ -9,6 +9,10 @@ sources:
   - docs/phase3-demo-change-script.md
   - docs/phase3-demo-recording-runbook.md
   - docs/phase3-demo-checklist.md
+  - packages/core/src/config.ts
+  - packages/cli/src/index.ts
+  - https://github.com/nickhilster/dyknow-demo-app
+  - https://github.com/nickhilster/dyknow-demo-app/tree/phase3-demo-staged-changes
   - AGENTS.md
 last_reviewed: 2026-05-25
 confidence: high
@@ -21,7 +25,9 @@ Phase 3 planning is now far enough along that the next useful work can move from
 - Active branch: `nickhilster/tea-367-phase-3-kickoff-select-demo-repo-and-script-reproducible`
 - Active PR: `#45` — `TEA-367: kick off Phase 3 demo prep`
 - Linear issue: `TEA-367`
-- Current repo status at handoff time should be clean before the next slice starts.
+- Demo repo: `https://github.com/nickhilster/dyknow-demo-app`
+- Baseline tag + commit: `phase3-demo-baseline` at `fee6467f40dc92904ae706f2fdb40446436ea5ea`
+- Staged drift branch + commit: `phase3-demo-staged-changes` at `361c59b`
 
 ## What is already done
 
@@ -35,15 +41,20 @@ The current branch has already established the Phase 3 planning stack:
 
 The branch also includes the `demo-smoke` hardening slice, so the handoff pages have a focused CLI validation path already in place.
 
+Execution is now in-flight in the real demo repo:
+
+- baseline app, stale docs, and DyKnow config are committed on `main`,
+- staged source drift is committed on `phase3-demo-staged-changes`,
+- first CLI pass artifacts and notes are captured in `docs/phase3-recording-notes.md` in the demo repo.
+
 ## Recommended next moves
 
 The next Codex operator should prefer this order:
 
-1. Create or scaffold `nickhilster/dyknow-demo-app` from the baseline plan.
-2. Verify the baseline tag flow and starter file set in the real demo repo.
-3. Apply the staged source changes from the change script.
-4. Reconcile the runbook against the actual page IDs, exact commands, and real repo layout.
-5. Only after the real demo repo exists, tighten any remaining recording details in this DyKnow repo.
+1. Record the first CLI cut using `phase3-demo-staged-changes` and the reconciled runbook commands.
+2. Produce the VS Code cut using the same baseline and staged branch.
+3. Decide whether to keep audit-log output appendix-only in the first public release.
+4. Feed final recording deltas back into the Phase 3 docs and messaging pages.
 
 ## Suggested execution approach
 
@@ -56,6 +67,15 @@ If the next operator moves into the demo repo itself, use these pages as the aut
 3. [Phase 3 Demo Change Script](phase3-demo-change-script.md)
 4. [Phase 3 Demo Recording Runbook](phase3-demo-recording-runbook.md)
 
+## Current operator defaults
+
+Until the real demo repo forces a correction, use these defaults:
+
+- Recording lead: CLI first.
+- Main recording path: start from a preconfigured repo; do not show `dyknow init` in the core cut.
+- Maintained page IDs for review actions: `product-overview`, `feature-map`, `architecture`, `setup-guide`, `agent-context`.
+- First public ending: refreshed docs plus refreshed `AGENTS.md`; keep audit-log output optional.
+
 ## Known constraints
 
 - Keep the Phase 3 story narrow: one visible feature, one route rename, one setup or dependency drift.
@@ -63,11 +83,10 @@ If the next operator moves into the demo repo itself, use these pages as the aut
 - Preserve the human-in-the-loop story by showing at least one approval action and one non-approval action.
 - Do not expand scope into new product surfaces or extra integrations just to make the demo look bigger.
 
-## Open questions for the next operator
+## Remaining open items for the next operator
 
-- Whether the first real recording should include `dyknow init` or begin from a preconfigured demo repo.
-- Which exact page IDs the demo repo config should use for the maintained files.
-- Whether the first public cut should show audit-log output or stop at refreshed docs and `AGENTS.md`.
+- Confirm whether the VS Code cut should mirror `--regenerate` or use `--skip` for its non-approval action.
+- Confirm whether the first public cut keeps audit-log output appendix-only.
 
 ## Cross-references
 

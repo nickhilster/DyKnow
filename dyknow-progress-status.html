@@ -177,26 +177,26 @@
       <h1>DyKnow Progress and Status Report</h1>
       <p>Generated from live repository metadata plus the current DyKnow state artifacts.</p>
       <div class="meta">
-        <div><strong>Report Date:</strong> 2026-05-24</div>
+        <div><strong>Report Date:</strong> 2026-05-27</div>
         <div><strong>Repository:</strong> DyKnow</div>
-        <div><strong>Branch:</strong> main</div>
-        <div><strong>HEAD:</strong> <code>f4bad90</code></div>
-        <div><strong>Total Commits:</strong> 92</div>
-        <div><strong>Latest Commit:</strong> Merge pull request #43 from nickhilster/feat/pr-gh-windows-bat-wrapper-regression</div>
+        <div><strong>Branch:</strong> nickhilster/tea-367-phase-3-kickoff-select-demo-repo-and-script-reproducible</div>
+        <div><strong>HEAD:</strong> <code>3434858</code></div>
+        <div><strong>Total Commits:</strong> 109</div>
+        <div><strong>Latest Commit:</strong> docs: add phase 3 recording runbook</div>
       </div>
     </section>
 
     <div class="grid">
       <article class="card kpi">
-        <div class="value">0</div>
+        <div class="value">5</div>
         <div class="label">Affected Pages in Current Repo Diff</div>
       </article>
       <article class="card kpi">
-        <div class="value">0</div>
+        <div class="value">5</div>
         <div class="label">Draft Proposals in Current Update Batch</div>
       </article>
       <article class="card kpi">
-        <div class="value">0</div>
+        <div class="value">2</div>
         <div class="label">Audit Entries Available</div>
       </article>
       <article class="card kpi">
@@ -207,12 +207,28 @@
       <article class="card wide">
         <h2>Executive Summary</h2>
         <p>This report is generated from current git metadata and validated DyKnow artifacts instead of hard-coded snapshot values.</p>
-        <p>The repository is on <code>main</code> at <code>f4bad90</code> with 92 commit(s). The latest commit is <code>Merge pull request #43 from nickhilster/feat/pr-gh-windows-bat-wrapper-regression</code>.</p>
+        <p>The repository is on <code>nickhilster/tea-367-phase-3-kickoff-select-demo-repo-and-script-reproducible</code> at <code>3434858</code> with 109 commit(s). The latest commit is <code>docs: add phase 3 recording runbook</code>.</p>
         <div>
           <span class="badge warn">Worktree: Has local changes</span>
-          <span class="badge good">Drafts: 0</span>
-          <span class="badge good">Affected Pages: 0</span>
+          <span class="badge warn">Drafts: 5</span>
+          <span class="badge warn">Affected Pages: 5</span>
         </div>
+      </article>
+
+      <article class="card wide">
+        <h2>Working Tree Changes</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Path</th>
+              <th>Raw Git Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>M</td><td><code>.github/workflows/ci.yml</code></td><td>M .github/workflows/ci.yml</td></tr><tr><td>M</td><td><code>docs/dyknow/.state/repo-diff.json</code></td><td> M docs/dyknow/.state/repo-diff.json</td></tr><tr><td>M</td><td><code>docs/dyknow/.state/repo-map.json</code></td><td> M docs/dyknow/.state/repo-map.json</td></tr><tr><td>M</td><td><code>docs/dyknow/.state/update-proposals.json</code></td><td> M docs/dyknow/.state/update-proposals.json</td></tr><tr><td>M</td><td><code>docs/handoff-phase3-codex.md</code></td><td> M docs/handoff-phase3-codex.md</td></tr><tr><td>M</td><td><code>docs/handoff-phase3-demo.md</code></td><td> M docs/handoff-phase3-demo.md</td></tr><tr><td>M</td><td><code>docs/log.md</code></td><td> M docs/log.md</td></tr><tr><td>M</td><td><code>docs/phase3-demo-checklist.md</code></td><td> M docs/phase3-demo-checklist.md</td></tr><tr><td>M</td><td><code>docs/phase3-demo-recording-runbook.md</code></td><td> M docs/phase3-demo-recording-runbook.md</td></tr><tr><td>M</td><td><code>dyknow-progress-status.html</code></td><td> M dyknow-progress-status.html</td></tr><tr><td>M</td><td><code>packages/cli/src/status.ts</code></td><td> M packages/cli/src/status.ts</td></tr><tr><td>M</td><td><code>packages/cli/test/status.test.ts</code></td><td> M packages/cli/test/status.test.ts</td></tr>
+          </tbody>
+        </table>
       </article>
 
       <article class="card narrow">
@@ -220,7 +236,7 @@
         <ul>
           <li>Repo diff artifact: present</li>
           <li>Update proposal artifact: present</li>
-          <li>Audit visibility: no entries found</li>
+          <li>Audit visibility: entries available</li>
           <li>Working tree: contains local changes</li>
         </ul>
       </article>
@@ -236,7 +252,7 @@
           </thead>
           <tbody>
             <tr><td>Added files</td><td>0</td></tr>
-            <tr><td>Changed files</td><td>0</td></tr>
+            <tr><td>Changed files</td><td>2</td></tr>
             <tr><td>Removed files</td><td>0</td></tr>
             <tr><td>Added warnings</td><td>0</td></tr>
             <tr><td>Removed warnings</td><td>0</td></tr>
@@ -244,14 +260,62 @@
         </table>
       </article>
 
+      <article class="card wide">
+        <h2>Affected Pages</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Page</th>
+              <th>Output</th>
+              <th>Reasons</th>
+              <th>Matched Sources</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>agent-context</td><td>AGENTS.md</td><td>changed-file</td><td>.github/workflows/ci.yml, docs/log.md</td></tr><tr><td>architecture</td><td>docs/architecture.md</td><td>changed-file</td><td>docs/log.md</td></tr><tr><td>feature-map</td><td>docs/feature-map.md</td><td>changed-file</td><td>.github/workflows/ci.yml, docs/log.md</td></tr><tr><td>product-overview</td><td>docs/product-overview.md</td><td>changed-file</td><td>docs/log.md</td></tr><tr><td>setup-guide</td><td>docs/setup-guide.md</td><td>changed-file</td><td>docs/log.md</td></tr>
+          </tbody>
+        </table>
+      </article>
+
       <article class="card narrow">
         <h2>Proposal States</h2>
-        <p>No drafted proposals are available.</p>
+        <ul><li>Needs review: 5</li></ul>
+      </article>
+
+      <article class="card wide">
+        <h2>Draft Proposals</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Page</th>
+              <th>State</th>
+              <th>Risk</th>
+              <th>Confidence</th>
+              <th>Sources</th>
+              <th>Summary</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>agent-context</td><td>Needs review</td><td>high</td><td>medium</td><td>.github/workflows/ci.yml, docs/log.md</td><td>Review AI Agent Context for 2 changed source path(s).</td></tr><tr><td>architecture</td><td>Needs review</td><td>high</td><td>medium</td><td>docs/log.md</td><td>Review Architecture for 1 changed source path(s).</td></tr><tr><td>feature-map</td><td>Needs review</td><td>high</td><td>medium</td><td>.github/workflows/ci.yml, docs/log.md</td><td>Review Feature Map for 2 changed source path(s).</td></tr><tr><td>product-overview</td><td>Needs review</td><td>high</td><td>medium</td><td>docs/log.md</td><td>Review Product Overview for 1 changed source path(s).</td></tr><tr><td>setup-guide</td><td>Needs review</td><td>high</td><td>medium</td><td>docs/log.md</td><td>Review Setup Guide for 1 changed source path(s).</td></tr>
+          </tbody>
+        </table>
       </article>
 
       <article class="card wide">
         <h2>Recent Audit Activity</h2>
-        <p>No audit entries are available yet.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Action</th>
+              <th>Sources</th>
+              <th>Log</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>2026-05-25T03:50:51.395Z</td><td>review:approve</td><td>docs/implementation-roadmap.md</td><td>docs/dyknow/.state/audit-log.jsonl</td></tr><tr><td>2026-05-25T03:50:46.548Z</td><td>review:skip</td><td>docs/implementation-roadmap.md</td><td>docs/dyknow/.state/audit-log.jsonl</td></tr>
+          </tbody>
+        </table>
       </article>
     </div>
 

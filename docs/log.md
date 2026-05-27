@@ -281,3 +281,19 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-25 | create | docs/phase3-demo-checklist.md | Added a concrete Phase 3 demo checklist with issue-by-issue acceptance criteria.
 2026-05-25 | update | docs/handoff-phase3-demo.md | Linked the new Phase 3 demo checklist and smoke command scaffold into the handoff.
 2026-05-25 | update | docs/index.md | Added the Phase 3 demo checklist to Agent handoffs for easier navigation.
+2026-05-25 | update | docs/phase3-demo-recording-runbook.md | Locked first-cut recording defaults (preconfigured init path, default page IDs, and optional audit-log appendix).
+2026-05-25 | update | docs/handoff-phase3-codex.md | Converted open takeover questions into resolved operator defaults plus narrower remaining open items.
+2026-05-25 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot while validating the Phase 3 smoke path after runbook and handoff updates.
+2026-05-25 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot during the same Phase 3 smoke-path validation run.
+2026-05-25 | update | docs/dyknow/.state/update-proposals.json | Regenerated update proposals during the same Phase 3 smoke-path validation run.
+2026-05-25 | update | docs/phase3-demo-checklist.md | Aligned the checklist with the CLI-first recording default and preconfigured-init baseline.
+2026-05-25 | update | docs/handoff-phase3-demo.md | Narrowed the remaining open question to first-cut ending scope now that the CLI-first lead decision is locked.
+2026-05-25 | create | github:nickhilster/dyknow-demo-app | Created the public Phase 3 demo sandbox repo with stale baseline docs, DyKnow config, and baseline tag `phase3-demo-baseline` at `fee6467f40dc92904ae706f2fdb40446436ea5ea`.
+2026-05-25 | update | github:nickhilster/dyknow-demo-app | Pushed staged drift branch `phase3-demo-staged-changes` (`361c59b`) with feedback feature, pricing-to-plans route rename, dependency drift, and first CLI run artifacts.
+2026-05-25 | update | docs/phase3-demo-recording-runbook.md | Reconciled recording commands with the real demo repo flow, including snapshot-preserving scan output and exact local CLI command paths.
+2026-05-25 | update | docs/phase3-demo-checklist.md | Added concrete execution status for the real demo repo, baseline tag commit, staged branch commit, and CLI pass artifact capture.
+2026-05-25 | update | docs/handoff-phase3-demo.md | Shifted Phase 3 handoff from planning to execution with concrete baseline and staged-branch references.
+2026-05-25 | update | docs/handoff-phase3-codex.md | Refreshed takeover guidance to focus on recording completion now that the real demo sandbox is live.
+2026-05-25 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot while validating the updated Phase 3 handoff and checklist pages.
+2026-05-25 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot during the same post-handoff demo-smoke validation run.
+2026-05-25 | update | docs/dyknow/.state/update-proposals.json | Regenerated update proposals during the same post-handoff demo-smoke validation run.

@@ -36,6 +36,12 @@ type ReportAuditEntry = {
   source: "committed" | "runtime";
 };
 
+type WorkingTreeEntry = {
+  code: string;
+  path: string;
+  raw: string;
+};
+
 type StatusReportResult = {
   outputPath: string;
 };
@@ -131,8 +137,20 @@ function parseAuditLogEntries(input: string, inputPath: string) {
         );
       }
 
-      return AuditLogEntrySchema.parse(value);
+    return AuditLogEntrySchema.parse(value);
     });
+}
+
+function parseWorkingTreeEntries(statusSummary: string): WorkingTreeEntry[] {
+  return statusSummary
+    .split(/\r?\n/u)
+    .map((line) => line.trimEnd())
+    .filter((line) => line.length > 0)
+    .map((line) => ({
+      code: line.match(/^(.{1,2})\s+/u)?.[1]?.trim() || line.slice(0, 2).trim() || "??",
+      path: line.match(/^.{1,2}\s+(.*)$/u)?.[1]?.trim() ?? line.slice(3).trim(),
+      raw: line,
+    }));
 }
 
 async function readOptionalAuditEntries(options: {
@@ -218,8 +236,11 @@ function renderStatusReport(options: {
   totalCommits: number;
   updateBatch?: UpdateDraftBatch;
 }) {
-  const affectedPages = options.repoDiff?.affectedPages.length ?? 0;
-  const draftedProposals = options.updateBatch?.drafts.length ?? 0;
+  const workingTreeEntries = parseWorkingTreeEntries(options.statusSummary);
+  const repoDiffPages = options.repoDiff?.affectedPages ?? [];
+  const draftProposals = options.updateBatch?.drafts ?? [];
+  const affectedPages = repoDiffPages.length;
+  const draftedProposals = draftProposals.length;
   const reviewStateCounts = countReviewStates(options.updateBatch);
   const recentAuditEntries = options.auditEntries
     .slice()
@@ -454,6 +475,31 @@ function renderStatusReport(options: {
         </div>
       </article>
 
+      <article class="card wide">
+        <h2>Working Tree Changes</h2>
+        ${
+          workingTreeEntries.length > 0
+            ? `<table>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Path</th>
+              <th>Raw Git Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${workingTreeEntries
+              .map(
+                ({ code, path, raw }) =>
+                  `<tr><td>${escapeHtml(code)}</td><td><code>${escapeHtml(path || raw)}</code></td><td>${escapeHtml(raw)}</td></tr>`,
+              )
+              .join("")}
+          </tbody>
+        </table>`
+            : "<p>The working tree is clean.</p>"
+        }
+      </article>
+
       <article class="card narrow">
         <h2>Current Readiness</h2>
         <ul>
@@ -483,6 +529,32 @@ function renderStatusReport(options: {
         </table>
       </article>
 
+      <article class="card wide">
+        <h2>Affected Pages</h2>
+        ${
+          repoDiffPages.length > 0
+            ? `<table>
+          <thead>
+            <tr>
+              <th>Page</th>
+              <th>Output</th>
+              <th>Reasons</th>
+              <th>Matched Sources</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${repoDiffPages
+              .map(
+                ({ pageId, outputPath, matchedSourcePaths, reasons }) =>
+                  `<tr><td>${escapeHtml(pageId)}</td><td>${escapeHtml(outputPath)}</td><td>${escapeHtml(reasons.join(", "))}</td><td>${escapeHtml(matchedSourcePaths.join(", "))}</td></tr>`,
+              )
+              .join("")}
+          </tbody>
+        </table>`
+            : "<p>No pages are affected by the current repo diff.</p>"
+        }
+      </article>
+
       <article class="card narrow">
         <h2>Proposal States</h2>
         ${
@@ -493,6 +565,34 @@ function renderStatusReport(options: {
                 )
                 .join("")}</ul>`
             : "<p>No drafted proposals are available.</p>"
+        }
+      </article>
+
+      <article class="card wide">
+        <h2>Draft Proposals</h2>
+        ${
+          draftProposals.length > 0
+            ? `<table>
+          <thead>
+            <tr>
+              <th>Page</th>
+              <th>State</th>
+              <th>Risk</th>
+              <th>Confidence</th>
+              <th>Sources</th>
+              <th>Summary</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${draftProposals
+              .map(
+                ({ proposal }) =>
+                  `<tr><td>${escapeHtml(proposal.pageId)}</td><td>${escapeHtml(proposal.reviewState)}</td><td>${escapeHtml(proposal.risk)}</td><td>${escapeHtml(proposal.confidence)}</td><td>${escapeHtml(proposal.sources.join(", "))}</td><td>${escapeHtml(proposal.summary)}</td></tr>`,
+              )
+              .join("")}
+          </tbody>
+        </table>`
+            : "<p>No draft proposals are available.</p>"
         }
       </article>
 

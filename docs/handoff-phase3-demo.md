@@ -5,6 +5,8 @@ audience: internal
 sources:
   - docs/implementation-roadmap.md
   - docs/roadmap.md
+  - https://github.com/nickhilster/dyknow-demo-app
+  - https://github.com/nickhilster/dyknow-demo-app/tree/phase3-demo-staged-changes
   - AGENTS.md
 last_reviewed: 2026-05-25
 confidence: high
@@ -31,11 +33,17 @@ Current concrete target:
 - Baseline tag: `phase3-demo-baseline`
 - Intentionally stale starting files: `README.md`, `docs/feature-map.md`, `docs/setup-guide.md`, `docs/architecture.md`, and `AGENTS.md`
 
+Current execution state:
+
+- Baseline tag commit: `fee6467f40dc92904ae706f2fdb40446436ea5ea`
+- Staged drift branch: `phase3-demo-staged-changes` (`361c59b`)
+- First CLI pass notes captured at `docs/phase3-recording-notes.md` in the demo repo
+
 ## Scope for the next slice
 
-1. Pick the demo repository and capture baseline assumptions.
-2. Define the scripted walkthrough path for CLI and VS Code surfaces.
-3. Add reproducible run commands and expected outputs for each stage.
+1. Record the first CLI cut from the validated staged branch.
+2. Mirror the walkthrough in VS Code with the same source-change set.
+3. Finalize messaging and capture assets for the public-facing demo package.
 
 ## Deliverables
 
@@ -57,13 +65,13 @@ Current concrete target:
 
 ## Open questions
 
-- Should the first recorded walkthrough prioritize CLI or VS Code as the lead narrative?
+- Should the first public cut include audit-log output in the main walkthrough or keep that as an optional appendix?
 
 ## Next execution details
 
-1. Create `nickhilster/dyknow-demo-app` from a small Next.js TypeScript starter on `main`.
-2. Author stale baseline docs and tag that commit as `phase3-demo-baseline`.
-3. Stage the feature addition, route rename, and dependency or setup drift defined in [Phase 3 Demo Change Script](phase3-demo-change-script.md) on top of that baseline.
+1. Capture CLI footage against `phase3-demo-staged-changes` using the exact command order in [Phase 3 Demo Recording Runbook](phase3-demo-recording-runbook.md).
+2. Capture the VS Code walkthrough using the same baseline tag and staged branch.
+3. Decide whether audit-log output stays appendix-only or moves into the primary CLI cut.
 
 ## Cross-references
 

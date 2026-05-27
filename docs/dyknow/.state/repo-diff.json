@@ -1,20 +1,151 @@
 {
-  "comparedAt": "2026-05-25T04:59:49.825Z",
-  "rootPath": "c:\\DEV\\DyKnow",
+  "comparedAt": "2026-05-27T01:56:44.883Z",
+  "rootPath": "C:\\DEV\\DyKnow",
   "configPath": "dyknow.config.json",
   "baseSnapshotPath": "docs/dyknow/.state/repo-map.json",
   "outputPath": "docs/dyknow/.state/repo-diff.json",
-  "previousScannedAt": "2026-05-25T04:59:48.647Z",
-  "currentScannedAt": "2026-05-25T04:59:49.810Z",
+  "previousScannedAt": "2026-05-25T18:34:05.647Z",
+  "currentScannedAt": "2026-05-27T01:56:44.852Z",
   "addedFiles": [],
-  "changedFiles": [],
+  "changedFiles": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "changes": [
+        "size",
+        "line-count",
+        "top-level-keys"
+      ],
+      "before": {
+        "path": ".github/workflows/ci.yml",
+        "kind": "yaml",
+        "size": 2412,
+        "lineCount": 86,
+        "signals": [
+          "openapi",
+          "config"
+        ],
+        "dependencies": [],
+        "routes": [],
+        "headings": [],
+        "topLevelKeys": [
+          "jobs",
+          "name",
+          "on"
+        ]
+      },
+      "after": {
+        "path": ".github/workflows/ci.yml",
+        "kind": "yaml",
+        "size": 0,
+        "lineCount": 0,
+        "signals": [
+          "openapi",
+          "config"
+        ],
+        "dependencies": [],
+        "routes": [],
+        "headings": [],
+        "topLevelKeys": []
+      }
+    },
+    {
+      "path": "docs/log.md",
+      "changes": [
+        "size",
+        "line-count"
+      ],
+      "before": {
+        "path": "docs/log.md",
+        "kind": "markdown",
+        "size": 39374,
+        "lineCount": 291,
+        "signals": [
+          "documentation"
+        ],
+        "dependencies": [],
+        "routes": [],
+        "headings": [
+          "Wiki Log"
+        ],
+        "topLevelKeys": []
+      },
+      "after": {
+        "path": "docs/log.md",
+        "kind": "markdown",
+        "size": 40981,
+        "lineCount": 300,
+        "signals": [
+          "documentation"
+        ],
+        "dependencies": [],
+        "routes": [],
+        "headings": [
+          "Wiki Log"
+        ],
+        "topLevelKeys": []
+      }
+    }
+  ],
   "removedFiles": [],
   "addedWarnings": [],
   "removedWarnings": [],
-  "affectedPages": [],
+  "affectedPages": [
+    {
+      "pageId": "agent-context",
+      "outputPath": "AGENTS.md",
+      "matchedSourcePaths": [
+        ".github/workflows/ci.yml",
+        "docs/log.md"
+      ],
+      "reasons": [
+        "changed-file"
+      ]
+    },
+    {
+      "pageId": "architecture",
+      "outputPath": "docs/architecture.md",
+      "matchedSourcePaths": [
+        "docs/log.md"
+      ],
+      "reasons": [
+        "changed-file"
+      ]
+    },
+    {
+      "pageId": "feature-map",
+      "outputPath": "docs/feature-map.md",
+      "matchedSourcePaths": [
+        ".github/workflows/ci.yml",
+        "docs/log.md"
+      ],
+      "reasons": [
+        "changed-file"
+      ]
+    },
+    {
+      "pageId": "product-overview",
+      "outputPath": "docs/product-overview.md",
+      "matchedSourcePaths": [
+        "docs/log.md"
+      ],
+      "reasons": [
+        "changed-file"
+      ]
+    },
+    {
+      "pageId": "setup-guide",
+      "outputPath": "docs/setup-guide.md",
+      "matchedSourcePaths": [
+        "docs/log.md"
+      ],
+      "reasons": [
+        "changed-file"
+      ]
+    }
+  ],
   "summary": {
     "addedFiles": 0,
-    "changedFiles": 0,
+    "changedFiles": 2,
     "removedFiles": 0,
     "addedWarnings": 0,
     "removedWarnings": 0
