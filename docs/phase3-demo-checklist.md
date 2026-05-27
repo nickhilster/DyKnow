@@ -6,10 +6,12 @@ sources:
   - docs/handoff-phase3-demo.md
   - docs/implementation-roadmap.md
   - docs/roadmap.md
+   - packages/vscode-extension/package.json
+   - packages/vscode-extension/src/extension.ts
   - https://github.com/nickhilster/dyknow-demo-app
   - https://github.com/nickhilster/dyknow-demo-app/tree/phase3-demo-staged-changes
   - AGENTS.md
-last_reviewed: 2026-05-25
+last_reviewed: 2026-05-27
 confidence: high
 ---
 
@@ -26,6 +28,7 @@ Working staged change set: use the proposed source changes and stale-file target
 Working recording order: use the command sequence and capture checklist in [Phase 3 Demo Recording Runbook](phase3-demo-recording-runbook.md).
 
 Current recording default: lead with the CLI cut first and keep `dyknow init` out of the main recording path unless config is missing.
+Current VS Code default: use `skip` as the non-approval action, and keep audit-log output appendix-only for the first public cut.
 
 ## Execution status (2026-05-25)
 
@@ -34,6 +37,7 @@ Current recording default: lead with the CLI cut first and keep `dyknow init` ou
 - Staged drift branch created: `phase3-demo-staged-changes` (`361c59b`)
 - CLI flow executed end to end (`scan -> diff -> update -> review`) with one approval and one non-approval action pattern
 - Recording notes captured in the demo repo at `docs/phase3-recording-notes.md`
+- VS Code `Source Evidence` now exists as a first-class DyKnow view that follows the active `Suggested Updates` selection
 
 ## Issue checklist
 
@@ -63,9 +67,10 @@ Current recording default: lead with the CLI cut first and keep `dyknow init` ou
    - Exit criterion: a smoke command returns a clean success signal and leaves a useful artifact trail.
 
 5. Draft the VS Code walkthrough path.
-   - Status: remaining.
-   - Decide which view or command sequence is the lead narrative.
-   - Include at least one approval action and one non-approval action.
+   - Status: complete.
+   - Lead with the DyKnow views that make stale knowledge obvious: `DyKnow Map`, `Changed Knowledge`, and `Stale Pages`.
+   - Include at least one approval action and one non-approval action; use `Approve` on `feature-map` and `Skip` on `setup-guide`.
+   - Show `Agent Context` and the first-class `Source Evidence` view before ending the walkthrough, with `Source Evidence` following the active `Suggested Updates` selection.
    - Exit criterion: the walkthrough can be followed from the handoff without extra tribal knowledge.
 
 6. Capture the recording script and artifact list.

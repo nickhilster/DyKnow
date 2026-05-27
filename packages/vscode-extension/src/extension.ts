@@ -916,11 +916,15 @@ function escapeHtml(value: string): string {
 }
 
 function createSourceCommandUri(workspaceRoot: string, source: string): string {
-  const targetUri = /^https?:\/\//i.test(source)
-    ? vscode.Uri.parse(source)
-    : vscode.Uri.file(resolve(workspaceRoot, source));
+  const targetUri = resolveSourceUri(workspaceRoot, source);
   const commandArgs = encodeURIComponent(JSON.stringify([targetUri]));
   return `command:vscode.open?${commandArgs}`;
+}
+
+function resolveSourceUri(workspaceRoot: string, source: string): vscode.Uri {
+  return /^https?:\/\//i.test(source)
+    ? vscode.Uri.parse(source)
+    : vscode.Uri.file(resolve(workspaceRoot, source));
 }
 
 function buildEvidenceHtml(workspaceRoot: string, draft: UpdateDraft): string {
@@ -986,6 +990,128 @@ function buildEvidenceHtml(workspaceRoot: string, draft: UpdateDraft): string {
 </html>`;
 }
 
+class SourceEvidenceItem extends vscode.TreeItem {
+  constructor(
+    label: string,
+    options?: {
+      description?: string;
+      tooltip?: string | vscode.MarkdownString;
+      iconId?: string;
+      command?: vscode.Command;
+    },
+  ) {
+    super(label, vscode.TreeItemCollapsibleState.None);
+
+    this.description = options?.description;
+    this.tooltip = options?.tooltip;
+    this.iconPath = options?.iconId
+      ? new vscode.ThemeIcon(options.iconId)
+      : undefined;
+    this.command = options?.command;
+  }
+}
+
+class SourceEvidenceProvider
+  implements vscode.TreeDataProvider<SourceEvidenceItem>
+{
+  private readonly _onDidChangeTreeData =
+    new vscode.EventEmitter<SourceEvidenceItem | undefined>();
+  readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+
+  private workspaceRoot: string | undefined;
+  private selectedDraft: UpdateDraft | undefined;
+
+  refresh(workspaceRoot: string | undefined): void {
+    this.workspaceRoot = workspaceRoot;
+    this._onDidChangeTreeData.fire();
+  }
+
+  showDraft(draft: UpdateDraft | undefined): void {
+    this.selectedDraft = draft;
+    this._onDidChangeTreeData.fire();
+  }
+
+  getTreeItem(element: SourceEvidenceItem): vscode.TreeItem {
+    return element;
+  }
+
+  async getChildren(): Promise<SourceEvidenceItem[]> {
+    const cwd = this.workspaceRoot;
+
+    if (!cwd) {
+      return [];
+    }
+
+    if (!this.selectedDraft) {
+      return [
+        new SourceEvidenceItem("Select a suggested update", {
+          description: "Source Evidence follows the active proposal.",
+          tooltip:
+            "Select a proposal in Suggested Updates to inspect its source evidence.",
+          iconId: "info",
+        }),
+      ];
+    }
+
+    const { proposal, affectedPage } = this.selectedDraft;
+    const summaryLines = [
+      proposal.summary,
+      `Why: ${proposal.why}`,
+      `Review: ${proposal.reviewState}`,
+      `Risk: ${proposal.risk}`,
+      `Confidence: ${proposal.confidence}`,
+      `Human review: ${proposal.requiresHumanReview ? "required" : "not required"}`,
+    ];
+    const items = [
+      new SourceEvidenceItem(proposal.pageId, {
+        description: `${proposal.reviewState} · ${proposal.risk} risk · ${proposal.confidence} confidence`,
+        tooltip: summaryLines.join("\n"),
+        iconId: proposal.requiresHumanReview ? "warning" : "check",
+      }),
+      new SourceEvidenceItem(affectedPage.outputPath, {
+        description: "Maintained output",
+        tooltip: `Open maintained output for ${proposal.pageId}`,
+        iconId: "file",
+        command: {
+          command: "vscode.open",
+          title: "Open maintained output",
+          arguments: [vscode.Uri.file(resolve(cwd, affectedPage.outputPath))],
+        },
+      }),
+    ];
+
+    if (proposal.sources.length === 0) {
+      items.push(
+        new SourceEvidenceItem("No captured sources", {
+          description: "This proposal did not record source evidence.",
+          iconId: "warning",
+        }),
+      );
+
+      return items;
+    }
+
+    for (const source of proposal.sources) {
+      items.push(
+        new SourceEvidenceItem(source, {
+          description: /^https?:\/\//i.test(source)
+            ? "External source"
+            : "Workspace source",
+          tooltip: `Open source evidence: ${source}`,
+          iconId: "references",
+          command: {
+            command: "vscode.open",
+            title: "Open source evidence",
+            arguments: [resolveSourceUri(cwd, source)],
+          },
+        }),
+      );
+    }
+
+    return items;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Activate
 // ---------------------------------------------------------------------------
@@ -1003,8 +1129,8 @@ export function activate(context: vscode.ExtensionContext): void {
   const changedKnowledgeProvider = new ChangedKnowledgeProvider();
   const stalePagesProvider = new StalePagesProvider();
   const suggestedUpdatesProvider = new SuggestedUpdatesProvider();
+  const sourceEvidenceProvider = new SourceEvidenceProvider();
   const statusBarItem = createStatusBarItem();
-  let evidencePanel: vscode.WebviewPanel | undefined;
 
   // Register tree views
   const dyKnowMapView = vscode.window.createTreeView("dyknow.map", {
@@ -1039,6 +1165,14 @@ export function activate(context: vscode.ExtensionContext): void {
     },
   );
 
+  const sourceEvidenceView = vscode.window.createTreeView(
+    "dyknow.sourceEvidence",
+    {
+      treeDataProvider: sourceEvidenceProvider,
+      showCollapseAll: false,
+    },
+  );
+
   function refreshViews(): void {
     const cwd = getWorkspacePath();
     dyKnowMapProvider.refresh(cwd);
@@ -1046,11 +1180,16 @@ export function activate(context: vscode.ExtensionContext): void {
     changedKnowledgeProvider.refresh(cwd);
     stalePagesProvider.refresh(cwd);
     suggestedUpdatesProvider.refresh(cwd);
+    sourceEvidenceProvider.refresh(cwd);
     // Give providers time to re-render before updating status bar
     setTimeout(() => {
       updateStatusBar(statusBarItem, suggestedUpdatesProvider);
     }, 300);
   }
+
+  suggestedUpdatesView.onDidChangeSelection(({ selection }) => {
+    sourceEvidenceProvider.showDraft(selection[0]?.draft);
+  });
 
   // Initial load
   refreshViews();
@@ -1254,69 +1393,69 @@ export function activate(context: vscode.ExtensionContext): void {
           );
 
           refreshViews();
-
-      vscode.commands.registerCommand(
-        "dyknow.editProposal",
-        async (item: ProposalItem) => {
-          const cwd = getWorkspacePath();
-
-          if (!cwd || !item) return;
-
-          const doc = await vscode.workspace.openTextDocument({
-            content: item.draft.proposal.proposedText,
-            language: "markdown",
-          });
-          await vscode.window.showTextDocument(doc, {
-            preview: false,
-            viewColumn: vscode.ViewColumn.Beside,
-          });
-
-          const choice = await vscode.window.showInformationMessage(
-            `Edit ${item.draft.proposal.pageId}, then apply changes to DyKnow proposal state.`,
-            "Apply",
-            "Cancel",
-          );
-
-          if (choice !== "Apply") {
-            return;
-          }
-
-          const editedText = doc.getText();
-
-          try {
-            await vscode.window.withProgress(
-              {
-                location: vscode.ProgressLocation.Notification,
-                title: `DyKnow: Saving edits for ${item.draft.proposal.pageId}...`,
-                cancellable: false,
-              },
-              async () =>
-                runCli(cwd, [
-                  "review",
-                  "--edit",
-                  "--page",
-                  item.draft.proposal.pageId,
-                  "--text",
-                  editedText,
-                ]),
-            );
-
-            refreshViews();
-            void vscode.window.showInformationMessage(
-              `DyKnow saved edited proposal for ${item.draft.proposal.pageId}.`,
-            );
-          } catch (err) {
-            const msg = err instanceof Error ? err.message : String(err);
-            void vscode.window.showErrorMessage(`DyKnow edit failed: ${msg}`);
-          }
-        },
-      ),
           void vscode.window.showInformationMessage(
             `DyKnow regenerated proposal for ${item.draft.proposal.pageId}.`,
           );
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
           void vscode.window.showErrorMessage(`DyKnow regenerate failed: ${msg}`);
+        }
+      },
+    ),
+
+    vscode.commands.registerCommand(
+      "dyknow.editProposal",
+      async (item: ProposalItem) => {
+        const cwd = getWorkspacePath();
+
+        if (!cwd || !item) return;
+
+        const doc = await vscode.workspace.openTextDocument({
+          content: item.draft.proposal.proposedText,
+          language: "markdown",
+        });
+        await vscode.window.showTextDocument(doc, {
+          preview: false,
+          viewColumn: vscode.ViewColumn.Beside,
+        });
+
+        const choice = await vscode.window.showInformationMessage(
+          `Edit ${item.draft.proposal.pageId}, then apply changes to DyKnow proposal state.`,
+          "Apply",
+          "Cancel",
+        );
+
+        if (choice !== "Apply") {
+          return;
+        }
+
+        const editedText = doc.getText();
+
+        try {
+          await vscode.window.withProgress(
+            {
+              location: vscode.ProgressLocation.Notification,
+              title: `DyKnow: Saving edits for ${item.draft.proposal.pageId}...`,
+              cancellable: false,
+            },
+            async () =>
+              runCli(cwd, [
+                "review",
+                "--edit",
+                "--page",
+                item.draft.proposal.pageId,
+                "--text",
+                editedText,
+              ]),
+          );
+
+          refreshViews();
+          void vscode.window.showInformationMessage(
+            `DyKnow saved edited proposal for ${item.draft.proposal.pageId}.`,
+          );
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          void vscode.window.showErrorMessage(`DyKnow edit failed: ${msg}`);
         }
       },
     ),
@@ -1417,25 +1556,13 @@ export function activate(context: vscode.ExtensionContext): void {
       async (item: ProposalItem) => {
         const cwd = getWorkspacePath();
 
-        if (!cwd || !item) return;
+        const activeItem = item ?? suggestedUpdatesView.selection[0];
 
-        if (!evidencePanel || evidencePanel.viewColumn === undefined) {
-          evidencePanel = vscode.window.createWebviewPanel(
-            "dyknow.evidence",
-            "DyKnow: Source Evidence",
-            vscode.ViewColumn.Beside,
-            {
-              enableScripts: false,
-              enableCommandUris: true,
-            },
-          );
-          evidencePanel.onDidDispose(() => {
-            evidencePanel = undefined;
-          });
-        }
+        if (!cwd || !activeItem) return;
 
-        evidencePanel.webview.html = buildEvidenceHtml(cwd, item.draft);
-        evidencePanel.reveal(vscode.ViewColumn.Beside, true);
+        sourceEvidenceProvider.refresh(cwd);
+        sourceEvidenceProvider.showDraft(activeItem.draft);
+        await vscode.commands.executeCommand("workbench.view.extension.dyknow");
       },
     ),
 
@@ -1732,6 +1859,7 @@ export function activate(context: vscode.ExtensionContext): void {
     changedKnowledgeView,
     stalePagesView,
     suggestedUpdatesView,
+    sourceEvidenceView,
     statusBarItem,
     ...commands,
   );

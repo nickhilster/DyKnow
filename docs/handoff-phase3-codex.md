@@ -11,10 +11,12 @@ sources:
   - docs/phase3-demo-checklist.md
   - packages/core/src/config.ts
   - packages/cli/src/index.ts
+  - packages/vscode-extension/package.json
+  - packages/vscode-extension/src/extension.ts
   - https://github.com/nickhilster/dyknow-demo-app
   - https://github.com/nickhilster/dyknow-demo-app/tree/phase3-demo-staged-changes
   - AGENTS.md
-last_reviewed: 2026-05-25
+last_reviewed: 2026-05-27
 confidence: high
 ---
 
@@ -46,6 +48,8 @@ Execution is now in-flight in the real demo repo:
 - baseline app, stale docs, and DyKnow config are committed on `main`,
 - staged source drift is committed on `phase3-demo-staged-changes`,
 - first CLI pass artifacts and notes are captured in `docs/phase3-recording-notes.md` in the demo repo.
+- Phase 3 recording defaults are locked: CLI first, VS Code follow-up uses `skip` for the non-approval action, and audit-log output stays appendix-only in the first public cut.
+- the VS Code extension now exposes `Source Evidence` as a first-class DyKnow view that follows the active `Suggested Updates` selection, matching the planned demo sequence.
 
 ## Recommended next moves
 
@@ -53,8 +57,7 @@ The next Codex operator should prefer this order:
 
 1. Record the first CLI cut using `phase3-demo-staged-changes` and the reconciled runbook commands.
 2. Produce the VS Code cut using the same baseline and staged branch.
-3. Decide whether to keep audit-log output appendix-only in the first public release.
-4. Feed final recording deltas back into the Phase 3 docs and messaging pages.
+3. Feed final recording deltas back into the Phase 3 docs and messaging pages.
 
 ## Suggested execution approach
 
@@ -74,7 +77,9 @@ Until the real demo repo forces a correction, use these defaults:
 - Recording lead: CLI first.
 - Main recording path: start from a preconfigured repo; do not show `dyknow init` in the core cut.
 - Maintained page IDs for review actions: `product-overview`, `feature-map`, `architecture`, `setup-guide`, `agent-context`.
-- First public ending: refreshed docs plus refreshed `AGENTS.md`; keep audit-log output optional.
+- First public ending: refreshed docs plus refreshed `AGENTS.md`; keep audit-log output appendix-only.
+- VS Code follow-up: use `skip` for the non-approval action so it contrasts with the CLI `regenerate` example.
+- Audit-log appendix: keep it out of the main story unless the later public cut explicitly needs it.
 
 ## Known constraints
 
@@ -85,8 +90,8 @@ Until the real demo repo forces a correction, use these defaults:
 
 ## Remaining open items for the next operator
 
-- Confirm whether the VS Code cut should mirror `--regenerate` or use `--skip` for its non-approval action.
-- Confirm whether the first public cut keeps audit-log output appendix-only.
+- Capture the VS Code recording once the CLI cut is stable.
+- Feed any final recording deltas back into the Phase 3 docs and messaging pages.
 
 ## Cross-references
 

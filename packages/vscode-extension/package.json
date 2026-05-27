@@ -58,6 +58,11 @@
           "id": "dyknow.agentContext",
           "name": "Agent Context",
           "when": "dyknow:hasConfig"
+        },
+        {
+          "id": "dyknow.sourceEvidence",
+          "name": "Source Evidence",
+          "when": "dyknow:hasConfig"
         }
       ]
     },
@@ -167,7 +172,7 @@
         },
         {
           "command": "dyknow.refreshViews",
-          "when": "view == dyknow.map || view == dyknow.changedKnowledge || view == dyknow.stalePages || view == dyknow.suggestedUpdates || view == dyknow.agentContext",
+          "when": "view == dyknow.map || view == dyknow.changedKnowledge || view == dyknow.stalePages || view == dyknow.suggestedUpdates || view == dyknow.agentContext || view == dyknow.sourceEvidence",
           "group": "navigation@4"
         },
         {

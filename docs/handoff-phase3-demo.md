@@ -5,10 +5,12 @@ audience: internal
 sources:
   - docs/implementation-roadmap.md
   - docs/roadmap.md
+  - packages/vscode-extension/package.json
+  - packages/vscode-extension/src/extension.ts
   - https://github.com/nickhilster/dyknow-demo-app
   - https://github.com/nickhilster/dyknow-demo-app/tree/phase3-demo-staged-changes
   - AGENTS.md
-last_reviewed: 2026-05-25
+last_reviewed: 2026-05-27
 confidence: high
 ---
 
@@ -38,6 +40,8 @@ Current execution state:
 - Baseline tag commit: `fee6467f40dc92904ae706f2fdb40446436ea5ea`
 - Staged drift branch: `phase3-demo-staged-changes` (`361c59b`)
 - First CLI pass notes captured at `docs/phase3-recording-notes.md` in the demo repo
+- Phase 3 recording defaults are now locked: CLI first, VS Code follow-up uses `skip` for the non-approval action, and the audit-log output stays appendix-only for the first public cut.
+- The VS Code extension now exposes `Source Evidence` as a first-class DyKnow view, so the follow-up cut can show the planned sidebar sequence without relying on a separate panel.
 
 ## Scope for the next slice
 
@@ -65,13 +69,13 @@ Current execution state:
 
 ## Open questions
 
-- Should the first public cut include audit-log output in the main walkthrough or keep that as an optional appendix?
+- None for the current documented cut. The first public recording keeps audit-log output appendix-only, and the VS Code follow-up uses `skip` as the non-approval action.
 
 ## Next execution details
 
 1. Capture CLI footage against `phase3-demo-staged-changes` using the exact command order in [Phase 3 Demo Recording Runbook](phase3-demo-recording-runbook.md).
 2. Capture the VS Code walkthrough using the same baseline tag and staged branch.
-3. Decide whether audit-log output stays appendix-only or moves into the primary CLI cut.
+3. Keep audit-log output in the appendix for the first public cut.
 
 ## Cross-references
 

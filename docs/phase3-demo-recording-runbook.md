@@ -9,12 +9,14 @@ sources:
   - docs/handoff-phase3-demo.md
   - packages/core/src/config.ts
   - packages/cli/src/index.ts
+  - packages/vscode-extension/package.json
+  - packages/vscode-extension/src/extension.ts
   - https://github.com/nickhilster/dyknow-demo-app
   - https://github.com/nickhilster/dyknow-demo-app/tree/phase3-demo-staged-changes
   - docs/messaging.md
   - docs/setup-guide.md
   - AGENTS.md
-last_reviewed: 2026-05-25
+last_reviewed: 2026-05-27
 confidence: medium
 ---
 
@@ -38,7 +40,8 @@ To keep the first public recording short and reproducible, use these decisions a
    - `architecture`
    - `setup-guide`
    - `agent-context`
-4. Ending scope: refreshed docs plus refreshed `AGENTS.md`; keep audit-log output as optional appendix footage.
+4. Ending scope: refreshed docs plus refreshed `AGENTS.md`; keep audit-log output appendix-only for the first public cut.
+5. VS Code non-approval action: use `skip` so the second cut demonstrates a different review choice than the CLI cut.
 
 ## Recording goal
 
@@ -192,10 +195,19 @@ Store the first recording notes as a future page or artifact tied to the demo re
 
 After the CLI recording is stable, reuse the same baseline and staged change set for the VS Code recording. Keep the source changes identical when possible so the difference between the two recordings is the surface area, not the product story.
 
+Use the VS Code extension surface to shift the emphasis from terminal commands to the visual review workflow:
+
+1. Open the `dyknow-demo-app` workspace with `dyknow.config.json` already present.
+2. Show the `DyKnow Map`, `Changed Knowledge`, and `Stale Pages` views so the stale state is visible before any action.
+3. Run `DyKnow: Scan`, `DyKnow: Detect Changes`, and `DyKnow: Draft Updates` from the DyKnow view or command palette.
+4. Open `Suggested Updates` and use `Approve` on `feature-map`.
+5. Use `Skip` on `setup-guide` to demonstrate the non-approval path in the extension.
+6. Open `Agent Context`, then show the first-class `Source Evidence` view while `feature-map` or `setup-guide` remains selected in `Suggested Updates` so the evidence visibly follows the active proposal.
+7. End the cut with `DyKnow: Commit Approved Updates` or `DyKnow: Open PR` if the recording needs a publish moment; otherwise stop after the review pass.
+
 ## Remaining open items
 
 - Whether a later extended cut should include a short appendix that shows `dyknow log --source all --action all` after review actions.
-- Whether the VS Code follow-up cut should use `skip` instead of `regenerate` for its non-approval example.
 
 ## Cross-references
 
