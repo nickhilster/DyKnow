@@ -308,3 +308,5 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-27 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot while validating the VS Code cut runbook update with demo-smoke.
 2026-05-27 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot during the same VS Code cut demo-smoke validation run.
 2026-05-27 | update | docs/dyknow/.state/update-proposals.json | Regenerated update proposals during the same VS Code cut demo-smoke validation run.
+2026-05-27 | update | docs/roadmap.md | Rewrote to Phase 0–5 structure with current milestone progress (Phase 0 100%, Phase 1 77%, Phase 2 100%, Phase 3 ~50%); aligned with Linear and Notion state.
+2026-05-27 | update | linear | Updated Phase 3 milestone description to reflect execution state: sandbox live, CLI pass done, recording and messaging assets remaining (TEA-379, TEA-380, TEA-381).
