@@ -299,3 +299,12 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-25 | update | docs/dyknow/.state/update-proposals.json | Regenerated update proposals during the same post-handoff demo-smoke validation run.
 2026-05-26 | update | docs/phase3-demo-recording-runbook.md | Locked the Phase 3 VS Code follow-up narrative, using `skip` for the non-approval action and keeping audit-log output appendix-only for the first public cut.
 2026-05-27 | update | docs/handoff-phase3-codex.md, docs/handoff-phase3-demo.md, docs/phase3-demo-recording-runbook.md, docs/phase3-demo-checklist.md | Clarified that the Phase 3 VS Code follow-up now uses a first-class Source Evidence view tied to the active Suggested Updates selection.
+2026-05-27 | update | docs/handoff-phase3-codex.md, docs/phase3-demo-checklist.md | Recorded the latest demo-repo CLI revalidation against the current DyKnow build, including the current diff summary and review-state outcome.
+2026-05-27 | update | github:nickhilster/dyknow-demo-app | Revalidated the staged demo flow against the current DyKnow build, refreshed the demo repo state artifacts, and updated recording notes with the latest diff and review-state summary.
+2026-05-27 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot while validating the updated Phase 3 handoff docs after the latest demo-repo CLI revalidation.
+2026-05-27 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot during the same post-revalidation demo-smoke run.
+2026-05-27 | update | docs/dyknow/.state/update-proposals.json | Regenerated update proposals during the same post-revalidation demo-smoke run.
+2026-05-27 | update | packages/vscode-extension/src/extension.ts, docs/phase3-demo-recording-runbook.md | Made the Source Evidence action focus the dedicated view and aligned the VS Code demo runbook with that reveal path.
+2026-05-27 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot while validating the VS Code cut runbook update with demo-smoke.
+2026-05-27 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot during the same VS Code cut demo-smoke validation run.
+2026-05-27 | update | docs/dyknow/.state/update-proposals.json | Regenerated update proposals during the same VS Code cut demo-smoke validation run.

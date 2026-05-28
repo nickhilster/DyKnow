@@ -9,6 +9,7 @@ sources:
   - docs/phase3-demo-change-script.md
   - docs/phase3-demo-recording-runbook.md
   - docs/phase3-demo-checklist.md
+  - docs/log.md
   - packages/core/src/config.ts
   - packages/cli/src/index.ts
   - packages/vscode-extension/package.json
@@ -48,6 +49,8 @@ Execution is now in-flight in the real demo repo:
 - baseline app, stale docs, and DyKnow config are committed on `main`,
 - staged source drift is committed on `phase3-demo-staged-changes`,
 - first CLI pass artifacts and notes are captured in `docs/phase3-recording-notes.md` in the demo repo.
+- the latest CLI revalidation against the current DyKnow build completed on 2026-05-27, with demo-app lint and build both passing before the `scan -> diff -> update -> review` loop.
+- that revalidated pass reported 3 added, 4 changed, and 1 removed file(s), drafted 5 proposals across 5 affected pages, and left 2 proposals Approved plus 3 still in Needs review after the scripted review actions.
 - Phase 3 recording defaults are locked: CLI first, VS Code follow-up uses `skip` for the non-approval action, and audit-log output stays appendix-only in the first public cut.
 - the VS Code extension now exposes `Source Evidence` as a first-class DyKnow view that follows the active `Suggested Updates` selection, matching the planned demo sequence.
 
@@ -90,6 +93,7 @@ Until the real demo repo forces a correction, use these defaults:
 
 ## Remaining open items for the next operator
 
+- Capture the CLI recording while the 2026-05-27 revalidated command path is still fresh.
 - Capture the VS Code recording once the CLI cut is stable.
 - Feed any final recording deltas back into the Phase 3 docs and messaging pages.
 

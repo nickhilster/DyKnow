@@ -140,8 +140,8 @@
     {
       "path": ".github/workflows/ci.yml",
       "kind": "yaml",
-      "size": 2412,
-      "lineCount": 86,
+      "size": 0,
+      "lineCount": 0,
       "signals": [
         "openapi",
         "config"
@@ -149,11 +149,7 @@
       "dependencies": [],
       "routes": [],
       "headings": [],
-      "topLevelKeys": [
-        "jobs",
-        "name",
-        "on"
-      ]
+      "topLevelKeys": []
     },
     {
       "path": "AGENTS.md",
@@ -404,8 +400,8 @@
     {
       "path": "docs/handoff-phase3-codex.md",
       "kind": "markdown",
-      "size": 5233,
-      "lineCount": 99,
+      "size": 6223,
+      "lineCount": 108,
       "signals": [
         "documentation"
       ],
@@ -426,8 +422,8 @@
     {
       "path": "docs/handoff-phase3-demo.md",
       "kind": "markdown",
-      "size": 4318,
-      "lineCount": 87,
+      "size": 4838,
+      "lineCount": 91,
       "signals": [
         "documentation"
       ],
@@ -553,8 +549,8 @@
     {
       "path": "docs/log.md",
       "kind": "markdown",
-      "size": 39374,
-      "lineCount": 291,
+      "size": 43133,
+      "lineCount": 311,
       "signals": [
         "documentation"
       ],
@@ -638,8 +634,8 @@
     {
       "path": "docs/phase3-demo-checklist.md",
       "kind": "markdown",
-      "size": 4619,
-      "lineCount": 91,
+      "size": 5567,
+      "lineCount": 98,
       "signals": [
         "documentation"
       ],
@@ -656,8 +652,8 @@
     {
       "path": "docs/phase3-demo-recording-runbook.md",
       "kind": "markdown",
-      "size": 7562,
-      "lineCount": 207,
+      "size": 8698,
+      "lineCount": 219,
       "signals": [
         "documentation"
       ],
@@ -1074,8 +1070,8 @@
     {
       "path": "packages/cli/src/demo-smoke.ts",
       "kind": "typescript",
-      "size": 6987,
-      "lineCount": 258,
+      "size": 8725,
+      "lineCount": 318,
       "signals": [
         "source-code"
       ],
@@ -1178,8 +1174,8 @@
     {
       "path": "packages/cli/src/status.ts",
       "kind": "typescript",
-      "size": 16463,
-      "lineCount": 617,
+      "size": 19610,
+      "lineCount": 717,
       "signals": [
         "source-code"
       ],
@@ -1217,8 +1213,8 @@
     {
       "path": "packages/cli/test/demo-smoke.test.ts",
       "kind": "typescript",
-      "size": 4000,
-      "lineCount": 131,
+      "size": 5363,
+      "lineCount": 192,
       "signals": [
         "source-code"
       ],
@@ -1269,7 +1265,7 @@
     {
       "path": "packages/cli/test/pr.test.ts",
       "kind": "typescript",
-      "size": 31787,
+      "size": 31820,
       "lineCount": 984,
       "signals": [
         "source-code"
@@ -1319,8 +1315,8 @@
     {
       "path": "packages/cli/test/status.test.ts",
       "kind": "typescript",
-      "size": 5174,
-      "lineCount": 161,
+      "size": 5228,
+      "lineCount": 162,
       "signals": [
         "source-code"
       ],
@@ -1682,8 +1678,8 @@
     {
       "path": "packages/vscode-extension/package.json",
       "kind": "json",
-      "size": 13355,
-      "lineCount": 425,
+      "size": 13524,
+      "lineCount": 430,
       "signals": [
         "package-manifest",
         "config"
@@ -1740,8 +1736,8 @@
     {
       "path": "packages/vscode-extension/src/extension.ts",
       "kind": "typescript",
-      "size": 49829,
-      "lineCount": 1743,
+      "size": 53530,
+      "lineCount": 1872,
       "signals": [
         "source-code"
       ],
@@ -1810,7 +1806,7 @@
   ],
   "outputPath": "docs/dyknow/.state/repo-map.json",
   "rootPath": "C:\\DEV\\DyKnow",
-  "scannedAt": "2026-05-25T18:34:05.647Z",
+  "scannedAt": "2026-05-28T01:09:06.206Z",
   "warnings": [
     {
       "code": "secret-pattern",

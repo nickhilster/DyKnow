@@ -1563,6 +1563,7 @@ export function activate(context: vscode.ExtensionContext): void {
         sourceEvidenceProvider.refresh(cwd);
         sourceEvidenceProvider.showDraft(activeItem.draft);
         await vscode.commands.executeCommand("workbench.view.extension.dyknow");
+        await vscode.commands.executeCommand("dyknow.sourceEvidence.focus");
       },
     ),
 

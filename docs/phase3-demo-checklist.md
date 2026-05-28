@@ -6,6 +6,7 @@ sources:
   - docs/handoff-phase3-demo.md
   - docs/implementation-roadmap.md
   - docs/roadmap.md
+   - docs/log.md
    - packages/vscode-extension/package.json
    - packages/vscode-extension/src/extension.ts
   - https://github.com/nickhilster/dyknow-demo-app
@@ -36,6 +37,7 @@ Current VS Code default: use `skip` as the non-approval action, and keep audit-l
 - Baseline locked on `main` with tag `phase3-demo-baseline` at `fee6467f40dc92904ae706f2fdb40446436ea5ea`
 - Staged drift branch created: `phase3-demo-staged-changes` (`361c59b`)
 - CLI flow executed end to end (`scan -> diff -> update -> review`) with one approval and one non-approval action pattern
+- CLI flow revalidated on 2026-05-27 against the current DyKnow build: demo-app lint and build passed, `scan`/`diff` reported 3 added, 4 changed, and 1 removed file(s), `update` drafted 5 proposals across 5 affected pages, and the scripted review sequence left 2 Approved plus 3 Needs review.
 - Recording notes captured in the demo repo at `docs/phase3-recording-notes.md`
 - VS Code `Source Evidence` now exists as a first-class DyKnow view that follows the active `Suggested Updates` selection
 
@@ -81,7 +83,7 @@ Current VS Code default: use `skip` as the non-approval action, and keep audit-l
 
 ## Open questions
 
-- Does the demo smoke command need to run inside the demo repo only, or should it also validate the DyKnow repo itself?
+- Does the demo smoke command need to run inside the demo repo only, or should it also validate the DyKnow repo itself before the first public recording cut?
 
 ## Cross-references
 

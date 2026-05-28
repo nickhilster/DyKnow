@@ -20,6 +20,13 @@ export type DemoSmokeOptions = {
   workspacePath: string;
 };
 
+type RequiredPhase3Document = {
+  fileLabel: string;
+  linkText: string;
+  path: string;
+  pathLabel: string;
+};
+
 function defaultWriter(message: string) {
   console.log(message);
 }
@@ -30,6 +37,59 @@ function defaultErrorWriter(message: string) {
 
 function toPortablePath(path: string) {
   return path.replaceAll("\\", "/");
+}
+
+function escapeForRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getRequiredPhase3Documents(
+  options: DemoSmokeOptions,
+): RequiredPhase3Document[] {
+  return [
+    {
+      fileLabel: "Phase 3 handoff page",
+      linkText: "Phase 3 Public Demo Handoff",
+      path: options.handoffPath,
+      pathLabel: "Phase 3 handoff path",
+    },
+    {
+      fileLabel: "Phase 3 checklist page",
+      linkText: "Phase 3 Demo Checklist",
+      path: options.checklistPath,
+      pathLabel: "Phase 3 checklist path",
+    },
+    {
+      fileLabel: "Phase 3 repo selection page",
+      linkText: "Phase 3 Demo Repo Selection",
+      path: "docs/phase3-demo-repo-selection.md",
+      pathLabel: "Phase 3 repo selection path",
+    },
+    {
+      fileLabel: "Phase 3 baseline plan page",
+      linkText: "Phase 3 Demo Baseline Plan",
+      path: "docs/phase3-demo-baseline-plan.md",
+      pathLabel: "Phase 3 baseline plan path",
+    },
+    {
+      fileLabel: "Phase 3 change script page",
+      linkText: "Phase 3 Demo Change Script",
+      path: "docs/phase3-demo-change-script.md",
+      pathLabel: "Phase 3 change script path",
+    },
+    {
+      fileLabel: "Phase 3 recording runbook page",
+      linkText: "Phase 3 Demo Recording Runbook",
+      path: "docs/phase3-demo-recording-runbook.md",
+      pathLabel: "Phase 3 recording runbook path",
+    },
+    {
+      fileLabel: "Phase 3 Codex takeover handoff page",
+      linkText: "Phase 3 Codex Takeover Handoff",
+      path: "docs/handoff-phase3-codex.md",
+      pathLabel: "Phase 3 Codex takeover handoff path",
+    },
+  ];
 }
 
 function parseDemoSmokeOptions(args: readonly string[]): DemoSmokeOptions {
@@ -191,16 +251,6 @@ export async function runDemoSmoke(
   try {
     const options = parseDemoSmokeOptions(args);
     const workspacePath = resolve(cwd, options.workspacePath);
-    const handoffPath = await resolveWorkspacePath(
-      workspacePath,
-      options.handoffPath,
-      "Phase 3 handoff path",
-    );
-    const checklistPath = await resolveWorkspacePath(
-      workspacePath,
-      options.checklistPath,
-      "Phase 3 checklist path",
-    );
     const indexPath = await resolveWorkspacePath(
       workspacePath,
       options.indexPath,
@@ -216,39 +266,49 @@ export async function runDemoSmoke(
       options.configPath,
       "Phase 3 config path",
     );
+    const requiredDocuments = await Promise.all(
+      getRequiredPhase3Documents(options).map(async (document) => ({
+        ...document,
+        filePath: await resolveWorkspacePath(
+          workspacePath,
+          document.path,
+          document.pathLabel,
+        ),
+      })),
+    );
 
-    await assertFileExists(handoffPath, "Phase 3 handoff page");
-    await assertFileExists(checklistPath, "Phase 3 checklist page");
+    for (const document of requiredDocuments) {
+      await assertFileExists(document.filePath, document.fileLabel);
+    }
+
     await assertFileExists(configPath, "DyKnow config");
-    await assertFileContains({
-      filePath: indexPath,
-      label: "Phase 3 handoff link in docs/index.md",
-      pattern: /\[Phase 3 Public Demo Handoff\]\(handoff-phase3-demo\.md\)/,
-    });
-    await assertFileContains({
-      filePath: indexPath,
-      label: "Phase 3 checklist link in docs/index.md",
-      pattern: /\[Phase 3 Demo Checklist\]\(phase3-demo-checklist\.md\)/,
-    });
-    await assertFileContains({
-      filePath: logPath,
-      label: "Phase 3 handoff log entry",
-      pattern: /\| create \| docs\/handoff-phase3-demo\.md \|/,
-    });
-    await assertFileContains({
-      filePath: logPath,
-      label: "Phase 3 checklist log entry",
-      pattern: /\| create \| docs\/phase3-demo-checklist\.md \|/,
-    });
+
+    for (const document of requiredDocuments) {
+      const indexLinkPath = toPortablePath(relative(dirname(indexPath), document.filePath));
+      await assertFileContains({
+        filePath: indexPath,
+        label: `${document.linkText} link in docs/index.md`,
+        pattern: new RegExp(
+          `\\[${escapeForRegex(document.linkText)}\\]\\(${escapeForRegex(indexLinkPath)}\\)`,
+        ),
+      });
+    }
+
+    for (const document of requiredDocuments) {
+      const logEntryPath = toPortablePath(relative(workspacePath, document.filePath));
+      await assertFileContains({
+        filePath: logPath,
+        label: `${document.linkText} create log entry`,
+        pattern: new RegExp(`\\| create \\| ${escapeForRegex(logEntryPath)} \\|`),
+      });
+    }
 
     await runDemoSmokePipeline({
       configPath,
       workspacePath,
     });
 
-    stdout(
-      `Phase 3 smoke path passed for ${toPortablePath(relative(workspacePath, handoffPath))} and ${toPortablePath(relative(workspacePath, checklistPath))}.`,
-    );
+    stdout(`Phase 3 smoke path passed for ${requiredDocuments.length} required Phase 3 docs.`);
     return 0;
   } catch (error) {
     stderr(error instanceof Error ? error.message : "Unknown demo smoke error.");

@@ -46,7 +46,7 @@ async function writeFailingGhCommand(tools: string) {
 }
 
 async function runGit(cwd: string, args: readonly string[]) {
-  const result = await execFileAsync("git", [...args], {
+  const result = await execFileAsync("git", ["-c", "safe.bareRepository=all", ...args], {
     cwd,
     encoding: "utf8",
   });

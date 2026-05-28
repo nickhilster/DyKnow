@@ -202,7 +202,7 @@ Use the VS Code extension surface to shift the emphasis from terminal commands t
 3. Run `DyKnow: Scan`, `DyKnow: Detect Changes`, and `DyKnow: Draft Updates` from the DyKnow view or command palette.
 4. Open `Suggested Updates` and use `Approve` on `feature-map`.
 5. Use `Skip` on `setup-guide` to demonstrate the non-approval path in the extension.
-6. Open `Agent Context`, then show the first-class `Source Evidence` view while `feature-map` or `setup-guide` remains selected in `Suggested Updates` so the evidence visibly follows the active proposal.
+6. Trigger `Source Evidence` from the active proposal in `Suggested Updates`, then open `Agent Context` and keep the same proposal selected so the evidence view visibly follows the active proposal.
 7. End the cut with `DyKnow: Commit Approved Updates` or `DyKnow: Open PR` if the recording needs a publish moment; otherwise stop after the review pass.
 
 ## Remaining open items
