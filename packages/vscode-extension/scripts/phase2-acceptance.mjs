@@ -19,6 +19,7 @@ const REQUIRED_VIEWS = [
   "dyknow.stalePages",
   "dyknow.suggestedUpdates",
   "dyknow.agentContext",
+  "dyknow.sourceEvidence",
 ];
 
 const REQUIRED_COMMANDS = [
@@ -31,6 +32,8 @@ const REQUIRED_COMMANDS = [
   "dyknow.editProposal",
   "dyknow.regenerateProposal",
   "dyknow.markSourceIrrelevant",
+  "dyknow.viewDiff",
+  "dyknow.showEvidence",
   "dyknow.regeneratePending",
   "dyknow.rejectPending",
   "dyknow.regenerateSelected",

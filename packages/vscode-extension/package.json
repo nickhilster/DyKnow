@@ -113,6 +113,11 @@
         "icon": "$(exclude)"
       },
       {
+        "command": "dyknow.viewDiff",
+        "title": "View Diff",
+        "icon": "$(diff)"
+      },
+      {
         "command": "dyknow.showEvidence",
         "title": "Source Evidence",
         "icon": "$(references)"
