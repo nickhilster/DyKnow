@@ -235,7 +235,10 @@ function getWorkspacePath(): string | undefined {
   return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 }
 
-async function readJsonFile<T>(cwd: string, relPath: string): Promise<T | null> {
+async function readJsonFile<T>(
+  cwd: string,
+  relPath: string,
+): Promise<T | null> {
   try {
     const text = await readFile(resolve(cwd, relPath), "utf8");
     return JSON.parse(text) as T;
@@ -304,7 +307,10 @@ class MapGroupItem extends vscode.TreeItem {
 }
 
 class MapFileItem extends vscode.TreeItem {
-  constructor(readonly file: RepoMapFileSummary, workspaceRoot: string) {
+  constructor(
+    readonly file: RepoMapFileSummary,
+    workspaceRoot: string,
+  ) {
     super(basename(file.path), vscode.TreeItemCollapsibleState.None);
 
     this.description = `${file.kind} · ${file.path}`;
@@ -335,8 +341,9 @@ class MapFileItem extends vscode.TreeItem {
 class DyKnowMapProvider
   implements vscode.TreeDataProvider<MapGroupItem | MapFileItem>
 {
-  private readonly _onDidChangeTreeData =
-    new vscode.EventEmitter<MapGroupItem | MapFileItem | undefined>();
+  private readonly _onDidChangeTreeData = new vscode.EventEmitter<
+    MapGroupItem | MapFileItem | undefined
+  >();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   private map: RepoMapSnapshot | null = null;
@@ -375,7 +382,8 @@ class DyKnowMapProvider
 
     if (!element) {
       return MAP_GROUP_ORDER.map((signal) => {
-        const files = this.map?.files.filter((f) => f.signals.includes(signal)) ?? [];
+        const files =
+          this.map?.files.filter((f) => f.signals.includes(signal)) ?? [];
         return new MapGroupItem(signal, files);
       }).filter((group) => group.files.length > 0);
     }
@@ -455,9 +463,12 @@ class AgentContextItem extends vscode.TreeItem {
   }
 }
 
-class AgentContextProvider implements vscode.TreeDataProvider<AgentContextItem> {
-  private readonly _onDidChangeTreeData =
-    new vscode.EventEmitter<AgentContextItem | undefined>();
+class AgentContextProvider
+  implements vscode.TreeDataProvider<AgentContextItem>
+{
+  private readonly _onDidChangeTreeData = new vscode.EventEmitter<
+    AgentContextItem | undefined
+  >();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   private workspaceRoot: string | undefined;
@@ -525,8 +536,9 @@ class ChangedFileItem extends vscode.TreeItem {
 class ChangedKnowledgeProvider
   implements vscode.TreeDataProvider<ChangedFileItem>
 {
-  private readonly _onDidChangeTreeData =
-    new vscode.EventEmitter<ChangedFileItem | undefined>();
+  private readonly _onDidChangeTreeData = new vscode.EventEmitter<
+    ChangedFileItem | undefined
+  >();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   private diff: RepoDiff | null = null;
@@ -562,9 +574,18 @@ class ChangedKnowledgeProvider
     }
 
     const entries: RepoDiffEntry[] = [
-      ...(this.diff.added ?? []).map((e) => ({ ...e, change: "added" as const })),
-      ...(this.diff.changed ?? []).map((e) => ({ ...e, change: "changed" as const })),
-      ...(this.diff.removed ?? []).map((e) => ({ ...e, change: "removed" as const })),
+      ...(this.diff.added ?? []).map((e) => ({
+        ...e,
+        change: "added" as const,
+      })),
+      ...(this.diff.changed ?? []).map((e) => ({
+        ...e,
+        change: "changed" as const,
+      })),
+      ...(this.diff.removed ?? []).map((e) => ({
+        ...e,
+        change: "removed" as const,
+      })),
       ...(this.diff.addedFiles ?? []).map((e) => ({
         path: e.path,
         change: "added" as const,
@@ -618,8 +639,9 @@ class StalePageItem extends vscode.TreeItem {
 }
 
 class StalePagesProvider implements vscode.TreeDataProvider<StalePageItem> {
-  private readonly _onDidChangeTreeData =
-    new vscode.EventEmitter<StalePageItem | undefined>();
+  private readonly _onDidChangeTreeData = new vscode.EventEmitter<
+    StalePageItem | undefined
+  >();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   private workspaceRoot: string | undefined;
@@ -656,7 +678,10 @@ class StalePagesProvider implements vscode.TreeDataProvider<StalePageItem> {
       (repoDiff?.affectedPages ?? []).map((page) => page.pageId),
     );
     const proposalByPage = new Map(
-      (proposals?.drafts ?? []).map((draft) => [draft.proposal.pageId, draft.proposal]),
+      (proposals?.drafts ?? []).map((draft) => [
+        draft.proposal.pageId,
+        draft.proposal,
+      ]),
     );
 
     const items = await Promise.all(
@@ -727,7 +752,9 @@ class StalePagesProvider implements vscode.TreeDataProvider<StalePageItem> {
 
     this.staleItems = items
       .filter((item): item is StalePageItem => item !== undefined)
-      .sort((a, b) => a.label!.toString().localeCompare(b.label!.toString()));
+      .sort((a, b) =>
+        String(a.label ?? "").localeCompare(String(b.label ?? "")),
+      );
 
     return this.staleItems;
   }
@@ -758,9 +785,9 @@ class ProposalItem extends vscode.TreeItem {
             ? "$(warning)"
             : proposal.reviewState === "Edited"
               ? "$(edit)"
-        : proposal.reviewState === "Skipped"
-          ? "$(x)"
-          : "$(circle-large-outline)";
+              : proposal.reviewState === "Skipped"
+                ? "$(x)"
+                : "$(circle-large-outline)";
 
     this.label = `${stateIcon} ${proposal.pageId}`;
     this.description = `${riskIcon} ${proposal.risk} · ${proposal.confidence}`;
@@ -784,7 +811,7 @@ class ProposalItem extends vscode.TreeItem {
               ? "proposal-escalated"
               : proposal.reviewState === "Edited"
                 ? "proposal-edited"
-          : "proposal-skipped";
+                : "proposal-skipped";
 
     this.command = {
       command: "dyknow.viewDiff",
@@ -797,8 +824,9 @@ class ProposalItem extends vscode.TreeItem {
 class SuggestedUpdatesProvider
   implements vscode.TreeDataProvider<ProposalItem>
 {
-  private readonly _onDidChangeTreeData =
-    new vscode.EventEmitter<ProposalItem | undefined>();
+  private readonly _onDidChangeTreeData = new vscode.EventEmitter<
+    ProposalItem | undefined
+  >();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   private batch: UpdateDraftBatch | null = null;
@@ -843,17 +871,16 @@ class SuggestedUpdatesProvider
     ]);
 
     return (
-      this.batch?.drafts.filter(
-        (d) => pendingStates.has(d.proposal.reviewState),
+      this.batch?.drafts.filter((d) =>
+        pendingStates.has(d.proposal.reviewState),
       ).length ?? 0
     );
   }
 
   get approvedCount(): number {
     return (
-      this.batch?.drafts.filter(
-        (d) => d.proposal.reviewState === "Approved",
-      ).length ?? 0
+      this.batch?.drafts.filter((d) => d.proposal.reviewState === "Approved")
+        .length ?? 0
     );
   }
 }
@@ -1014,8 +1041,9 @@ class SourceEvidenceItem extends vscode.TreeItem {
 class SourceEvidenceProvider
   implements vscode.TreeDataProvider<SourceEvidenceItem>
 {
-  private readonly _onDidChangeTreeData =
-    new vscode.EventEmitter<SourceEvidenceItem | undefined>();
+  private readonly _onDidChangeTreeData = new vscode.EventEmitter<
+    SourceEvidenceItem | undefined
+  >();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   private workspaceRoot: string | undefined;
@@ -1398,7 +1426,9 @@ export function activate(context: vscode.ExtensionContext): void {
           );
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
-          void vscode.window.showErrorMessage(`DyKnow regenerate failed: ${msg}`);
+          void vscode.window.showErrorMessage(
+            `DyKnow regenerate failed: ${msg}`,
+          );
         }
       },
     ),
@@ -1477,10 +1507,12 @@ export function activate(context: vscode.ExtensionContext): void {
           return;
         }
 
-        const existingOverrides =
-          (await readJsonFile<SourceOverrides>(cwd, SOURCE_OVERRIDES_PATH)) ?? {
-            pages: {},
-          };
+        const existingOverrides = (await readJsonFile<SourceOverrides>(
+          cwd,
+          SOURCE_OVERRIDES_PATH,
+        )) ?? {
+          pages: {},
+        };
 
         const existingIgnored =
           existingOverrides.pages[pageId]?.ignoredSources ?? [];
@@ -1502,7 +1534,9 @@ export function activate(context: vscode.ExtensionContext): void {
           return;
         }
 
-        const ignoredSources = [...new Set(picked.map((choice) => choice.label))];
+        const ignoredSources = [
+          ...new Set(picked.map((choice) => choice.label)),
+        ];
 
         existingOverrides.pages[pageId] = {
           ignoredSources,
@@ -1532,7 +1566,10 @@ export function activate(context: vscode.ExtensionContext): void {
         const { proposal } = item.draft;
         const outputPath = item.draft.affectedPage.outputPath;
         const currentUri = vscode.Uri.file(resolve(cwd, outputPath));
-        const tmpPath = resolve(tmpdir(), `dyknow-proposed-${proposal.pageId}.md`);
+        const tmpPath = resolve(
+          tmpdir(),
+          `dyknow-proposed-${proposal.pageId}.md`,
+        );
 
         try {
           await writeFile(tmpPath, proposal.proposedText, "utf8");
@@ -1546,7 +1583,9 @@ export function activate(context: vscode.ExtensionContext): void {
           );
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
-          void vscode.window.showErrorMessage(`DyKnow diff viewer failed: ${msg}`);
+          void vscode.window.showErrorMessage(
+            `DyKnow diff viewer failed: ${msg}`,
+          );
         }
       },
     ),
@@ -1667,7 +1706,9 @@ export function activate(context: vscode.ExtensionContext): void {
           return;
         }
 
-        const pageIds = [...new Set(selectedItems.map((d) => d.draft.proposal.pageId))];
+        const pageIds = [
+          ...new Set(selectedItems.map((d) => d.draft.proposal.pageId)),
+        ];
         const confirm = await vscode.window.showWarningMessage(
           `Regenerate ${pageIds.length} selected DyKnow proposal(s)?`,
           { modal: true },
@@ -1773,7 +1814,9 @@ export function activate(context: vscode.ExtensionContext): void {
           return;
         }
 
-        const pageIds = [...new Set(selectedItems.map((d) => d.draft.proposal.pageId))];
+        const pageIds = [
+          ...new Set(selectedItems.map((d) => d.draft.proposal.pageId)),
+        ];
         const confirm = await vscode.window.showWarningMessage(
           `Reject ${pageIds.length} selected DyKnow proposal(s)?`,
           { modal: true },
