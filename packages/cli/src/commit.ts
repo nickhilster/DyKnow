@@ -125,14 +125,13 @@ async function ensureCommitableWorktree(
   cwd: string,
   allowedPaths: ReadonlySet<string>,
 ) {
-  const status = await runGit(cwd, [
-    "status",
-    "--porcelain=v1",
-    "-z",
-    "--untracked-files=all",
-  ], {
-    trimOutput: false,
-  });
+  const status = await runGit(
+    cwd,
+    ["status", "--porcelain=v1", "-z", "--untracked-files=all"],
+    {
+      trimOutput: false,
+    },
+  );
   const disallowedPaths = parseStatusPaths(status).filter(
     (path) => !allowedPaths.has(path),
   );

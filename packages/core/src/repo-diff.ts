@@ -6,12 +6,12 @@ import { type PageDefinition, PageDefinitionSchema } from "./contracts.js";
 import {
   type DependencyRecord,
   type RepoFileSummary,
-  type RepoRoute,
   RepoFileSummarySchema,
   type RepoMap,
   RepoMapSchema,
   type RepoMapWarning,
   RepoMapWarningSchema,
+  type RepoRoute,
 } from "./repo-map.js";
 
 export const DEFAULT_REPO_DIFF_OUTPUT_PATH =

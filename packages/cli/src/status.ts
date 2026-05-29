@@ -137,7 +137,7 @@ function parseAuditLogEntries(input: string, inputPath: string) {
         );
       }
 
-    return AuditLogEntrySchema.parse(value);
+      return AuditLogEntrySchema.parse(value);
     });
 }
 
@@ -147,7 +147,10 @@ function parseWorkingTreeEntries(statusSummary: string): WorkingTreeEntry[] {
     .map((line) => line.trimEnd())
     .filter((line) => line.length > 0)
     .map((line) => ({
-      code: line.match(/^(.{1,2})\s+/u)?.[1]?.trim() || line.slice(0, 2).trim() || "??",
+      code:
+        line.match(/^(.{1,2})\s+/u)?.[1]?.trim() ||
+        line.slice(0, 2).trim() ||
+        "??",
       path: line.match(/^.{1,2}\s+(.*)$/u)?.[1]?.trim() ?? line.slice(3).trim(),
       raw: line,
     }));
@@ -701,9 +704,7 @@ export async function createStatusReport(options: {
       totalCommits: Number.parseInt(totalCommitsText, 10),
       ...(remoteUrl ? { remoteUrl } : {}),
       ...(repoDiffArtifact ? { repoDiff: repoDiffArtifact.data } : {}),
-      ...(updateBatchArtifact
-        ? { updateBatch: updateBatchArtifact.data }
-        : {}),
+      ...(updateBatchArtifact ? { updateBatch: updateBatchArtifact.data } : {}),
     }),
     "utf8",
   );

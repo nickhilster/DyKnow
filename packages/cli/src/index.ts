@@ -1,7 +1,7 @@
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
-import { createInterface } from "node:readline/promises";
 import { basename, dirname, relative, resolve } from "node:path";
 import { stdin as input, stdout as output } from "node:process";
+import { createInterface } from "node:readline/promises";
 
 import {
   DEFAULT_IGNORED_SOURCE_PATTERNS,
@@ -152,7 +152,9 @@ async function detectInitialStackProfile(cwd: string): Promise<DetectedStack> {
 
   if (await pathExists(packageJsonPath)) {
     try {
-      const packageJson = JSON.parse(await readFile(packageJsonPath, "utf8")) as {
+      const packageJson = JSON.parse(
+        await readFile(packageJsonPath, "utf8"),
+      ) as {
         dependencies?: Record<string, string>;
         devDependencies?: Record<string, string>;
       };
@@ -183,7 +185,10 @@ async function detectInitialStackProfile(cwd: string): Promise<DetectedStack> {
     }
   }
 
-  if ((await pathExists(pyprojectPath)) || (await pathExists(requirementsPath))) {
+  if (
+    (await pathExists(pyprojectPath)) ||
+    (await pathExists(requirementsPath))
+  ) {
     return {
       profile: "python",
       reason: "Detected Python dependency manifests in the workspace.",
@@ -214,14 +219,19 @@ async function detectInitialStackProfile(cwd: string): Promise<DetectedStack> {
 
   return {
     profile: "generic",
-    reason: "Using generic repo defaults because no specific stack markers were found.",
+    reason:
+      "Using generic repo defaults because no specific stack markers were found.",
   };
 }
 
 function parseInitModeAnswer(answer: string): InitOptions["mode"] | null {
   const normalized = answer.trim().toLowerCase();
 
-  if (normalized === "" || normalized === "local" || normalized === "local-only") {
+  if (
+    normalized === "" ||
+    normalized === "local" ||
+    normalized === "local-only"
+  ) {
     return "local-only";
   }
 
@@ -275,9 +285,7 @@ async function resolveInteractiveInitOptions(
   }
 
   while (true) {
-    const modeAnswer = await prompt(
-      `Mode [${mode}] (local-only/connected): `,
-    );
+    const modeAnswer = await prompt(`Mode [${mode}] (local-only/connected): `);
     const parsedMode = parseInitModeAnswer(modeAnswer);
 
     if (parsedMode) {

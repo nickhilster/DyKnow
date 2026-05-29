@@ -1,5 +1,12 @@
 import { readFile, readdir, stat } from "node:fs/promises";
-import { basename, extname, join, matchesGlob, relative, resolve } from "node:path";
+import {
+  basename,
+  extname,
+  join,
+  matchesGlob,
+  relative,
+  resolve,
+} from "node:path";
 
 import {
   DEFAULT_REPO_MAP_OUTPUT_PATH,
@@ -7,11 +14,11 @@ import {
   type DependencySection,
   type DyknowConfig,
   type RepoFileKind,
-  type RepoRoute,
   type RepoFileSignal,
   type RepoMap,
   RepoMapSchema,
   type RepoMapWarning,
+  type RepoRoute,
 } from "@dyknow/core";
 
 const SKIPPED_DIRECTORY_NAMES = new Set([
@@ -346,9 +353,9 @@ function extractDependencies(
       /dependencies\s*=\s*\[((?:.|\r|\n)*?)\]/m,
     );
 
-    for (const rawDependency of (
-      projectDependenciesMatch?.[1] ?? ""
-    ).matchAll(/"([^"]+)"/g)) {
+    for (const rawDependency of (projectDependenciesMatch?.[1] ?? "").matchAll(
+      /"([^"]+)"/g,
+    )) {
       const [name, version] = splitPythonDependency(rawDependency[1] ?? "");
 
       dependencies.push({
@@ -426,8 +433,7 @@ function parseTomlKeyValueDependencies(
     .split(/\r\n|\r|\n/)
     .map((line) => line.trim())
     .filter(
-      (line) =>
-        line.length > 0 && !line.startsWith("#") && line.includes("="),
+      (line) => line.length > 0 && !line.startsWith("#") && line.includes("="),
     )
     .map((line) => {
       const [rawName, rawVersion] = line.split("=", 2);
@@ -526,7 +532,9 @@ function extractOpenApiJsonRoutes(filePath: string, text: string): RepoRoute[] {
     return Object.entries(paths)
       .filter((entry): entry is [string, Record<string, unknown>] => {
         const [routePath, methods] = entry;
-        return routePath.startsWith("/") && methods && typeof methods === "object";
+        return (
+          routePath.startsWith("/") && methods && typeof methods === "object"
+        );
       })
       .map(([routePath, methods]) => ({
         framework: "openapi",
@@ -535,9 +543,15 @@ function extractOpenApiJsonRoutes(filePath: string, text: string): RepoRoute[] {
         handler: filePath,
         methods: Object.keys(methods)
           .filter((method) =>
-            ["get", "post", "put", "patch", "delete", "head", "options"].includes(
-              method.toLowerCase(),
-            ),
+            [
+              "get",
+              "post",
+              "put",
+              "patch",
+              "delete",
+              "head",
+              "options",
+            ].includes(method.toLowerCase()),
           )
           .map((method) => method.toUpperCase())
           .sort((left, right) => left.localeCompare(right)),
@@ -564,7 +578,9 @@ function extractOpenApiYamlRoutes(filePath: string, text: string): RepoRoute[] {
       kind: "api",
       path: currentPath,
       handler: filePath,
-      methods: [...currentMethods].sort((left, right) => left.localeCompare(right)),
+      methods: [...currentMethods].sort((left, right) =>
+        left.localeCompare(right),
+      ),
     });
   }
 
@@ -582,7 +598,7 @@ function extractOpenApiYamlRoutes(filePath: string, text: string): RepoRoute[] {
       break;
     }
 
-    const pathMatch = line.match(/^  (\/[^:]+):\s*$/);
+    const pathMatch = line.match(/^ {2}(\/[^:]+):\s*$/);
 
     if (pathMatch) {
       flushCurrentPath();
@@ -592,7 +608,7 @@ function extractOpenApiYamlRoutes(filePath: string, text: string): RepoRoute[] {
     }
 
     const methodMatch = line.match(
-      /^    (get|post|put|patch|delete|head|options):\s*$/i,
+      /^ {4}(get|post|put|patch|delete|head|options):\s*$/i,
     );
 
     if (methodMatch && currentPath) {
@@ -604,7 +620,11 @@ function extractOpenApiYamlRoutes(filePath: string, text: string): RepoRoute[] {
   return routes;
 }
 
-function extractTopLevelKeys(filePath: string, kind: RepoFileKind, text: string): string[] {
+function extractTopLevelKeys(
+  filePath: string,
+  kind: RepoFileKind,
+  text: string,
+): string[] {
   if (kind === "json") {
     return extractJsonTopLevelKeys(text);
   }

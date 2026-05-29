@@ -9,8 +9,8 @@ import {
   type UpdateDraftBatch,
   UpdateDraftBatchSchema,
   type UpdateProvider,
-  createOpenAiByoKeyUpdateProvider,
   createLocalStubUpdateProvider,
+  createOpenAiByoKeyUpdateProvider,
   draftUpdateResult,
   parseDyknowConfig,
 } from "@dyknow/core";
@@ -263,7 +263,8 @@ export async function createUpdateDraftBatch(options: {
     totalTokens += draftResult.providerTelemetry.usage.totalTokens;
 
     if (draftResult.providerTelemetry.usage.estimatedCostUsd !== null) {
-      totalEstimatedCostUsd += draftResult.providerTelemetry.usage.estimatedCostUsd;
+      totalEstimatedCostUsd +=
+        draftResult.providerTelemetry.usage.estimatedCostUsd;
       hasEstimatedCost = true;
     }
 

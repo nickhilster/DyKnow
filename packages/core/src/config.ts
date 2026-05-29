@@ -312,11 +312,7 @@ function createBaseAllowedSources(): string[] {
   ];
 }
 
-export type InitialStackProfile =
-  | "generic"
-  | "nextjs"
-  | "express"
-  | "python";
+export type InitialStackProfile = "generic" | "nextjs" | "express" | "python";
 
 function createStackAwareAllowedSources(
   stackProfile: InitialStackProfile,

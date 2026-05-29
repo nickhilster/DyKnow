@@ -134,7 +134,11 @@ export function classifyDraftRisk(
     request.currentContent,
   ].map(normalizeText);
 
-  const RISK_ORDER: z.infer<typeof RiskLevelSchema>[] = ["low", "medium", "high"];
+  const RISK_ORDER: z.infer<typeof RiskLevelSchema>[] = [
+    "low",
+    "medium",
+    "high",
+  ];
 
   let highestRisk: z.infer<typeof RiskLevelSchema> = "low";
 
@@ -378,7 +382,10 @@ function estimateOpenAiCostUsd(options: {
   return Number((inputCost + outputCost).toFixed(6));
 }
 
-function extractUsage(responseBody: unknown, model: string): UpdateProviderUsage {
+function extractUsage(
+  responseBody: unknown,
+  model: string,
+): UpdateProviderUsage {
   if (
     !responseBody ||
     typeof responseBody !== "object" ||
@@ -391,9 +398,7 @@ function extractUsage(responseBody: unknown, model: string): UpdateProviderUsage
 
   const usageRecord = responseBody.usage as Record<string, unknown>;
   const inputTokens =
-    typeof usageRecord.input_tokens === "number"
-      ? usageRecord.input_tokens
-      : 0;
+    typeof usageRecord.input_tokens === "number" ? usageRecord.input_tokens : 0;
   const outputTokens =
     typeof usageRecord.output_tokens === "number"
       ? usageRecord.output_tokens
@@ -524,7 +529,10 @@ export function createOpenAiByoKeyUpdateProvider(options: {
 
       for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), requestTimeoutMs);
+        const timeoutId = setTimeout(
+          () => controller.abort(),
+          requestTimeoutMs,
+        );
 
         try {
           const response = await fetchImpl(
@@ -594,7 +602,9 @@ export function createOpenAiByoKeyUpdateProvider(options: {
             );
           } else {
             lastError =
-              error instanceof Error ? error : new Error("Unknown provider error.");
+              error instanceof Error
+                ? error
+                : new Error("Unknown provider error.");
           }
 
           if (attempt >= maxAttempts) {
@@ -637,9 +647,7 @@ export async function draftUpdateResult(options: {
     request,
     template,
   });
-  const providerDraft = UpdateProviderDraftSchema.parse(
-    providerResult.draft,
-  );
+  const providerDraft = UpdateProviderDraftSchema.parse(providerResult.draft);
   const providerTelemetry = UpdateProviderTelemetrySchema.parse(
     providerResult.telemetry ?? {},
   );
@@ -667,7 +675,5 @@ export async function draftUpdateProposal(options: {
 }): Promise<UpdateProposal> {
   const result = await draftUpdateResult(options);
 
-  return UpdateProposalSchema.parse(
-    result.proposal,
-  );
+  return UpdateProposalSchema.parse(result.proposal);
 }

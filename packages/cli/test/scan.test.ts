@@ -418,7 +418,7 @@ describe("dyknow scan", () => {
     await writeFile(
       join(root, "pyproject.toml"),
       [
-        '[project]',
+        "[project]",
         'dependencies = ["fastapi>=0.115", "pydantic>=2.0"]',
         "",
         "[tool.poetry.group.dev.dependencies]",
