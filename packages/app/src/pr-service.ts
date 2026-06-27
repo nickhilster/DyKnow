@@ -263,7 +263,9 @@ export async function createPrResult(options: {
       cwd: rootPath,
       inputPath: options.inputPath,
       message: options.message,
-      ...(options.allowHighRisk ? { allowHighRisk: options.allowHighRisk } : {}),
+      ...(options.allowHighRisk
+        ? { allowHighRisk: options.allowHighRisk }
+        : {}),
     });
     commitHash = commitResult.commitHash;
     publishedProposals = commitResult.publishedProposals;

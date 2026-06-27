@@ -19,11 +19,11 @@ import {
   appendAuditEntries,
   formatRelativePath,
 } from "./audit.js";
-import { DEFAULT_STATUS_OUTPUT_PATH } from "./status-service.js";
 import {
   assertDraftMatchesConfiguredPage,
   resolveWorkspacePath,
 } from "./security.js";
+import { DEFAULT_STATUS_OUTPUT_PATH } from "./status-service.js";
 
 const execFileAsync = promisify(execFile);
 

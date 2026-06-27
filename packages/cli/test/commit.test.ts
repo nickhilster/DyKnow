@@ -449,19 +449,15 @@ describe("dyknow commit", () => {
     await runGit(root, ["config", "user.email", "dyknow@example.com"]);
     await runGit(root, ["add", "README.md"]);
     await runGit(root, ["commit", "-m", "chore: initial fixture"]);
-    await writeFile(
-      join(root, DYKNOW_CONFIG_SCHEMA_FILE_NAME),
-      "{}\n",
-      "utf8",
-    );
+    await writeFile(join(root, DYKNOW_CONFIG_SCHEMA_FILE_NAME), "{}\n", "utf8");
     await writeFile(
       join(root, "docs", "dyknow", ".state", "repo-map.json"),
-      "{\n  \"files\": []\n}\n",
+      '{\n  "files": []\n}\n',
       "utf8",
     );
     await writeFile(
       join(root, "docs", "dyknow", ".state", "repo-diff.json"),
-      "{\n  \"affectedPages\": []\n}\n",
+      '{\n  "affectedPages": []\n}\n',
       "utf8",
     );
     await writeFile(
