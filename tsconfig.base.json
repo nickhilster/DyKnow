@@ -17,6 +17,7 @@
     "exactOptionalPropertyTypes": true,
     "baseUrl": ".",
     "paths": {
+      "@dyknow/app": ["packages/app/src/index.ts"],
       "@dyknow/core": ["packages/core/src/index.ts"]
     }
   }

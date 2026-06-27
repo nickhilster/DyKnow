@@ -1,12 +1,9 @@
 {
-  "name": "@dyknow/cli",
+  "name": "@dyknow/app",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "bin": {
-    "dyknow": "./dist/bin.js"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -15,7 +12,6 @@
   },
   "files": ["dist"],
   "dependencies": {
-    "@dyknow/app": "file:../app",
     "@dyknow/core": "file:../core"
   }
 }

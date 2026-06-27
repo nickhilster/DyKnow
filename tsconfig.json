@@ -2,10 +2,16 @@
   "files": [],
   "references": [
     {
+      "path": "./packages/app"
+    },
+    {
       "path": "./packages/core"
     },
     {
       "path": "./packages/cli"
+    },
+    {
+      "path": "./packages/mcp-server"
     }
     // vscode-extension has its own standalone tsconfig (bundler moduleResolution,
     // noEmit) and is built via esbuild — not included in the composite project refs.

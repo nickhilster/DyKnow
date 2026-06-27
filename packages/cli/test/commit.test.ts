@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 import {
   AuditLogEntrySchema,
   DEFAULT_UPDATE_OUTPUT_PATH,
+  DYKNOW_CONFIG_SCHEMA_FILE_NAME,
   UpdateDraftBatchSchema,
 } from "@dyknow/core";
 
@@ -406,5 +407,140 @@ describe("dyknow commit", () => {
     expect(exitCode).toBe(1);
     expect(stderr[0]).toContain("--allow-high-risk");
     expect(stderr[0]).toContain("product-overview");
+  }, 15000);
+
+  it("allows and stages DyKnow bootstrap artifacts during the first publish commit", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-commit-"));
+
+    await mkdir(join(root, "docs", "dyknow", ".state"), { recursive: true });
+    await writeFile(join(root, "README.md"), "# Fixture\n", "utf8");
+    await writeFile(
+      join(root, "dyknow.config.json"),
+      `${JSON.stringify(
+        {
+          $schema: `./${DYKNOW_CONFIG_SCHEMA_FILE_NAME}`,
+          projectName: "Fixture",
+          mode: "local-only",
+          allowedSources: ["README.md", "docs/**"],
+          ignoredSources: [],
+          pages: [
+            {
+              id: "product-overview",
+              title: "Product Overview",
+              outputPath: "docs/dyknow/product-overview.md",
+              audience: "mixed",
+              sources: ["README.md"],
+              reviewRules: {
+                approvalRequired: true,
+              },
+            },
+          ],
+          approvalRequired: true,
+          llmProvider: "local",
+          publishTargets: [],
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    await runGit(root, ["init"]);
+    await runGit(root, ["config", "user.name", "DyKnow Test"]);
+    await runGit(root, ["config", "user.email", "dyknow@example.com"]);
+    await runGit(root, ["add", "README.md"]);
+    await runGit(root, ["commit", "-m", "chore: initial fixture"]);
+    await writeFile(
+      join(root, DYKNOW_CONFIG_SCHEMA_FILE_NAME),
+      "{}\n",
+      "utf8",
+    );
+    await writeFile(
+      join(root, "docs", "dyknow", ".state", "repo-map.json"),
+      "{\n  \"files\": []\n}\n",
+      "utf8",
+    );
+    await writeFile(
+      join(root, "docs", "dyknow", ".state", "repo-diff.json"),
+      "{\n  \"affectedPages\": []\n}\n",
+      "utf8",
+    );
+    await writeFile(
+      join(root, "dyknow-progress-status.html"),
+      "<html><body>status</body></html>\n",
+      "utf8",
+    );
+    await writeFile(
+      join(root, DEFAULT_UPDATE_OUTPUT_PATH),
+      `${JSON.stringify(
+        {
+          draftedAt: "2026-05-23T18:00:00.000Z",
+          rootPath: root,
+          configPath: "dyknow.config.json",
+          repoDiffPath: "docs/dyknow/.state/repo-diff.json",
+          outputPath: DEFAULT_UPDATE_OUTPUT_PATH,
+          providerId: "local",
+          drafts: [
+            {
+              affectedPage: {
+                pageId: "product-overview",
+                outputPath: "docs/dyknow/product-overview.md",
+                matchedSourcePaths: ["README.md"],
+                reasons: ["changed-file"],
+              },
+              proposal: {
+                pageId: "product-overview",
+                summary: "Summary",
+                why: "Why",
+                sources: ["README.md"],
+                proposedText: "# Product Overview\n\nApproved content.",
+                confidence: "low",
+                risk: "medium",
+                reviewState: "Approved",
+                requiresHumanReview: true,
+              },
+            },
+          ],
+          summary: {
+            affectedPages: 1,
+            draftedProposals: 1,
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+    const exitCode = await runCli(["commit"], {
+      cwd: root,
+      stdout: (message) => {
+        stdout.push(message);
+      },
+      stderr: (message) => {
+        stderr.push(message);
+      },
+    });
+    const status = await runGit(root, ["status", "--short"]);
+    const committedFiles = await runGit(root, [
+      "show",
+      "--pretty=",
+      "--name-only",
+      "HEAD",
+    ]);
+
+    expect(exitCode).toBe(0);
+    expect(stderr).toEqual([]);
+    expect(stdout[0]).toContain("Applied 1 approved update proposal(s)");
+    expect(status).toBe("");
+    expect(committedFiles).toContain("dyknow.config.json");
+    expect(committedFiles).toContain(DYKNOW_CONFIG_SCHEMA_FILE_NAME);
+    expect(committedFiles).toContain("docs/dyknow/.state/repo-map.json");
+    expect(committedFiles).toContain("docs/dyknow/.state/repo-diff.json");
+    expect(committedFiles).toContain(DEFAULT_UPDATE_OUTPUT_PATH);
+    expect(committedFiles).toContain("docs/dyknow/.state/audit-log.jsonl");
+    expect(committedFiles).toContain("docs/dyknow/product-overview.md");
+    expect(committedFiles).toContain("dyknow-progress-status.html");
   }, 15000);
 });

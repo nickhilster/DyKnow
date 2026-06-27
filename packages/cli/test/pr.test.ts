@@ -215,7 +215,7 @@ describe("dyknow pr", () => {
       .trim()
       .split(/\r?\n/u)
       .map((line) => AuditLogEntrySchema.parse(JSON.parse(line)));
-    const body = buildPrBody({ approvedDrafts: batch.drafts, batch });
+    const body = buildPrBody({ drafts: batch.drafts, batch });
     const branchName = await runGit(root, ["branch", "--show-current"]);
     const remoteHeads = await runGit(remote, [
       "for-each-ref",
@@ -305,8 +305,207 @@ describe("dyknow pr", () => {
     });
 
     expect(exitCode).toBe(1);
-    expect(stderr[0]).toContain("Run dyknow review --approve first");
+    expect(stderr[0]).toContain(
+      "Run dyknow review --approve or dyknow commit first",
+    );
   }, 15000);
+
+  it("opens a pull request from already published proposals on the base branch", async () => {
+    const root = await mkdtemp(join(tmpdir(), "dyknow-pr-"));
+    const remote = await mkdtemp(join(tmpdir(), "dyknow-pr-remote-"));
+    const tools = await mkdtemp(join(tmpdir(), "dyknow-pr-tools-"));
+
+    await mkdir(join(root, "docs", "dyknow", ".state"), { recursive: true });
+    await writeFile(
+      join(root, "docs", "product-overview.md"),
+      "# Product Overview\n\nOld content.\n",
+      "utf8",
+    );
+    await writeFile(join(root, "README.md"), "# Fixture\n", "utf8");
+    await writeFile(
+      join(root, "dyknow.config.json"),
+      `${JSON.stringify(
+        {
+          $schema: "./dyknow.config.schema.json",
+          projectName: "Fixture",
+          mode: "local-only",
+          allowedSources: ["README.md", "docs/**"],
+          ignoredSources: [],
+          pages: [
+            {
+              id: "product-overview",
+              title: "Product Overview",
+              outputPath: "docs/product-overview.md",
+              audience: "mixed",
+              sources: ["README.md"],
+              reviewRules: {
+                approvalRequired: true,
+              },
+            },
+          ],
+          approvalRequired: true,
+          llmProvider: "local",
+          publishTargets: [],
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    await runGit(root, ["init"]);
+    await runGit(root, ["config", "user.name", "DyKnow Test"]);
+    await runGit(root, ["config", "user.email", "dyknow@example.com"]);
+    await runGit(root, ["branch", "-M", "main"]);
+    await runGit(remote, ["init", "--bare"]);
+    await runGit(root, ["remote", "add", "origin", remote]);
+    await runGit(root, ["add", "."]);
+    await runGit(root, ["commit", "-m", "chore: initial fixture"]);
+    await runGit(root, ["push", "--set-upstream", "origin", "main"]);
+    await writeFile(
+      join(root, DEFAULT_UPDATE_OUTPUT_PATH),
+      `${JSON.stringify(
+        {
+          draftedAt: "2026-05-23T18:00:00.000Z",
+          rootPath: root,
+          configPath: "dyknow.config.json",
+          repoDiffPath: "docs/dyknow/.state/repo-diff.json",
+          outputPath: DEFAULT_UPDATE_OUTPUT_PATH,
+          providerId: "local",
+          drafts: [
+            {
+              affectedPage: {
+                pageId: "product-overview",
+                outputPath: "docs/product-overview.md",
+                matchedSourcePaths: ["README.md"],
+                reasons: ["changed-file"],
+              },
+              proposal: {
+                pageId: "product-overview",
+                summary: "Summary",
+                why: "Why",
+                sources: ["README.md"],
+                proposedText: "# Product Overview\n\nApproved content.",
+                confidence: "low",
+                risk: "medium",
+                reviewState: "Published",
+                requiresHumanReview: true,
+              },
+            },
+          ],
+          summary: {
+            affectedPages: 1,
+            draftedProposals: 1,
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    await writeFile(
+      join(root, "docs", "product-overview.md"),
+      "# Product Overview\n\nApproved content.\n",
+      "utf8",
+    );
+    await writeFile(
+      join(root, "docs", "dyknow", ".state", "audit-log.jsonl"),
+      `${JSON.stringify(
+        {
+          action: "publish:commit",
+          actor: "copilot",
+          sourcesRead: ["README.md"],
+          outputsAffected: [
+            "docs/product-overview.md",
+            DEFAULT_UPDATE_OUTPUT_PATH,
+          ],
+          timestamp: "2026-05-23T18:05:00.000Z",
+          hash: "deadbeefcafebabe",
+        },
+        null,
+        0,
+      )}\n`,
+      "utf8",
+    );
+    await runGit(root, ["add", "."]);
+    await runGit(root, ["commit", "-m", "docs: apply approved dyknow updates"]);
+
+    const fakeGhCommand = await writeFakeGhCommand(tools);
+    process.env.PATH = `${tools};${originalPath}`;
+    process.env.DYKNOW_GH_COMMAND = `node ${fakeGhCommand}`;
+
+    const stdout: string[] = [];
+    const stderr: string[] = [];
+    const exitCode = await runCli(
+      [
+        "pr",
+        "--branch",
+        "dyknow/test-published-updates",
+        "--title",
+        "Apply approved DyKnow updates",
+      ],
+      {
+        cwd: root,
+        stdout: (message) => {
+          stdout.push(message);
+        },
+        stderr: (message) => {
+          stderr.push(message);
+        },
+      },
+    );
+
+    const batchText = await readFile(
+      join(root, DEFAULT_UPDATE_OUTPUT_PATH),
+      "utf8",
+    );
+    const auditText = await readFile(
+      join(root, "docs", "dyknow", ".state", "audit-log.jsonl"),
+      "utf8",
+    );
+    const runtimeAuditPath = await runGit(root, [
+      "rev-parse",
+      "--git-path",
+      "dyknow/runtime-audit-log.jsonl",
+    ]);
+    const runtimeAuditText = await readFile(
+      join(root, runtimeAuditPath),
+      "utf8",
+    );
+    const batch = UpdateDraftBatchSchema.parse(JSON.parse(batchText));
+    const auditEntries = auditText
+      .trim()
+      .split(/\r?\n/u)
+      .map((line) => AuditLogEntrySchema.parse(JSON.parse(line)));
+    const runtimeAuditEntries = runtimeAuditText
+      .trim()
+      .split(/\r?\n/u)
+      .map((line) => AuditLogEntrySchema.parse(JSON.parse(line)));
+    const branchName = await runGit(root, ["branch", "--show-current"]);
+    const remoteHeads = await runGit(remote, [
+      "for-each-ref",
+      "--format=%(refname:short)",
+      "refs/heads",
+    ]);
+    const commitSubject = await runGit(root, ["log", "-1", "--pretty=%s"]);
+    const status = await runGit(root, ["status", "--short"]);
+
+    expect(stderr).toEqual([]);
+    expect(exitCode).toBe(0);
+    expect(stdout[0]).toContain(
+      "opened PR https://github.com/example/DyKnow/pull/99",
+    );
+    expect(batch.drafts[0]?.proposal.reviewState).toBe("Published");
+    expect(auditEntries.map((entry) => entry.action)).toEqual([
+      "publish:commit",
+    ]);
+    expect(runtimeAuditEntries.map((entry) => entry.action)).toEqual([
+      "publish:pr-opened",
+    ]);
+    expect(branchName).toBe("dyknow/test-published-updates");
+    expect(remoteHeads).toContain("dyknow/test-published-updates");
+    expect(commitSubject).toBe("docs: apply approved dyknow updates");
+    expect(status).toBe("");
+  }, 30000);
 
   it("requires an explicit flag before opening a PR for high-risk approved proposals", async () => {
     const root = await mkdtemp(join(tmpdir(), "dyknow-pr-"));
