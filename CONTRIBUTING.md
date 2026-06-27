@@ -136,7 +136,7 @@ BREAKING CHANGE: RiskLevel is now exported as RiskClassification.
 
 ### CI enforcement
 
-The `commit-lint` CI job runs on every PR and lints all commits from the PR base to the PR head. The job will fail if any commit message does not conform to the format above.
+The `commit-lint` CI job runs on pull requests and lints all commits from the PR base to the PR head. The job fails if any commit message does not conform to the format above.
 
 To check your messages locally before pushing:
 
@@ -151,6 +151,10 @@ npx commitlint --from HEAD~1 --to HEAD --verbose
 - PR title should also follow the format: `type(scope): description`.
 - Body should answer: **what changed**, **why**, **which sources justify it**, **risk level** (low / medium / high).
 - **High-risk content** (pricing, legal, security, compliance, customer commitments) requires named human review before merging — even if you are an LLM with merge rights.
+
+## Security reporting
+
+If you discover a vulnerability, follow [SECURITY.md](SECURITY.md). Do not put undisclosed security details into a public issue or pull request.
 
 ## Running the lint checklist
 
@@ -169,7 +173,7 @@ The repo is now in Phase 1 with a working TypeScript workspace. For code changes
 5. Make your change in a feature branch.
 6. Write or update tests — all PRs must keep the test suite green.
 7. Follow the commit message format above.
-8. Open a PR; CI runs lint, tests, build, security scan, and commit-lint.
+8. Open a PR; CI runs dependency audit, lint, tests, build, and commit-lint.
 
 See [AGENTS.md](AGENTS.md) for the full development command reference and coding standards.
 

@@ -9,6 +9,8 @@ Format: each release gets a heading with date and a short list of changes groupe
 ## [Unreleased]
 
 ### Added
+- `LICENSE` — MIT license for the repository.
+- `CODE_OF_CONDUCT.md`, `SECURITY.md`, and `SUPPORT.md` — baseline community and security docs for the public repo.
 - `packages/cli/src/audit.ts` — shared append-only audit helper for CLI publish and review flows.
 - `packages/cli/src/log.ts` and CLI integration tests for `log`.
 - `dyknow.config.json` and `dyknow.config.schema.json` — generated repo-local config and JSON Schema for DyKnow Local.
@@ -35,6 +37,8 @@ Format: each release gets a heading with date and a short list of changes groupe
 - `docs/implementation-roadmap.md` — task-level build checklist phased 0–5 (foundations, Local CLI, VS Code, public demo, Cloud Lite, pilots).
 
 ### Changed
+- Public repo metadata now uses MIT licensing and removes private tracker links plus internal-only dogfood names from synthesized docs.
+- CI now runs commit-lint on pull requests in addition to dependency audit, lint, tests, and build.
 - `dyknow diff` now works end to end, comparing the current workspace scan to the saved repo-map snapshot, mapping deltas to affected configured pages, and writing a structured repo-diff artifact.
 - `dyknow update` now works end to end for the local stub path, reading `docs/dyknow/.state/repo-diff.json`, drafting proposals for affected configured pages, and writing `docs/dyknow/.state/update-proposals.json` without mutating page files.
 - `dyknow review` now works for the first persisted edit, external-editor edit, skip, regenerate, and review-audit slice, reading `docs/dyknow/.state/update-proposals.json`, applying approval, rejection, escalation, one edited proposal text change, one editor-driven edited proposal text change, an explicit skip action, or a targeted regenerate action while only mutating the artifact when the chosen action requires it and appending review-action audit entries to `docs/dyknow/.state/audit-log.jsonl`.
