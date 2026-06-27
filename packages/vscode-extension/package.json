@@ -16,8 +16,12 @@
   "engines": {
     "vscode": "^1.100.0"
   },
-  "categories": ["Other"],
-  "activationEvents": ["workspaceContains:dyknow.config.json"],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "workspaceContains:dyknow.config.json"
+  ],
   "contributes": {
     "viewsContainers": {
       "activitybar": [
@@ -385,7 +389,11 @@
       "properties": {
         "dyknow.llmProvider": {
           "type": "string",
-          "enum": ["anthropic", "openai", "local-stub"],
+          "enum": [
+            "anthropic",
+            "openai",
+            "local-stub"
+          ],
           "default": "anthropic",
           "description": "LLM provider used by dyknow update."
         },
@@ -421,6 +429,6 @@
   "devDependencies": {
     "@types/vscode": "^1.100.0",
     "@vscode/vsce": "^3.9.1",
-    "esbuild": "^0.27.7"
+    "esbuild": "^0.28.1"
   }
 }
