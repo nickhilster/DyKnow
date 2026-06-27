@@ -1,7 +1,7 @@
 ---
 title: Implementation Roadmap
 purpose: Task-level checklist of everything to build, phased but undated, so contributors can pick work up at any time.
-audience: internal
+audience: mixed
 sources:
   - sources/dyknow_local_whitepaper.md (sections 7, 8, 14, 15, 21)
   - roadmap.md
@@ -31,7 +31,7 @@ sources:
   - dyknow/.state/repo-map.json
   - dyknow/.state/repo-diff.json
   - dyknow/.state/update-proposals.json
-last_reviewed: 2026-05-24
+last_reviewed: 2026-06-26
 confidence: medium
 ---
 
@@ -39,7 +39,7 @@ confidence: medium
 
 This is the **build checklist**. Strategic phase context (goals, success criteria, risk framing) lives in [roadmap.md](roadmap.md); this page lists the actual tasks. Tasks are grouped by phase and by area within each phase. There are no dates — order within a phase is roughly suggested, but tasks within an area can usually proceed in parallel.
 
-The current code scaffold lives in `packages/core` and `packages/cli`. Phase 0 now has a real TypeScript/npm workspace, CI validation, shared-contract plus config-validation slices, working `dyknow init` / `dyknow scan` / `dyknow diff` / `dyknow update` commands, and the first provider-backed drafting path that writes structured update proposals for affected pages.
+The current code scaffold lives in `packages/core`, `packages/app`, `packages/cli`, `packages/mcp-server`, and `packages/vscode-extension`. Phase 0 now has a real TypeScript/npm workspace, CI validation, shared-contract plus config-validation slices, a shared Local application layer, working CLI and MCP publication flows, and focused VS Code command-wiring verification.
 
 When a task is completed, tick the box and append an `update` entry to [log.md](log.md) referencing this page.
 
@@ -76,7 +76,7 @@ These items underpin every later phase. Land them once; reuse everywhere.
 
 ## Phase 1 — DyKnow Local CLI (MVP 1)
 
-**Strategic goal:** dogfood inside Teambotics repos; maintain 5 pages reliably with human approval. See [roadmap.md § Phase 1](roadmap.md).
+**Strategic goal:** dogfood inside maintainer-owned repos; maintain 5 pages reliably with human approval. See [roadmap.md § Phase 1](roadmap.md).
 
 ### Config system
 - [x] `dyknow.config.json` JSON Schema.
@@ -129,6 +129,7 @@ These items underpin every later phase. Land them once; reuse everywhere.
 - [x] Append review-action audit entries to an append-only log artifact.
 - [x] Append publish-action audit entries for `dyknow commit` and `dyknow pr` to the same log artifact.
 - [x] `dyknow log` — pretty-print recent audit entries.
+- [x] Expose the audit/log workflow through the MCP surface with committed/runtime filtering.
 
 ### Initial maintained pages
 - [x] Product Overview generator.
@@ -139,7 +140,7 @@ These items underpin every later phase. Land them once; reuse everywhere.
 
 ### Dogfood
 - [x] Run DyKnow Local on this docs repo and verify it can maintain its own pages.
-- [ ] Run DyKnow Local on Teambotics, LTBBuddy, Code2Motion, EasyBuddy, StoryTellr, NikBot repos.
+- [ ] Run DyKnow Local on additional maintainer-owned repos and at least one public demo repo.
 - [ ] Collect findings, file issues, iterate.
 
 ### Quality bar before exiting Phase 1
@@ -186,6 +187,7 @@ These items underpin every later phase. Land them once; reuse everywhere.
 - [x] A first-time user can install the extension and complete one full approval cycle without reading docs.
   - Acceptance artifacts are generated at `docs/dyknow/.state/phase2-acceptance-report.json` and `docs/dyknow/.state/phase2-acceptance-report.md`.
   - Manual walkthrough evidence is recorded at `docs/dyknow/.state/phase2-manual-walkthrough.md` (VSIX install plus scan/diff/update/review workflow execution).
+- [x] Focused automated verification exists for extension command and publish-flow argument wiring.
 
 ---
 
@@ -267,10 +269,10 @@ These items underpin every later phase. Land them once; reuse everywhere.
 - [ ] Status page + on-call rotation basics.
 
 ### Dogfood
-- [ ] Stand up Teambotics product pages on DyKnow Hub as the first customer.
+- [ ] Stand up first-party product pages on DyKnow Hub as the first showcase.
 
 ### Quality bar
-- [ ] One real (non-Teambotics) early-design partner could be onboarded end-to-end.
+- [ ] One real early-design partner could be onboarded end-to-end.
 
 ---
 

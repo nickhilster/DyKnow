@@ -321,9 +321,9 @@ Also add `outputPath` to the local `UpdateDraft` or extend `ProposalItem` to car
 
 2. Add a `"publisher"` field to `package.json`:
    ```json
-   "publisher": "teambotics"
+  "publisher": "dyknow"
    ```
-   (This is the VS Code Marketplace publisher ID. Use `"teambotics"` — create the publisher account at https://marketplace.visualstudio.com/manage if it doesn't exist yet.)
+  (This is the VS Code Marketplace publisher ID. Use the public publisher you plan to ship under; `"dyknow"` is the neutral default in this repo.)
 
 3. Add a `.vscodeignore` file at `packages/vscode-extension/.vscodeignore`:
    ```

@@ -8,12 +8,7 @@ Pointers to the immutable source material that feeds the wiki. **Do not edit the
 |---|---|---|---|
 | DyKnow Whitepaper | [dyknow_local_whitepaper.md](dyknow_local_whitepaper.md) | Founding concept document | 2026-05-23 |
 
-## External project hubs
-
-| Platform | URL |
-|---|---|
-| Linear | https://linear.app/teambotics/project/dyknow-30e3394df921 |
-| Notion | https://www.notion.so/369cddcb424a81b2beedd1d654388b89 |
+Private planning workspaces are intentionally omitted from this public repository because they are not authoritative raw sources.
 
 ## How to add a source
 

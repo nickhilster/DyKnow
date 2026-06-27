@@ -1,16 +1,16 @@
 ---
 title: Roadmap
 purpose: Phased build path from internal prototype through commercial pilots.
-audience: internal
+audience: mixed
 sources:
   - sources/dyknow_local_whitepaper.md (sections 15, 21)
-last_reviewed: 2026-05-27
+last_reviewed: 2026-06-26
 confidence: medium
 ---
 
 ## Summary
 
-DyKnow is built in six phases (Phase 0–5), starting with foundational contracts and a CLI dogfooded inside Teambotics, progressing through a VS Code extension and public demo, and eventually reaching DyKnow Cloud Lite and commercial pilots.
+DyKnow is built in six phases (Phase 0–5), starting with foundational contracts and a CLI dogfooded inside maintainer-owned repos, progressing through a VS Code extension and public demo, and eventually reaching DyKnow Cloud Lite and commercial pilots.
 
 ## Phase 0 — Foundations
 
@@ -26,9 +26,9 @@ Core contracts, config schema, CI, confidence/risk rubric, output template set, 
 
 ## Phase 1 — DyKnow Local CLI
 
-Status: Core complete (77%) — dogfood and quality-bar closure remaining
+Status: Repo-local workflow complete and verified (85%) — broader dogfood and quality-bar closure remaining
 
-Build DyKnow Local for Teambotics repositories and product folders.
+Build DyKnow Local for maintainer-owned repositories and product folders.
 
 ### Implemented commands
 
@@ -37,16 +37,22 @@ Build DyKnow Local for Teambotics repositories and product folders.
 - `dyknow diff` — structured delta and affected-page mapping
 - `dyknow update` — BYO OpenAI + local stub provider, retry/timeout, cost telemetry
 - `dyknow review` — interactive walkthrough: approve, reject, edit, skip, regenerate, external editor
+- `dyknow log` — merged committed + runtime audit viewer with source and action filters
 - `dyknow commit` — apply approved proposals with high-risk guard
 - `dyknow pr` — branch + GitHub PR via `gh` with confirmed publish audit
-- `dyknow log` — merged committed + runtime audit viewer with source and action filters
 - `dyknow status` — HTML repo status report with live workspace details
+
+### Repo-verified local state
+
+- CLI workflow is green in this repo under `build`, `test`, `lint`, and `typecheck`
+- MCP now covers read, review, log, commit, and PR publication flows through the shared app layer
+- the VS Code extension now has focused automated verification for command and publish-flow argument wiring in addition to its existing manual acceptance evidence
 
 ### Remaining
 
-- Broader dogfood across Teambotics repos (TEA-354)
-- >90% precision change-detection quality bar on labeled test set (TEA-355)
-- End-to-end cycle on each dogfood repo without manual fixup (TEA-356)
+- Broader dogfood across maintainer-owned repos
+- >90% precision change-detection quality bar on a labeled test set
+- End-to-end cycle on each dogfood repo without manual fixup
 
 ### Success criteria
 
@@ -95,9 +101,9 @@ Demo sandbox live. CLI pass executed and validated. Recording runbook and VS Cod
 
 ### Remaining
 
-- TEA-379: Record CLI footage against `phase3-demo-staged-changes` using the validated runbook
-- TEA-380: Record VS Code extension footage using same source-change set
-- TEA-381: Produce messaging assets (landing page, pitch deck, one-pager PDF, demo repo README polish)
+- Record CLI footage against `phase3-demo-staged-changes` using the validated runbook
+- Record VS Code extension footage using same source-change set
+- Produce messaging assets (landing page, pitch deck, one-pager PDF, demo repo README polish)
 
 ## Phase 4 — DyKnow Cloud Lite
 
@@ -111,7 +117,7 @@ Status: Not started — planned after demo assets stabilize.
 - DyKnow Hub publishing path
 - 5–10 Dynamic Knowledge Pages
 
-Use Teambotics product pages as the first showcase.
+Use first-party product pages or the public demo property as the first showcase.
 
 ## Phase 5 — Commercial Pilots
 

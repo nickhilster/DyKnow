@@ -4,7 +4,7 @@ purpose: Explain what DyKnow is, the problem it solves, and how the two product 
 audience: mixed
 sources:
   - sources/dyknow_local_whitepaper.md (sections 1–4, 19, 22)
-last_reviewed: 2026-05-23
+last_reviewed: 2026-05-28
 confidence: high
 ---
 
@@ -41,7 +41,7 @@ The two surfaces share conceptual logic — source maps, page definitions, updat
 
 - **Cloud**: SaaS startups, agencies managing client sites, AI product companies, developer tool companies, support-heavy services, education platforms.
 - **Local**: AI-native startups, dev-tool companies, OSS maintainers, teams using AI coding agents, security-sensitive teams, internal platform teams.
-- **Internal dogfood**: Teambotics itself (Teambotics, LTBBuddy, Code2Motion, EasyBuddy, StoryTellr, NikBot).
+- **Early dogfood**: maintainer-owned repos and first-party product surfaces before wider pilots.
 
 ## Why now
 

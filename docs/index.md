@@ -13,7 +13,8 @@ Catalog of every Dynamic Knowledge Page in this wiki. Keep entries to one line. 
 ## Technical
 
 - [Architecture](architecture.md) — components of DyKnow Cloud, DyKnow Local, and the shared engine.
-- [Setup Guide](setup-guide.md) — planned DyKnow Local CLI workflow.
+- [MCP Server Plan](mcp-server-plan.md) — pivot rationale, extraction record, shipped MCP tools, and remaining MCP questions.
+- [Setup Guide](setup-guide.md) — current DyKnow Local CLI workflow from init through PR.
 
 ## Trust and governance
 
