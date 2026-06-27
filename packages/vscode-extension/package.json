@@ -4,8 +4,8 @@
   "description": "Source-aligned knowledge maintenance — scan, detect drift, and apply approved updates from inside VS Code.",
   "version": "0.1.0",
   "private": true,
-  "license": "UNLICENSED",
-  "publisher": "teambotics",
+  "license": "MIT",
+  "publisher": "dyknow",
   "repository": {
     "type": "git",
     "url": "https://github.com/nickhilster/DyKnow.git",

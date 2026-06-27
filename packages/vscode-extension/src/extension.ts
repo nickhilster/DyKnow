@@ -7,6 +7,17 @@ import { promisify } from "node:util";
 
 import * as vscode from "vscode";
 
+import {
+  buildAllPendingReviewArgs,
+  buildCommitArgs,
+  buildEditProposalArgs,
+  buildOpenPrArgs,
+  buildReviewActionArgs,
+  buildSelectedReviewArgs,
+  buildUpdateArgs,
+  createDefaultPrBranchName,
+} from "./commands.js";
+
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -1306,7 +1317,7 @@ export function activate(context: vscode.ExtensionContext): void {
         provider === "anthropic"
           ? config.get<string>("anthropicModel", "claude-sonnet-4-6")
           : config.get<string>("openaiModel", "gpt-4o");
-      const args = ["update", "--provider", provider, "--model", model];
+      const args = buildUpdateArgs(provider, model);
 
       try {
         await vscode.window.withProgress(
@@ -1336,12 +1347,10 @@ export function activate(context: vscode.ExtensionContext): void {
         if (!cwd || !item) return;
 
         try {
-          await runCli(cwd, [
-            "review",
-            "--approve",
-            "--page",
-            item.draft.proposal.pageId,
-          ]);
+          await runCli(
+            cwd,
+            buildReviewActionArgs("approve", item.draft.proposal.pageId),
+          );
 
           refreshViews();
         } catch (err) {
@@ -1359,12 +1368,10 @@ export function activate(context: vscode.ExtensionContext): void {
         if (!cwd || !item) return;
 
         try {
-          await runCli(cwd, [
-            "review",
-            "--skip",
-            "--page",
-            item.draft.proposal.pageId,
-          ]);
+          await runCli(
+            cwd,
+            buildReviewActionArgs("skip", item.draft.proposal.pageId),
+          );
 
           refreshViews();
         } catch (err) {
@@ -1382,12 +1389,10 @@ export function activate(context: vscode.ExtensionContext): void {
         if (!cwd || !item) return;
 
         try {
-          await runCli(cwd, [
-            "review",
-            "--reject",
-            "--page",
-            item.draft.proposal.pageId,
-          ]);
+          await runCli(
+            cwd,
+            buildReviewActionArgs("reject", item.draft.proposal.pageId),
+          );
 
           refreshViews();
         } catch (err) {
@@ -1412,12 +1417,10 @@ export function activate(context: vscode.ExtensionContext): void {
               cancellable: false,
             },
             async () =>
-              runCli(cwd, [
-                "review",
-                "--regenerate",
-                "--page",
-                item.draft.proposal.pageId,
-              ]),
+              runCli(
+                cwd,
+                buildReviewActionArgs("regenerate", item.draft.proposal.pageId),
+              ),
           );
 
           refreshViews();
@@ -1469,14 +1472,10 @@ export function activate(context: vscode.ExtensionContext): void {
               cancellable: false,
             },
             async () =>
-              runCli(cwd, [
-                "review",
-                "--edit",
-                "--page",
-                item.draft.proposal.pageId,
-                "--text",
-                editedText,
-              ]),
+              runCli(
+                cwd,
+                buildEditProposalArgs(item.draft.proposal.pageId, editedText),
+              ),
           );
 
           refreshViews();
@@ -1616,11 +1615,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
       getOutput().show(true);
       const config = vscode.workspace.getConfiguration("dyknow");
-      const args = ["commit"];
-
-      if (config.get<boolean>("allowHighRisk", false)) {
-        args.push("--allow-high-risk");
-      }
+      const args = buildCommitArgs(config.get<boolean>("allowHighRisk", false));
 
       try {
         await vscode.window.withProgress(
@@ -1667,7 +1662,7 @@ export function activate(context: vscode.ExtensionContext): void {
             title: "DyKnow: Regenerating pending proposals...",
             cancellable: false,
           },
-          async () => runCli(cwd, ["review", "--regenerate", "--all"]),
+          async () => runCli(cwd, buildAllPendingReviewArgs("regenerate")),
         );
 
         refreshViews();
@@ -1719,11 +1714,7 @@ export function activate(context: vscode.ExtensionContext): void {
           return;
         }
 
-        const args = ["review", "--regenerate"];
-
-        for (const pageId of pageIds) {
-          args.push("--page", pageId);
-        }
+        const args = buildSelectedReviewArgs("regenerate", pageIds);
 
         getOutput().show(true);
 
@@ -1777,7 +1768,7 @@ export function activate(context: vscode.ExtensionContext): void {
             title: "DyKnow: Rejecting pending proposals...",
             cancellable: false,
           },
-          async () => runCli(cwd, ["review", "--reject", "--all"]),
+          async () => runCli(cwd, buildAllPendingReviewArgs("reject")),
         );
 
         refreshViews();
@@ -1827,11 +1818,7 @@ export function activate(context: vscode.ExtensionContext): void {
           return;
         }
 
-        const args = ["review", "--reject"];
-
-        for (const pageId of pageIds) {
-          args.push("--page", pageId);
-        }
+        const args = buildSelectedReviewArgs("reject", pageIds);
 
         getOutput().show(true);
 
@@ -1866,7 +1853,7 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
       }
 
-      const defaultBranch = `dyknow/updates-${new Date().toISOString().slice(0, 10)}`;
+      const defaultBranch = createDefaultPrBranchName();
       const branch = await vscode.window.showInputBox({
         prompt: "Branch name for the DyKnow PR",
         placeHolder: defaultBranch,
@@ -1884,7 +1871,7 @@ export function activate(context: vscode.ExtensionContext): void {
             title: "DyKnow: Opening PR…",
             cancellable: false,
           },
-          async () => runCli(cwd, ["pr", "--branch", branch]),
+          async () => runCli(cwd, buildOpenPrArgs(branch)),
         );
 
         void vscode.window.showInformationMessage(
