@@ -35,6 +35,7 @@ export type PrResult = {
   branch: string;
   commitHash: string;
   publishedProposals: number;
+  publishMode: "approved" | "published";
   url: string;
 };
 
@@ -317,6 +318,7 @@ export async function createPrResult(options: {
     branch,
     commitHash,
     publishedProposals,
+    publishMode: draftState === "Approved" ? "approved" : "published",
     url,
   };
 }

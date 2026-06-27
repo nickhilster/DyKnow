@@ -230,6 +230,7 @@ describe("dyknow pr", () => {
     expect(stdout[0]).toContain(
       "opened PR https://github.com/example/DyKnow/pull/99",
     );
+    expect(stdout[0]).toContain("Applied 1 approved update proposal(s)");
     expect(pageText).toContain("Approved content.");
     expect(batch.drafts[0]?.proposal.reviewState).toBe("Published");
     expect(auditEntries).toHaveLength(2);
@@ -494,6 +495,7 @@ describe("dyknow pr", () => {
     expect(stdout[0]).toContain(
       "opened PR https://github.com/example/DyKnow/pull/99",
     );
+    expect(stdout[0]).toContain("Reused published DyKnow commit");
     expect(batch.drafts[0]?.proposal.reviewState).toBe("Published");
     expect(auditEntries.map((entry) => entry.action)).toEqual([
       "publish:commit",

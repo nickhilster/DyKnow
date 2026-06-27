@@ -726,8 +726,15 @@ async function handlePr(args: readonly string[], context?: CliContext) {
       ...(options.branch ? { branch: options.branch } : {}),
     });
 
+    if (result.publishMode === "approved") {
+      stdout(
+        `Applied ${result.publishedProposals} approved update proposal(s), pushed branch ${result.branch}, and opened PR ${result.url}.`,
+      );
+      return 0;
+    }
+
     stdout(
-      `Applied ${result.publishedProposals} approved update proposal(s), pushed branch ${result.branch}, and opened PR ${result.url}.`,
+      `Reused published DyKnow commit ${result.commitHash}, pushed branch ${result.branch}, and opened PR ${result.url}.`,
     );
     return 0;
   } catch (error) {
