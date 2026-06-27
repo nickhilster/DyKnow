@@ -5,9 +5,11 @@
 DyKnow keeps a company's most important knowledge pages aligned with the latest source material — code, docs, websites, support tickets, product specs. It exists in two complementary forms:
 
 - **DyKnow Cloud** — hosted system that monitors approved external/internal sources.
-- **DyKnow Local** — repo-native CLI / VS Code extension that runs inside the customer's environment.
+- **DyKnow Local** — repo-native CLI, MCP server, and optional VS Code extension that runs inside the customer's environment.
 
-This repository contains the working concept, whitepaper, documentation system, and the initial TypeScript workspace for DyKnow Local's shared engine plus the first implemented `init`, `scan`, `diff`, `update`, `review`, `log`, `status`, `commit`, and `pr` CLI slices.
+This repository contains the working concept, whitepaper, documentation system, and the initial TypeScript workspace for DyKnow Local's shared engine, shared app layer, CLI, and MCP server.
+
+DyKnow is released under the MIT license. Private planning workspaces and internal-only repo names are intentionally excluded from the synthesized docs in this public repository.
 
 ## Repo layout
 
@@ -28,8 +30,11 @@ This repository contains the working concept, whitepaper, documentation system, 
 ├── CHANGELOG.md                    Human-facing release notes.
 ├── package.json                    npm workspace root.
 ├── packages/
+│   ├── app/                        Shared DyKnow Local application services reused across surfaces.
 │   ├── cli/                        Bootstrap DyKnow Local CLI package.
-│   └── core/                       Shared engine contracts and config validation.
+│   ├── core/                       Shared engine contracts and config validation.
+│   ├── mcp-server/                 Stdio MCP server for agent-native IDE and desktop clients.
+│   └── vscode-extension/           Optional VS Code client surface.
 ├── tsconfig.base.json              Shared TypeScript compiler settings.
 └── docs/
     ├── dyknow/
@@ -66,7 +71,10 @@ The current implementation slice uses:
 
 - **TypeScript + npm workspaces** for shared code across DyKnow Local surfaces.
 - **`packages/core`** for JSON-serializable shared contracts, config validation, repo-map schemas, repo-diff schemas, and provider-backed update drafting.
+- **`packages/app`** for reusable DyKnow Local orchestration shared by the CLI and MCP server, including audit/log reporting.
 - **`packages/cli`** for the DyKnow Local CLI package with working `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow log`, `dyknow status`, `dyknow commit`, and `dyknow pr` commands.
+- **`packages/mcp-server`** for the stdio MCP surface, now covering `scan`, `diff`, `update`, `list_proposals`, `get_proposal`, `review_proposal`, `log`, `status`, `commit`, and `open_pr`.
+- **`packages/vscode-extension`** for the optional editor client, now backed by focused automated tests for CLI command wiring helpers.
 - **Biome + Vitest + GitHub Actions** for formatting, linting, tests, and CI.
 
 ## Quick starts
@@ -86,3 +94,14 @@ The current implementation slice uses:
 - Generating an HTML status snapshot: run `node packages/cli/dist/bin.js status` after a build. The current implementation writes `dyknow-progress-status.html` from live git metadata plus the current repo diff, update proposal, and audit artifacts.
 - Applying approved proposals in one git commit: run `node packages/cli/dist/bin.js commit` after `dyknow review --approve ...`. The current implementation applies only `Approved` proposals, marks them `Published`, updates page files, creates one git commit when the worktree is otherwise clean, appends publish-action audit entries to `docs/dyknow/.state/audit-log.jsonl` as part of that committed flow, and requires `--allow-high-risk` before it will publish any approved proposal whose risk level is `high`.
 - Creating a reviewable pull request for approved proposals: run `node packages/cli/dist/bin.js pr --branch <name>` from `main` after `dyknow review --approve ...`. The current implementation creates a new branch, reuses the approved-proposal apply-and-commit flow, pushes the branch to `origin`, opens a GitHub pull request with a page/risk/source summary table, records a `publish:pr-prepared` audit entry in the committed audit trail before the external PR creation call, appends a confirmed `publish:pr-opened` entry to the git-local runtime audit file after the external PR-open call succeeds, and requires `--allow-high-risk` before it will publish approved high-risk proposals.
+
+## Community
+
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution and review workflow.
+- See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for collaboration expectations.
+- See [SECURITY.md](SECURITY.md) for vulnerability reporting.
+- See [SUPPORT.md](SUPPORT.md) for support paths.
+
+## License
+
+This repository is available under the [MIT License](LICENSE).

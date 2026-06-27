@@ -99,5 +99,5 @@ High-risk claims require a human reviewer. Mark them clearly in the diff.
 
 - DyKnow's founding source of truth is [docs/sources/dyknow_local_whitepaper.md](docs/sources/dyknow_local_whitepaper.md). All product claims should trace back to it until additional sources are added.
 - DyKnow has two product surfaces: **Cloud** and **Local**. Most pages need to address both unless explicitly scoped.
-- The internal first customer is Teambotics. Examples and dogfooding should reference it where useful.
+- Prefer generic public examples in synthesized docs. Do not copy private workspace links or internal customer or repo names into public-facing pages unless they are intentionally approved for publication.
 - See [AGENTS.md](AGENTS.md) for general agent context (project purpose, conventions, do-not-touch).

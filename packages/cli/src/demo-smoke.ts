@@ -1,14 +1,11 @@
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 
-import {
-  DEFAULT_REPO_MAP_OUTPUT_PATH,
-  parseDyknowConfig,
-} from "@dyknow/core";
+import { DEFAULT_REPO_MAP_OUTPUT_PATH, parseDyknowConfig } from "@dyknow/core";
 
 import { createRepoDiff } from "./diff.js";
-import { resolveWorkspacePath } from "./security.js";
 import { scanWorkspace } from "./scan.js";
+import { resolveWorkspacePath } from "./security.js";
 import { createUpdateDraftBatch } from "./update.js";
 
 export type DemoSmokeOptions = {
@@ -224,7 +221,11 @@ async function runDemoSmokePipeline(options: {
     rootPath: options.workspacePath,
   });
   await mkdir(dirname(repoMapOutputPath), { recursive: true });
-  await writeFile(repoMapOutputPath, `${JSON.stringify(repoMap, null, 2)}\n`, "utf8");
+  await writeFile(
+    repoMapOutputPath,
+    `${JSON.stringify(repoMap, null, 2)}\n`,
+    "utf8",
+  );
 
   await createRepoDiff({
     cwd: options.workspacePath,
@@ -242,7 +243,11 @@ async function runDemoSmokePipeline(options: {
 
 export async function runDemoSmoke(
   args: readonly string[],
-  context?: { cwd?: string; stdout?: (message: string) => void; stderr?: (message: string) => void },
+  context?: {
+    cwd?: string;
+    stdout?: (message: string) => void;
+    stderr?: (message: string) => void;
+  },
 ): Promise<number> {
   const cwd = context?.cwd ?? process.cwd();
   const stdout = context?.stdout ?? defaultWriter;
@@ -284,7 +289,9 @@ export async function runDemoSmoke(
     await assertFileExists(configPath, "DyKnow config");
 
     for (const document of requiredDocuments) {
-      const indexLinkPath = toPortablePath(relative(dirname(indexPath), document.filePath));
+      const indexLinkPath = toPortablePath(
+        relative(dirname(indexPath), document.filePath),
+      );
       await assertFileContains({
         filePath: indexPath,
         label: `${document.linkText} link in docs/index.md`,
@@ -295,11 +302,15 @@ export async function runDemoSmoke(
     }
 
     for (const document of requiredDocuments) {
-      const logEntryPath = toPortablePath(relative(workspacePath, document.filePath));
+      const logEntryPath = toPortablePath(
+        relative(workspacePath, document.filePath),
+      );
       await assertFileContains({
         filePath: logPath,
         label: `${document.linkText} create log entry`,
-        pattern: new RegExp(`\\| create \\| ${escapeForRegex(logEntryPath)} \\|`),
+        pattern: new RegExp(
+          `\\| create \\| ${escapeForRegex(logEntryPath)} \\|`,
+        ),
       });
     }
 
@@ -308,10 +319,14 @@ export async function runDemoSmoke(
       workspacePath,
     });
 
-    stdout(`Phase 3 smoke path passed for ${requiredDocuments.length} required Phase 3 docs.`);
+    stdout(
+      `Phase 3 smoke path passed for ${requiredDocuments.length} required Phase 3 docs.`,
+    );
     return 0;
   } catch (error) {
-    stderr(error instanceof Error ? error.message : "Unknown demo smoke error.");
+    stderr(
+      error instanceof Error ? error.message : "Unknown demo smoke error.",
+    );
     return 1;
   }
 }

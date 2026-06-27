@@ -1,6 +1,6 @@
 ---
 title: Setup Guide
-purpose: Walk through the planned DyKnow Local CLI workflow from init to PR.
+purpose: Walk through the current DyKnow Local CLI workflow from init to PR.
 audience: external
 sources:
   - sources/dyknow_local_whitepaper.md (section 8)
@@ -10,27 +10,28 @@ sources:
   - dyknow/.state/repo-diff.json
   - dyknow/.state/update-proposals.json
   - ../packages/cli/src/audit.ts
-  - ../packages/cli/src/commit.ts
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
   - ../packages/cli/src/log.ts
-  - ../packages/cli/src/pr.ts
   - ../packages/cli/src/review.ts
   - ../packages/cli/src/scan.ts
   - ../packages/cli/src/security.ts
   - ../packages/cli/src/status.ts
   - ../packages/cli/src/update.ts
+  - ../packages/app/src/review-service.ts
+  - ../packages/app/src/commit-service.ts
+  - ../packages/app/src/pr-service.ts
   - ../packages/core/src/repo-diff.ts
   - ../packages/core/src/config.ts
   - ../packages/core/src/update-runner.ts
   - dyknow/.state/repo-map.json
-last_reviewed: 2026-05-24
+last_reviewed: 2026-06-26
 confidence: medium
 ---
 
 ## Summary
 
-This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow log`, `dyknow status`, `dyknow commit`, and the first `dyknow pr` publishing path are now implemented in this repo, while richer review editing and sync flows remain planned.
+This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow log`, `dyknow status`, `dyknow commit`, and `dyknow pr` are now implemented in this repo, while richer sync and downstream publishing flows remain planned.
 
 ## Prerequisites
 

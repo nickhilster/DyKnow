@@ -64,7 +64,8 @@ async function run(command, args, cwd) {
 
 function checkManifest(pkg) {
   const views =
-    pkg?.contributes?.views?.dyknow?.map((view) => view.id).filter(Boolean) ?? [];
+    pkg?.contributes?.views?.dyknow?.map((view) => view.id).filter(Boolean) ??
+    [];
   const commands =
     pkg?.contributes?.commands
       ?.map((command) => command.command)
@@ -92,19 +93,7 @@ function toMarkdown(report) {
   const checks = report.checks;
   const pass = report.overallPass ? "PASS" : "FAIL";
 
-  return `# Phase 2 Acceptance Report\n\n` +
-    `- Generated: ${report.generatedAt}\n` +
-    `- Overall: ${pass}\n` +
-    `- Quality bar status: ${report.qualityBarStatus}\n\n` +
-    `## Checks\n` +
-    `- Manifest views complete: ${checks.manifest.missingViews.length === 0}\n` +
-    `- Manifest commands complete: ${checks.manifest.missingCommands.length === 0}\n` +
-    `- Telemetry default is opt-in false: ${checks.manifest.telemetryOptInDefaultFalse}\n` +
-    `- Extension build: ${checks.build.ok}\n` +
-    `- Extension package: ${checks.package.ok}\n` +
-    `- VSIX exists: ${checks.vsixExists}\n\n` +
-    `## Remaining to fully close quality bar\n` +
-    `- Manual first-time-user walkthrough on a clean workspace (install extension, run scan/diff/update, review with inline actions, commit or open PR).\n`;
+  return `# Phase 2 Acceptance Report\n\n- Generated: ${report.generatedAt}\n- Overall: ${pass}\n- Quality bar status: ${report.qualityBarStatus}\n\n## Checks\n- Manifest views complete: ${checks.manifest.missingViews.length === 0}\n- Manifest commands complete: ${checks.manifest.missingCommands.length === 0}\n- Telemetry default is opt-in false: ${checks.manifest.telemetryOptInDefaultFalse}\n- Extension build: ${checks.build.ok}\n- Extension package: ${checks.package.ok}\n- VSIX exists: ${checks.vsixExists}\n\n## Remaining to fully close quality bar\n- Manual first-time-user walkthrough on a clean workspace (install extension, run scan/diff/update, review with inline actions, commit or open PR).\n`;
 }
 
 async function main() {
@@ -118,9 +107,7 @@ async function main() {
   try {
     buildResult.output = await run(
       process.execPath,
-      [
-        resolve(extensionRoot, "esbuild.mjs"),
-      ],
+      [resolve(extensionRoot, "esbuild.mjs")],
       extensionRoot,
     );
     buildResult.ok = true;
@@ -140,7 +127,8 @@ async function main() {
     );
     packageResult.ok = true;
   } catch (error) {
-    packageResult.error = error instanceof Error ? error.message : String(error);
+    packageResult.error =
+      error instanceof Error ? error.message : String(error);
   }
 
   let vsixExists = false;
@@ -177,7 +165,11 @@ async function main() {
   };
 
   await mkdir(reportDir, { recursive: true });
-  await writeFile(jsonReportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+  await writeFile(
+    jsonReportPath,
+    `${JSON.stringify(report, null, 2)}\n`,
+    "utf8",
+  );
   await writeFile(mdReportPath, `${toMarkdown(report)}\n`, "utf8");
 
   if (!overallPass) {

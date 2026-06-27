@@ -252,7 +252,8 @@ export const RISK_CLASSIFIER_RULES: readonly RiskClassifierRule[] = [
  */
 export const CONFIDENCE_SCORING_RUBRIC = {
   high: {
-    description: "3 or more matched source paths, or strong primary-source overlap.",
+    description:
+      "3 or more matched source paths, or strong primary-source overlap.",
     minMatchedSources: 3,
   },
   medium: {
@@ -260,7 +261,8 @@ export const CONFIDENCE_SCORING_RUBRIC = {
     minMatchedSources: 2,
   },
   low: {
-    description: "Single matched source path, no existing content to validate against.",
+    description:
+      "Single matched source path, no existing content to validate against.",
     minMatchedSources: 1,
   },
 } as const satisfies Record<

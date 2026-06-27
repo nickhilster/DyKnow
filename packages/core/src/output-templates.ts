@@ -309,12 +309,14 @@ function renderRagSourcePackTemplate(options: PageScaffoldOptions): string {
   const chunks = [
     {
       chunkId: `${options.pageId}:summary`,
-      content: "<!-- dyknow:fill summary chunk — one paragraph, self-contained -->",
+      content:
+        "<!-- dyknow:fill summary chunk — one paragraph, self-contained -->",
       attribution: { ...baseAttribution, section: "summary" },
     },
     {
       chunkId: `${options.pageId}:body-1`,
-      content: "<!-- dyknow:fill first body chunk — one topic, self-contained -->",
+      content:
+        "<!-- dyknow:fill first body chunk — one topic, self-contained -->",
       attribution: { ...baseAttribution, section: "body-1" },
     },
     {

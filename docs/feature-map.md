@@ -8,19 +8,21 @@ sources:
   - dyknow/.state/repo-diff.json
   - dyknow/.state/update-proposals.json
   - ../packages/cli/src/audit.ts
-  - ../packages/cli/src/commit.ts
   - ../packages/cli/src/diff.ts
   - ../packages/cli/src/index.ts
   - ../packages/cli/src/log.ts
-  - ../packages/cli/src/pr.ts
   - ../packages/cli/src/review.ts
   - ../packages/cli/src/scan.ts
   - ../packages/cli/src/status.ts
   - ../packages/cli/src/update.ts
+  - ../packages/app/src/review-service.ts
+  - ../packages/app/src/commit-service.ts
+  - ../packages/app/src/pr-service.ts
+  - ../packages/mcp-server/src/server.ts
   - ../packages/core/src/repo-diff.ts
   - ../packages/core/src/update-runner.ts
   - dyknow/.state/repo-map.json
-last_reviewed: 2026-05-24
+last_reviewed: 2026-06-26
 confidence: high
 ---
 
@@ -84,7 +86,24 @@ READMEs, `docs/` folders, source route files, API schemas, OpenAPI specs, packag
 
 Full workflow detail: [Setup Guide](setup-guide.md).
 
+### MCP server tools
+
+| Tool | Status | Purpose |
+|---|---|---|
+| `dyknow_scan` | Implemented | Run the repo scan flow and return structured scan results plus the artifact path. |
+| `dyknow_diff` | Implemented | Compare the workspace against the saved repo-map snapshot and return affected-page data. |
+| `dyknow_update` | Implemented | Draft update proposals from the current repo diff and persist the update-proposals artifact. |
+| `dyknow_list_proposals` | Implemented | Return a filtered lightweight list of proposal metadata without forcing the client to read the JSON artifact directly. |
+| `dyknow_get_proposal` | Implemented | Return one proposal with its proposed text, why, risk, confidence, and source evidence. |
+| `dyknow_review_proposal` | Implemented | Persist one review mutation (`Approved`, `Rejected`, `Escalated`, `Edited`, `Skipped`, or `Regenerated`) for a targeted page. |
+| `dyknow_log` | Implemented | Return the merged committed/runtime audit report with `source` and `action` filtering through the shared log service used by the CLI. |
+| `dyknow_status` | Implemented | Generate and return the current status report path plus structured repo status details. |
+| `dyknow_commit` | Implemented | Apply approved proposals and create one guarded git commit through the same shared publish path used by the CLI. |
+| `dyknow_open_pr` | Implemented | Create a review branch, apply approved proposals, push it, and open a GitHub PR through the same guarded publish path used by the CLI. |
+
 ### VS Code extension surfaces
+
+The extension now also has focused automated verification for CLI command wiring and publish-flow helper construction, in addition to the existing acceptance artifacts and manual walkthrough evidence.
 
 - **DyKnow Map** — how DyKnow understands the project (areas, routes, features, APIs, docs, agent files).
 - **Changed Knowledge** — what changed since the last scan.

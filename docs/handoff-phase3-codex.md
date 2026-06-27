@@ -17,7 +17,7 @@ sources:
   - https://github.com/nickhilster/dyknow-demo-app
   - https://github.com/nickhilster/dyknow-demo-app/tree/phase3-demo-staged-changes
   - AGENTS.md
-last_reviewed: 2026-05-27
+last_reviewed: 2026-05-28
 confidence: high
 ---
 
@@ -25,9 +25,8 @@ Phase 3 planning is now far enough along that the next useful work can move from
 
 ## Current state
 
-- Active branch: `nickhilster/tea-367-phase-3-kickoff-select-demo-repo-and-script-reproducible`
-- Active PR: `#45` — `TEA-367: kick off Phase 3 demo prep`
-- Linear issue: `TEA-367`
+- Active branch: `nickhilster/phase3-kickoff-select-demo-repo-and-script-reproducible`
+- Active PR: `#45` — `kick off Phase 3 demo prep`
 - Demo repo: `https://github.com/nickhilster/dyknow-demo-app`
 - Baseline tag + commit: `phase3-demo-baseline` at `fee6467f40dc92904ae706f2fdb40446436ea5ea`
 - Staged drift branch + commit: `phase3-demo-staged-changes` at `361c59b`

@@ -58,9 +58,7 @@ describe("output template registry", () => {
   });
 
   it("getOutputTemplate returns undefined for an unregistered type", () => {
-    expect(
-      getOutputTemplate("not-a-real-type" as never),
-    ).toBeUndefined();
+    expect(getOutputTemplate("not-a-real-type" as never)).toBeUndefined();
   });
 
   it("scaffoldPage throws for an unregistered type", () => {
@@ -240,7 +238,10 @@ describe("rag-source-pack template", () => {
     expect(lines.length).toBeGreaterThan(0);
 
     for (const line of lines) {
-      expect(() => JSON.parse(line), `Line is not valid JSON: ${line}`).not.toThrow();
+      expect(
+        () => JSON.parse(line),
+        `Line is not valid JSON: ${line}`,
+      ).not.toThrow();
     }
   });
 

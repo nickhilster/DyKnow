@@ -82,7 +82,8 @@ async function writePhase3SmokeFixture(
     join(root, "docs", "log.md"),
     [
       ...phase3FixtureDocuments.map(
-        (document) => `2026-05-25 | create | ${document.path} | Fixture log entry.`,
+        (document) =>
+          `2026-05-25 | create | ${document.path} | Fixture log entry.`,
       ),
       "",
     ].join("\n"),
@@ -120,7 +121,9 @@ describe("dyknow demo-smoke", () => {
 
     expect(exitCode).toBe(0);
     expect(stderr).toEqual([]);
-    expect(stdout.at(-1)).toBe("Phase 3 smoke path passed for 7 required Phase 3 docs.");
+    expect(stdout.at(-1)).toBe(
+      "Phase 3 smoke path passed for 7 required Phase 3 docs.",
+    );
 
     const repoMap = await readFile(
       join(root, "docs", "dyknow", ".state", "repo-map.json"),

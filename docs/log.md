@@ -32,10 +32,10 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-23 | update | docs/index.md | Added lint, CONTRIBUTING, CHANGELOG to Wiki operations section.
 2026-05-23 | create | docs/implementation-roadmap.md | Task-level checklist across Phases 0–5 (foundations, Local CLI, VS Code, demo, Cloud Lite, pilots).
 2026-05-23 | update | docs/index.md | Linked Implementation Roadmap under Product.
-2026-05-23 | create | linear | Created DyKnow project in Linear (Teambotics team) — https://linear.app/teambotics/project/dyknow-30e3394df921
-2026-05-23 | create | notion | Created DyKnow Hub in Notion under PROJECTS INITIATED (SOFTWARE) — https://www.notion.so/369cddcb424a81b2beedd1d654388b89
-2026-05-23 | create | linear | Added Phase 0–5 milestones to DyKnow Linear project.
-2026-05-23 | update | docs/sources/README.md | Added External project hubs table (Linear + Notion URLs).
+2026-05-23 | create | project-tracker | Created the private project tracker for DyKnow.
+2026-05-23 | create | planning-hub | Created the private planning hub for DyKnow.
+2026-05-23 | create | project-tracker | Added Phase 0–5 milestones to the private project tracker.
+2026-05-23 | update | docs/sources/README.md | Added a private project-hub note for internal planning context.
 2026-05-23 | update | repo bootstrap | Added TypeScript workspace, shared contracts, config validation, tests, and CI scaffold.
 2026-05-23 | update | AGENTS.md | Reflected current package layout, build commands, and coding conventions.
 2026-05-23 | update | docs/implementation-roadmap.md | Marked completed Phase 0 scaffolding and config-validation tasks.
@@ -258,13 +258,13 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-24 | create | commitlint.config.js | Added conventional commit config extending @commitlint/config-conventional; added wiki, scan, infra custom types; header-max-length set to 120.
 2026-05-24 | update | .github/workflows/ci.yml | Added commit-lint job (PR-only) that runs commitlint from PR base to head SHA with full fetch-depth.
 2026-05-24 | update | CONTRIBUTING.md | Added commit message format section (type table, examples, breaking changes, local check command); updated stale "When code lands" section to reflect Phase 1 code reality.
-2026-05-24 | update | notion | Updated DyKnow Hub page to reflect current repo progress — Phase 0 ~80%, Phase 1 ~85%, all 9 CLI commands implemented and dogfooded on this repo.
-2026-05-24 | update | linear | Populated DyKnow Linear project with 20 issues across Phase 0 and Phase 1 milestones (10 Done, 7 Todo); updated project status to In Progress; Phase 1 milestone now shows 77% progress.
+2026-05-24 | update | planning-hub | Updated the private planning hub to reflect current repo progress — Phase 0 ~80%, Phase 1 ~85%, all 9 CLI commands implemented and dogfooded on this repo.
+2026-05-24 | update | project-tracker | Populated the private project tracker with 20 issues across Phase 0 and Phase 1 milestones (10 Done, 7 Todo); updated project status to In Progress; Phase 1 milestone now shows 77% progress.
 2026-05-24 | update | packages/cli/src/commit.ts | Fixed worktree guard: added DEFAULT_REPO_MAP_OUTPUT_PATH to allowed paths set so repo-map.json does not block dyknow commit when it exists as an untracked state file.
-2026-05-24 | update | dogfood/ltb-buddy | Completed full Phase 1 dogfood cycle: scan → change → diff (1 file) → update (5 proposals) → review (4 approved, 1 skipped high-risk) → commit (671a535). First successful end-to-end cycle.
-2026-05-24 | update | dogfood/Code2Motion | Completed full Phase 1 dogfood cycle: scan → change → diff (1 file) → update (5 proposals, all low risk) → review (5 approved) → commit (bd4bb2d).
-2026-05-24 | update | dogfood/teambotics-website | Completed full Phase 1 dogfood cycle: scan → change → diff (1 file) → update (5 proposals, all low risk) → review (5 approved) → commit (ca3581a).
-2026-05-24 | update | dogfood/StoryTeller | Completed full Phase 1 dogfood cycle: scan → change → diff (1 file) → update (5 proposals, all low risk) → review (5 approved) → commit (6830f88). TEA-354 complete: all 4 available dogfood repos done end-to-end without manual fixup (excluding worktree guard bug fix).
+2026-05-24 | update | dogfood/internal-repo-1 | Completed full Phase 1 dogfood cycle: scan → change → diff (1 file) → update (5 proposals) → review (4 approved, 1 skipped high-risk) → commit (671a535). First successful end-to-end cycle.
+2026-05-24 | update | dogfood/internal-repo-2 | Completed full Phase 1 dogfood cycle: scan → change → diff (1 file) → update (5 proposals, all low risk) → review (5 approved) → commit (bd4bb2d).
+2026-05-24 | update | dogfood/internal-repo-3 | Completed full Phase 1 dogfood cycle: scan → change → diff (1 file) → update (5 proposals, all low risk) → review (5 approved) → commit (ca3581a).
+2026-05-24 | update | dogfood/internal-repo-4 | Completed full Phase 1 dogfood cycle: scan → change → diff (1 file) → update (5 proposals, all low risk) → review (5 approved) → commit (6830f88). Completed the first set of available internal dogfood repos end-to-end without manual fixup (excluding worktree guard bug fix).
 2026-05-24 | update | packages/vscode-extension | Phase 2 MVP: added sidebar tree views (Changed Knowledge, Suggested Updates), inline approve/skip actions, status bar with pending count, full command set (scan/diff/update/approve/skip/commit/openPr/refresh), esbuild ESM bundle replacing tsc+NodeNext.
 2026-05-24 | create | docs/handoff-phase2-vscode.md | Agent handoff doc for GitHub Copilot to finish Phase 2: diff viewer (Task 1), source evidence webview (Task 2), settings UI (Task 3), vsce publish prep (Task 4), roadmap checkbox update (Task 5). Added to docs/index.md under "Agent handoffs".
 2026-05-24 | update | docs/implementation-roadmap.md | Marked Phase 2 extension tasks done after Copilot handoff completion.
@@ -308,5 +308,16 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-05-27 | update | docs/dyknow/.state/repo-map.json | Refreshed the repo map snapshot while validating the VS Code cut runbook update with demo-smoke.
 2026-05-27 | update | docs/dyknow/.state/repo-diff.json | Regenerated the repo diff snapshot during the same VS Code cut demo-smoke validation run.
 2026-05-27 | update | docs/dyknow/.state/update-proposals.json | Regenerated update proposals during the same VS Code cut demo-smoke validation run.
-2026-05-27 | update | docs/roadmap.md | Rewrote to Phase 0–5 structure with current milestone progress (Phase 0 100%, Phase 1 77%, Phase 2 100%, Phase 3 ~50%); aligned with Linear and Notion state.
-2026-05-27 | update | linear | Updated Phase 3 milestone description to reflect execution state: sandbox live, CLI pass done, recording and messaging assets remaining (TEA-379, TEA-380, TEA-381).
+2026-05-27 | update | docs/roadmap.md | Rewrote to Phase 0–5 structure with current milestone progress (Phase 0 100%, Phase 1 77%, Phase 2 100%, Phase 3 ~50%); aligned with the current private planning state.
+2026-05-27 | update | project-tracker | Updated the Phase 3 milestone description to reflect execution state: sandbox live, CLI pass done, recording and messaging assets remaining.
+2026-05-28 | create | LICENSE, CODE_OF_CONDUCT.md, SECURITY.md, SUPPORT.md | Added baseline licensing, conduct, support, and security docs for the public repository.
+2026-05-28 | update | README.md, CONTRIBUTING.md, CHANGELOG.md, AGENTS.md, CLAUDE.md | Aligned public metadata, contributor guidance, and agent instructions for open-source sharing.
+2026-05-28 | update | docs/product-overview.md, docs/roadmap.md, docs/implementation-roadmap.md, docs/sources/README.md, docs/handoff-phase2-vscode.md, docs/handoff-phase3-codex.md | Removed private workspace links and internal-only customer, tracker, and repo references from synthesized docs.
+2026-05-28 | update | docs/log.md | Redacted private tracker URLs and internal dogfood repo names from historical entries before public sharing.
+2026-06-26 | create | docs/mcp-server-plan.md | Added the CLI-first, MCP-second DyKnow Local pivot plan with package boundaries, extraction order, and the first MCP tool schemas.
+2026-06-26 | update | docs/index.md | Linked the MCP Server Plan under Technical so the pivot path is discoverable from the wiki index.
+2026-06-26 | update | packages/app/src/log-service.ts | Extracted shared audit/log report generation into the app layer so CLI and MCP can reuse the same committed/runtime audit reader.
+2026-06-26 | update | packages/mcp-server/src/server.ts | Added the dyknow_log MCP tool so agent-native clients can inspect committed and runtime audit activity with source and action filters.
+2026-06-26 | update | packages/vscode-extension/src/commands.ts | Added focused, testable command-builder helpers for extension review, commit, and PR argument wiring.
+2026-06-26 | update | packages/vscode-extension/test/commands.test.ts | Added automated extension verification for command and publish-flow argument construction.
+2026-06-26 | update | docs/roadmap.md | Updated the Local status to reflect a repo-verified CLI + MCP + VS Code workflow while keeping broader dogfood work separate.

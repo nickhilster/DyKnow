@@ -22,9 +22,9 @@ export default {
         "chore",
         "revert",
         // DyKnow-specific
-        "wiki",   // wiki page updates (docs/ changes maintained by DyKnow itself)
-        "scan",   // changes to scan / diff / snapshot artifacts
-        "infra",  // infrastructure / tooling not captured by build or ci
+        "wiki", // wiki page updates (docs/ changes maintained by DyKnow itself)
+        "scan", // changes to scan / diff / snapshot artifacts
+        "infra", // infrastructure / tooling not captured by build or ci
       ],
     ],
   },

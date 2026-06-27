@@ -20,15 +20,21 @@ sources:
   - packages/core/src/repo-map.ts
   - packages/core/src/update-runner.ts
   - packages/core/src/update-templates.ts
+  - packages/app/src/diff-service.ts
+  - packages/app/src/proposal-service.ts
+  - packages/app/src/scan-service.ts
+  - packages/app/src/status-service.ts
+  - packages/app/src/update-service.ts
   - packages/cli/src/diff.ts
   - packages/cli/src/commit.ts
   - packages/cli/src/index.ts
+  - packages/mcp-server/src/server.ts
   - packages/cli/src/pr.ts
   - packages/cli/src/review.ts
   - packages/cli/src/scan.ts
   - packages/cli/src/status.ts
   - packages/cli/src/update.ts
-last_reviewed: 2026-05-24
+last_reviewed: 2026-06-26
 confidence: high
 ---
 
@@ -36,20 +42,13 @@ confidence: high
 
 This repository is the working concept, documentation hub, and bootstrap implementation workspace for **DyKnow** — a system for maintaining Dynamic Knowledge Pages that stay synchronized with product, code, docs, and websites. It has two surfaces: DyKnow Cloud (hosted) and DyKnow Local (repo-native).
 
-The repo now contains the founding whitepaper, a wiki of source-backed pages, a TypeScript/npm workspace for DyKnow Local shared contracts, and working `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow log`, `dyknow status`, `dyknow commit`, and `dyknow pr` commands that generate the repo-local config, repo-map and repo-diff snapshots, draft update proposals, persist review decisions, pretty-print recent audit entries across committed and git-local runtime audit files, generate an HTML status report, and publish approved changes into reviewable branches.
-
-## External hubs
-
-| Platform | URL |
-|---|---|
-| Linear | https://linear.app/teambotics/project/dyknow-30e3394df921 |
-| Notion | https://www.notion.so/369cddcb424a81b2beedd1d654388b89 |
+The repo now contains the founding whitepaper, a wiki of source-backed pages, a TypeScript/npm workspace for DyKnow Local shared contracts, a reusable application layer, and working `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow log`, `dyknow status`, `dyknow commit`, and `dyknow pr` commands that generate the repo-local config, repo-map and repo-diff snapshots, draft update proposals, persist review decisions, pretty-print recent audit entries across committed and git-local runtime audit files, generate an HTML status report, and publish approved changes into reviewable branches. The repo also now includes a stdio MCP server for agent-native clients across both read and mutation flows.
 
 ## Project purpose
 
 Build a knowledge maintenance system that:
 - Keeps product knowledge aligned with source material.
-- Runs locally (CLI, VS Code, CI) so sensitive code never leaves the customer.
+- Runs locally (CLI, MCP, VS Code, CI) so sensitive code never leaves the customer.
 - Maintains AI-agent context files (AGENTS.md, CLAUDE.md, etc.) as a first-class output.
 - Keeps humans in control of publishing.
 
@@ -72,8 +71,11 @@ Build a knowledge maintenance system that:
 ├── CHANGELOG.md
 ├── package.json                  npm workspace root.
 ├── packages/
+│   ├── app/                      Shared DyKnow Local application services.
 │   ├── cli/                      Bootstrap DyKnow Local CLI package.
-│   └── core/                     Shared engine contracts and config validation.
+│   ├── core/                     Shared engine contracts and config validation.
+│   ├── mcp-server/               Stdio MCP server for agent-native clients.
+│   └── vscode-extension/         Optional VS Code client surface.
 ├── tsconfig.base.json            Shared TypeScript compiler settings.
 └── docs/
   ├── dyknow/
@@ -94,18 +96,19 @@ Build a knowledge maintenance system that:
         └── dyknow_local_whitepaper.md   Founding raw source.
 ```
 
-  The implemented code surface is still small, but it is real: `packages/core` defines the first shared engine contracts, config validation, repo-map schema, repo-diff schema, default update prompt templates, and a provider-backed update runner with local built-in page generators, local confidence/risk heuristics, BYO OpenAI retry/timeout handling, and per-draft usage telemetry; `packages/cli` implements `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, an interactive and non-interactive `dyknow review` flow with edited proposal text, external-editor handling, skip handling, targeted regenerate handling, and review-action audit logging, a read-only `dyknow log` audit viewer that now merges the committed audit artifact with a git-local runtime audit file, `dyknow status` for generating an HTML progress snapshot, and the first `dyknow commit` and `dyknow pr` workflow slices with publish-action audit logging where high-risk proposals require an explicit `--allow-high-risk` publish override and PR publication records both a prepared local state and a confirmed external PR-open event in separate persistence boundaries; and CI runs lint, tests, and build checks.
+  The implemented code surface is still small, but it is real: `packages/core` defines the shared engine contracts, config validation, repo-map schema, repo-diff schema, default update prompt templates, and a provider-backed update runner with local built-in page generators, local confidence/risk heuristics, BYO OpenAI retry/timeout handling, and per-draft usage telemetry; `packages/app` owns reusable scan, diff, proposal-read, update, review, log, commit, PR, and status orchestration; `packages/cli` implements `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, an interactive and non-interactive `dyknow review` flow with edited proposal text, external-editor handling, skip handling, targeted regenerate handling, and review-action audit logging, a read-only `dyknow log` audit viewer that now merges the committed audit artifact with a git-local runtime audit file, `dyknow status` for generating an HTML progress snapshot, and `dyknow commit` and `dyknow pr` workflow slices with publish-action audit logging where high-risk proposals require an explicit `--allow-high-risk` publish override and PR publication records both a prepared local state and a confirmed external PR-open event in separate persistence boundaries; `packages/mcp-server` exposes stdio MCP tools for `scan`, `diff`, `update`, `list_proposals`, `get_proposal`, `review_proposal`, `log`, `status`, `commit`, and `open_pr`; `packages/vscode-extension` now has focused automated coverage for command and publish-flow argument wiring; and CI runs lint, tests, and build checks.
 
 ## Development commands
 
   - `npm install` — install workspace dependencies.
   - `npm test` — run the shared-contract and config-validation tests.
-  - `npm run build` — compile `packages/core` and `packages/cli`.
+  - `npm run build` — compile the TypeScript workspace packages, including `core`, `app`, `cli`, and `mcp-server`.
   - `npm run lint` — run Biome checks across the scaffolded workspace.
   - `node packages/cli/dist/bin.js init --force --project-name DyKnow` — generate the repo-local config and schema after a build.
   - `node packages/cli/dist/bin.js scan` — build the repo map snapshot at `docs/dyknow/.state/repo-map.json` after a build.
   - `node packages/cli/dist/bin.js diff` — compare the current workspace against the saved repo-map snapshot, map deltas to affected page IDs via configured source patterns, and write `docs/dyknow/.state/repo-diff.json` after a build.
   - `node packages/cli/dist/bin.js update` — read `docs/dyknow/.state/repo-diff.json`, draft proposals for affected pages through either the local built-in generator path or the BYO provider path, and write `docs/dyknow/.state/update-proposals.json` after a build.
+  - `node packages/mcp-server/dist/bin.js` — run the stdio MCP server for agent-native IDE and desktop clients after a build.
   - `node packages/cli/dist/bin.js review --approve --page <page-id>` — persist approval, rejection, escalation, one edited proposal text, one editor-driven edited proposal text, an explicit skip, a targeted regenerate, or an interactive walkthrough back into `docs/dyknow/.state/update-proposals.json` after a build while appending review-action audit entries to `docs/dyknow/.state/audit-log.jsonl`.
   - `node packages/cli/dist/bin.js log --limit 10 --source all --action all` — pretty-print recent entries from `docs/dyknow/.state/audit-log.jsonl` and the git-local runtime audit file after a build, label each entry with its source audit file, and optionally filter by source (`all|committed|runtime`) and action family (`all|review|publish`).
   - `node packages/cli/dist/bin.js status` — generate `dyknow-progress-status.html` from live git metadata plus the current repo diff, update proposal, and audit artifacts after a build.
@@ -118,6 +121,7 @@ Build a knowledge maintenance system that:
   - `dyknow scan` — build repo map at `docs/dyknow/.state/repo-map.json`
   - `dyknow diff` — compare the current workspace to the saved repo map, identify affected pages, and write `docs/dyknow/.state/repo-diff.json`
   - `dyknow update` — draft update proposals at `docs/dyknow/.state/update-proposals.json`
+  - `dyknow-mcp` — expose the MCP workflow for `scan`, `diff`, `update`, `list_proposals`, `get_proposal`, `review_proposal`, `log`, `status`, `commit`, and `open_pr`
   - `dyknow review` — persist approval, rejection, escalation, one edited proposal text, one editor-driven edited proposal text, an explicit skip, or a targeted regenerate in `docs/dyknow/.state/update-proposals.json`
   - `dyknow log` — pretty-print recent review and publish audit entries from the committed audit artifact plus the git-local runtime audit file
   - `dyknow status` — generate an HTML repo status report at `dyknow-progress-status.html`
@@ -129,7 +133,7 @@ See [docs/setup-guide.md](docs/setup-guide.md).
 ## Coding standards
 
 - TypeScript uses npm workspaces and NodeNext module resolution.
-- Shared engine contracts live in `packages/core`; CLI-specific wiring lives in `packages/cli`.
+- Shared engine contracts live in `packages/core`; reusable orchestration lives in `packages/app`; CLI-specific wiring lives in `packages/cli`; MCP transport and tool adapters live in `packages/mcp-server`.
 - Biome handles formatting and baseline linting; Vitest covers executable validation.
 - The current scanner honors `allowedSources` and `ignoredSources`, extracts Markdown headings, top-level JSON/YAML/TOML keys, dependency manifests from `package.json`, `pyproject.toml`, and `requirements*.txt`, captures lightweight OpenAPI, Next.js, and Express-style route metadata, and warns on likely sensitive content without writing file contents into the repo map.
 - The current diff command compares a fresh in-memory scan against the last saved repo-map snapshot, maps changed source paths to affected page IDs via configured page source patterns, and writes a structured repo-diff artifact without overwriting the base snapshot.
@@ -162,4 +166,5 @@ The canonical glossary is [docs/glossary.md](docs/glossary.md). When in doubt, u
 
 - No private data should appear in this repo.
 - All product claims must trace to the whitepaper (or a future approved source).
+- Public-facing docs should avoid private workspace URLs and internal customer or repo names unless they are intentionally approved for publication.
 - DyKnow is a concept-stage project; avoid fabricating implementation details that haven't been decided.

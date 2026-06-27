@@ -15,6 +15,7 @@
   },
   "files": ["dist"],
   "dependencies": {
+    "@dyknow/app": "file:../app",
     "@dyknow/core": "file:../core"
   }
 }

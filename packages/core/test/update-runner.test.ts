@@ -11,6 +11,28 @@ import {
 
 const originalFetch = globalThis.fetch;
 
+type InitialConfig = ReturnType<typeof createInitialDyknowConfig>;
+
+function getFirstPage(config: InitialConfig) {
+  const [page] = config.pages;
+
+  if (!page) {
+    throw new Error("Missing default page definition.");
+  }
+
+  return page;
+}
+
+function getPageById(config: InitialConfig, pageId: string) {
+  const page = config.pages.find((candidate) => candidate.id === pageId);
+
+  if (!page) {
+    throw new Error(`Missing default ${pageId} page definition.`);
+  }
+
+  return page;
+}
+
 afterEach(() => {
   globalThis.fetch = originalFetch;
 });
@@ -26,7 +48,7 @@ function makeRequest(overrides: {
 }) {
   const config = createInitialDyknowConfig();
   const page = {
-    ...config.pages[0]!,
+    ...getFirstPage(config),
     title: overrides.title ?? "Feature Map",
     outputPath: overrides.outputPath ?? "docs/feature-map.md",
   };
@@ -47,15 +69,18 @@ describe("classifyDraftRisk", () => {
   it("returns low for benign content", () => {
     expect(
       classifyDraftRisk(
-        makeRequest({ title: "Feature Map", matchedSourcePaths: ["README.md"] }),
+        makeRequest({
+          title: "Feature Map",
+          matchedSourcePaths: ["README.md"],
+        }),
       ),
     ).toBe("low");
   });
 
   it("returns high when page title contains a pricing keyword", () => {
-    expect(
-      classifyDraftRisk(makeRequest({ title: "Pricing Overview" })),
-    ).toBe("high");
+    expect(classifyDraftRisk(makeRequest({ title: "Pricing Overview" }))).toBe(
+      "high",
+    );
   });
 
   it("returns high when output path contains a legal keyword", () => {
@@ -117,9 +142,9 @@ describe("classifyDraftRisk", () => {
   });
 
   it("is case-insensitive", () => {
-    expect(
-      classifyDraftRisk(makeRequest({ title: "PRICING PAGE" })),
-    ).toBe("high");
+    expect(classifyDraftRisk(makeRequest({ title: "PRICING PAGE" }))).toBe(
+      "high",
+    );
   });
 });
 
@@ -243,7 +268,7 @@ describe("update runner", () => {
   it("raises high risk for security-oriented updates", async () => {
     const config = createInitialDyknowConfig();
     const page = {
-      ...config.pages.find((candidate) => candidate.id === "product-overview")!,
+      ...getPageById(config, "product-overview"),
       title: "Security Overview",
       sources: ["docs/trust-and-security.md"],
     };
@@ -347,7 +372,7 @@ describe("update runner", () => {
     const result = await provider.draftUpdate({
       prompt: "Prompt",
       request: {
-        page: createInitialDyknowConfig().pages[0]!,
+        page: getFirstPage(createInitialDyknowConfig()),
         affectedPage: {
           pageId: "product-overview",
           outputPath: "docs/product-overview.md",
@@ -373,7 +398,7 @@ describe("update runner", () => {
 
   it("assigns low risk and low confidence for a minimal, benign request", async () => {
     const config = createInitialDyknowConfig();
-    const page = config.pages.find((p) => p.id === "feature-map")!;
+    const page = getPageById(config, "feature-map");
 
     const proposal = await draftUpdateProposal({
       config,
@@ -451,7 +476,7 @@ describe("update runner", () => {
     const result = await provider.draftUpdate({
       prompt: "Prompt",
       request: {
-        page: createInitialDyknowConfig().pages[0]!,
+        page: getFirstPage(createInitialDyknowConfig()),
         affectedPage: {
           pageId: "product-overview",
           outputPath: "docs/product-overview.md",

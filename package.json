@@ -2,13 +2,12 @@
   "name": "dyknow",
   "private": true,
   "version": "0.1.0",
+  "license": "MIT",
   "type": "module",
   "engines": {
     "node": ">=20.11.0"
   },
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": ["packages/*"],
   "scripts": {
     "build": "tsc -b && npm run build --workspace=packages/vscode-extension",
     "demo:smoke": "node packages/cli/dist/bin.js demo-smoke",
