@@ -20,6 +20,7 @@ sources:
   - ../packages/cli/src/update.ts
   - ../packages/app/src/review-service.ts
   - ../packages/app/src/commit-service.ts
+  - ../packages/app/src/cloud-sync-service.ts
   - ../packages/app/src/pr-service.ts
   - ../packages/core/src/repo-diff.ts
   - ../packages/core/src/config.ts
@@ -31,7 +32,7 @@ confidence: medium
 
 ## Summary
 
-This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow log`, `dyknow status`, `dyknow commit`, and `dyknow pr` are now implemented in this repo, while richer sync and downstream publishing flows remain planned.
+This page describes the DyKnow Local CLI workflow. `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, `dyknow review`, `dyknow log`, `dyknow status`, `dyknow cloud-sync`, `dyknow commit`, and `dyknow pr` are now implemented in this repo, while richer downstream publishing flows remain planned.
 
 ## Prerequisites
 
@@ -76,6 +77,10 @@ The config defines:
 - Output formats
 - Publishing targets
 - Dependency allow and deny rules
+
+### Cloud control plane settings
+
+The generated config also includes an optional `cloud` block with `apiBaseUrl`, `email`, `organizationSlug`, and `workspaceSlug`. `dyknow cloud-sync` reads that block first, then `DYKNOW_CLOUD_*` environment overrides, then CLI flags. Keep passwords out of the config file; use `DYKNOW_CLOUD_PASSWORD` or `--password` instead.
 
 ### Optional external analysis
 You can also use Graphify separately to build an interactive knowledge graph from this repository's code, docs, and related artifacts. Install it with `pip install graphifyy && graphify install`, then run `graphify .` from the repo root or use the convenience script `npm run graphify` if Python and `graphifyy` are available.
@@ -130,6 +135,12 @@ The current implementation also enforces a few repo-safety rules at config-parse
   "approvalRequired": true,
   "llmProvider": "local",
   "publishTargets": [],
+  "cloud": {
+    "apiBaseUrl": "https://cloud.example.com",
+    "email": "ops@example.com",
+    "organizationSlug": "example-org",
+    "workspaceSlug": "example-workspace"
+  },
   "dependencyPolicy": {
     "allow": ["@company/approved-fork", "@company/internal-ui"],
     "deny": ["left-pad"]
@@ -358,7 +369,7 @@ or
 dyknow pr
 ```
 
-**Status:** `dyknow commit` and `dyknow pr` are implemented for the first apply-and-publish slices. `dyknow sync` is still planned.
+**Status:** `dyknow commit` and `dyknow pr` are implemented for the first apply-and-publish slices. `dyknow cloud-sync` is implemented as the manual Local-to-Cloud control-plane bridge, and `dyknow sync` remains planned as a broader umbrella command.
 
 The current implementation reads `docs/dyknow/.state/update-proposals.json`, applies only proposals whose `reviewState` is `Approved`, updates those output files, marks the applied proposals `Published`, appends publish audit entries to `docs/dyknow/.state/audit-log.jsonl`, and creates a single git commit.
 
@@ -393,13 +404,13 @@ If you override the GitHub CLI binary, the same constrained command contract app
 - on Windows, use a native executable instead of a `.cmd` or `.bat` wrapper
 - a safe pattern is `DYKNOW_GH_COMMAND="node tools/fake-gh.mjs"` for testing or a real native `gh.exe` path in production
 
-Optionally:
+Cloud control plane:
 
 ```bash
-dyknow sync
+dyknow cloud-sync
 ```
 
-Pushes approved outputs to DyKnow Cloud, a CMS, Notion, Confluence, or a website.
+Syncs local repo-map, repo-diff, update-proposal, and event artifacts into the configured DyKnow Cloud control plane.
 
 ## Cross-references
 

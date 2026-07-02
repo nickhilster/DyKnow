@@ -18,6 +18,8 @@
     "baseUrl": ".",
     "paths": {
       "@dyknow/app": ["packages/app/src/index.ts"],
+      "@dyknow/cloud-api": ["packages/cloud-api/src/server.ts"],
+      "@dyknow/cloud-shared": ["packages/cloud-shared/src/index.ts"],
       "@dyknow/core": ["packages/core/src/index.ts"]
     }
   }

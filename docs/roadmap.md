@@ -107,7 +107,7 @@ Demo sandbox live. CLI pass executed and validated. Recording runbook and VS Cod
 
 ## Phase 4 — DyKnow Cloud Lite
 
-Status: Not started — planned after demo assets stabilize.
+Status: Sprint 1 kickoff in progress (~10%) — the first control-plane slice is now defined, but hosted implementation has not landed yet.
 
 ### Planned additions
 
@@ -116,6 +116,16 @@ Status: Not started — planned after demo assets stabilize.
 - Manual file uploads
 - DyKnow Hub publishing path
 - 5–10 Dynamic Knowledge Pages
+
+### Current sprint focus
+
+- hosted auth, orgs, and workspaces
+- source and page registration records
+- read-only workspace dashboard
+- latest run and pending-update summaries
+- event model for later Local-to-Cloud ingestion
+
+See [Cloud Sprint 1 Control Plane](cloud-sprint-1-control-plane.md).
 
 Use first-party product pages or the public demo property as the first showcase.
 

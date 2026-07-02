@@ -2,6 +2,12 @@
   "files": [],
   "references": [
     {
+      "path": "./packages/cloud-shared"
+    },
+    {
+      "path": "./packages/cloud-api"
+    },
+    {
       "path": "./packages/app"
     },
     {

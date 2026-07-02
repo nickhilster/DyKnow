@@ -39,6 +39,7 @@ describe("dyknow init", () => {
       "utf8",
     );
     const config = JSON.parse(configText) as {
+      cloud?: Record<string, unknown>;
       projectName: string;
       mode: string;
     };
@@ -47,6 +48,7 @@ describe("dyknow init", () => {
     expect(stdout[0]).toContain(DYKNOW_CONFIG_FILE_NAME);
     expect(config.projectName).toBe("Fixture");
     expect(config.mode).toBe("local-only");
+    expect(config.cloud).toEqual({});
     expect(schema.title).toBe("DyKnow Config");
   });
 
@@ -101,6 +103,7 @@ describe("dyknow init", () => {
       "utf8",
     );
     const config = JSON.parse(configText) as {
+      cloud?: Record<string, unknown>;
       projectName: string;
       mode: string;
       allowedSources: string[];
@@ -110,6 +113,7 @@ describe("dyknow init", () => {
     expect(prompts).toHaveLength(3);
     expect(config.projectName).toBe("Fixture App");
     expect(config.mode).toBe("connected");
+    expect(config.cloud).toEqual({});
     expect(config.allowedSources).toContain("app/**");
     expect(config.allowedSources).toContain("next.config.*");
   });

@@ -220,6 +220,23 @@ These items underpin every later phase. Land them once; reuse everywhere.
 
 **Strategic goal:** stand up the hosted product with a minimal connector set and the DyKnow Hub. See [roadmap.md § Phase 4](roadmap.md).
 
+### Current Sprint 1 slice
+
+This phase is now starting with a narrower hosted **control plane** slice before broader connector and publishing work. See [Cloud Sprint 1 Control Plane](cloud-sprint-1-control-plane.md) and the worker-facing [DyKnow Cloud Sprint 1 Plan](superpowers/plans/2026-06-29-dyknow-cloud-sprint-1.md).
+
+- [ ] Add the first hosted package/app scaffold for DyKnow Cloud.
+- [ ] Define hosted contracts for orgs, workspaces, sources, pages, runs, update batches, and workspace events.
+- [ ] Add persistence for the Sprint 1 control-plane entities.
+- [ ] Add auth and org membership guards.
+- [ ] Add workspace creation and navigation.
+- [ ] Add manual source registration records.
+- [ ] Add page-definition registration records.
+- [ ] Add latest-run and pending-update summary read models.
+- [ ] Add append-only workspace events.
+- [ ] Add the read-only workspace dashboard.
+- [ ] Add first-party seed data for DyKnow dogfood.
+- [ ] Add automated validation for the hosted control-plane flow.
+
 ### Backend foundation
 - [ ] Choose hosting (managed vs. self-built).
 - [ ] Auth + organization model.

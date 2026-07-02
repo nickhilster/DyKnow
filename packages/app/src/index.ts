@@ -1,4 +1,5 @@
 export * from "./audit.js";
+export * from "./cloud-sync-service.js";
 export * from "./commit-service.js";
 export * from "./diff-service.js";
 export * from "./pr-service.js";

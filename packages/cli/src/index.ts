@@ -19,6 +19,11 @@ import {
   renderDyknowConfigJsonSchema,
 } from "@dyknow/core";
 
+import {
+  createCloudSyncResult,
+  resolveCloudSyncOptions,
+  type CloudSyncConfig,
+} from "@dyknow/app";
 import { createCommitResult, parseCommitOptions } from "./commit.js";
 import { runDemoSmoke } from "./demo-smoke.js";
 import { createRepoDiff, parseDiffOptions } from "./diff.js";
@@ -60,6 +65,14 @@ type ScanOptions = {
   configPath: string;
   outputPath: string;
   failOn: RepoMapWarning["code"][];
+};
+
+type CloudSyncOptions = {
+  password?: string;
+  apiBaseUrl?: string;
+  email?: string;
+  organizationSlug?: string;
+  workspaceSlug?: string;
 };
 
 function defaultWriter(message: string) {
@@ -138,6 +151,100 @@ function parseInitOptions(args: readonly string[]): InitOptions {
   }
 
   return { force, interactive, mode };
+}
+
+function parseCloudSyncOptions(args: readonly string[]): CloudSyncOptions {
+  let apiBaseUrl: string | undefined;
+  let email: string | undefined;
+  let organizationSlug: string | undefined;
+  let password: string | undefined;
+  let workspaceSlug: string | undefined;
+
+  for (let index = 0; index < args.length; index += 1) {
+    const argument = args[index];
+
+    if (argument === "--api") {
+      const value = args[index + 1];
+      if (!value) {
+        throw new Error("Missing value for --api.");
+      }
+      apiBaseUrl = value;
+      index += 1;
+      continue;
+    }
+
+    if (argument === "--email") {
+      const value = args[index + 1];
+      if (!value) {
+        throw new Error("Missing value for --email.");
+      }
+      email = value;
+      index += 1;
+      continue;
+    }
+
+    if (argument === "--organization") {
+      const value = args[index + 1];
+      if (!value) {
+        throw new Error("Missing value for --organization.");
+      }
+      organizationSlug = value;
+      index += 1;
+      continue;
+    }
+
+    if (argument === "--password") {
+      const value = args[index + 1];
+      if (!value) {
+        throw new Error("Missing value for --password.");
+      }
+      password = value;
+      index += 1;
+      continue;
+    }
+
+    if (argument === "--workspace") {
+      const value = args[index + 1];
+      if (!value) {
+        throw new Error("Missing value for --workspace.");
+      }
+      workspaceSlug = value;
+      index += 1;
+      continue;
+    }
+
+    throw new Error(`Unknown cloud sync option: ${argument}`);
+  }
+
+  const result: CloudSyncOptions = {};
+  if (apiBaseUrl) {
+    result.apiBaseUrl = apiBaseUrl;
+  }
+  if (email) {
+    result.email = email;
+  }
+  if (organizationSlug) {
+    result.organizationSlug = organizationSlug;
+  }
+  if (password) {
+    result.password = password;
+  }
+  if (workspaceSlug) {
+    result.workspaceSlug = workspaceSlug;
+  }
+  return result;
+}
+
+async function readCloudConfig(cwd: string): Promise<CloudSyncConfig> {
+  const configPath = resolve(cwd, DYKNOW_CONFIG_FILE_NAME);
+  try {
+    const raw = JSON.parse(await readFile(configPath, "utf8")) as {
+      cloud?: CloudSyncConfig;
+    };
+    return raw.cloud ?? {};
+  } catch {
+    return {};
+  }
 }
 
 type DetectedStack = {
@@ -412,6 +519,7 @@ function formatHelp(): string {
     "- dyknow status [--output <path>]",
     "- dyknow commit [--input <path>] [--message <text>] [--allow-high-risk]",
     "- dyknow pr [--input <path>] [--base <branch>] [--branch <name>] [--message <text>] [--title <text>] [--allow-high-risk]",
+    "- dyknow cloud-sync [--api <url>] [--email <value>] [--password <value>] [--organization <slug>] [--workspace <slug>]",
     "- dyknow demo-smoke [--workspace <path>] [--config <path>] [--handoff <path>] [--checklist <path>] [--index <path>] [--log <path>]",
     "",
     `Default repo diff output: ${DEFAULT_REPO_DIFF_OUTPUT_PATH}`,
@@ -743,6 +851,36 @@ async function handlePr(args: readonly string[], context?: CliContext) {
   }
 }
 
+async function handleCloudSync(args: readonly string[], context?: CliContext) {
+  const { cwd, stderr, stdout } = getContext(context);
+
+  try {
+    const cliOptions = parseCloudSyncOptions(args);
+    const configOptions = await readCloudConfig(cwd);
+    const resolvedOptions = resolveCloudSyncOptions({
+      cli: cliOptions,
+      config: configOptions,
+      cwd,
+    });
+    const result = await createCloudSyncResult({
+      apiBaseUrl: resolvedOptions.apiBaseUrl,
+      ...(resolvedOptions.cwd ? { cwd: resolvedOptions.cwd } : {}),
+      email: resolvedOptions.email,
+      organizationSlug: resolvedOptions.organizationSlug,
+      password: resolvedOptions.password,
+      workspaceSlug: resolvedOptions.workspaceSlug,
+    });
+
+    stdout(
+      `Synced ${result.runsRecorded} run(s), ${result.updateBatchesRecorded} update batch(es), and ${result.eventsRecorded} event(s) to Cloud.`,
+    );
+    return 0;
+  } catch (error) {
+    stderr(error instanceof Error ? error.message : "Unknown cloud sync error.");
+    return 1;
+  }
+}
+
 export function formatBootstrapStatus(): string {
   return formatHelp();
 }
@@ -793,6 +931,10 @@ export async function runCli(
 
   if (command === "pr") {
     return handlePr(commandArgs, context);
+  }
+
+  if (command === "cloud-sync") {
+    return handleCloudSync(commandArgs, context);
   }
 
   if (command === "demo-smoke") {

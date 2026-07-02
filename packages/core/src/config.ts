@@ -46,6 +46,13 @@ export const DependencyPolicySchema = z.object({
     .default([]),
 });
 
+export const CloudConfigSchema = z.object({
+  apiBaseUrl: z.string().url().optional(),
+  email: z.string().email().optional(),
+  organizationSlug: z.string().min(1).optional(),
+  workspaceSlug: z.string().min(1).optional(),
+});
+
 export const DyknowConfigSchema = z
   .object({
     projectName: z.string().min(1, "projectName is required."),
@@ -60,6 +67,7 @@ export const DyknowConfigSchema = z
     approvalRequired: z.boolean().default(true),
     llmProvider: LlmProviderSchema,
     publishTargets: z.array(z.string().min(1)).default([]),
+    cloud: CloudConfigSchema.default({}),
     dependencyPolicy: DependencyPolicySchema.default({
       allow: [],
       deny: [],
@@ -160,6 +168,7 @@ export const DyknowConfigSchema = z
 
 export type LlmProvider = z.infer<typeof LlmProviderSchema>;
 export type DependencyPolicy = z.infer<typeof DependencyPolicySchema>;
+export type CloudConfig = z.infer<typeof CloudConfigSchema>;
 export type DyknowConfig = z.infer<typeof DyknowConfigSchema>;
 
 export type ValidationResult =
@@ -359,6 +368,7 @@ function createStackAwareAllowedSources(
 export function createInitialDyknowConfig(options?: {
   approvalRequired?: boolean;
   allowedSources?: string[];
+  cloud?: CloudConfig;
   llmProvider?: LlmProvider;
   mode?: DyknowConfig["mode"];
   projectName?: string;
@@ -379,6 +389,7 @@ export function createInitialDyknowConfig(options?: {
     pages: createDefaultMaintainedPages(),
     approvalRequired: options?.approvalRequired ?? true,
     llmProvider,
+    cloud: options?.cloud ?? {},
     publishTargets:
       mode === "local-only" ? [] : (options?.publishTargets ?? []),
   });

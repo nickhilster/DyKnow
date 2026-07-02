@@ -9,7 +9,9 @@
   },
   "workspaces": ["packages/*"],
   "scripts": {
-    "build": "tsc -b && npm run build --workspace=packages/vscode-extension",
+    "build": "tsc -b && npm run build --workspace=packages/cloud-web && npm run build --workspace=packages/vscode-extension",
+    "dev:cloud": "npm run dev --workspace=packages/cloud-web",
+    "dev:cloud:api": "node packages/cloud-api/dist/bin.js",
     "demo:smoke": "node packages/cli/dist/bin.js demo-smoke",
     "format": "biome format . --write",
     "lint": "biome check .",

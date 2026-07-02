@@ -1,5 +1,5 @@
 {
-  "name": "@dyknow/app",
+  "name": "@dyknow/cloud-shared",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,9 +10,5 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist"],
-  "dependencies": {
-    "@dyknow/cloud-shared": "file:../cloud-shared",
-    "@dyknow/core": "file:../core"
-  }
+  "files": ["dist"]
 }

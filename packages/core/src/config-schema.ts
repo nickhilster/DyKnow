@@ -130,6 +130,29 @@ export function buildDyknowConfigJsonSchema() {
           minLength: 1,
         },
       },
+      cloud: {
+        type: "object",
+        default: {},
+        additionalProperties: false,
+        properties: {
+          apiBaseUrl: {
+            type: "string",
+            format: "uri",
+          },
+          email: {
+            type: "string",
+            format: "email",
+          },
+          organizationSlug: {
+            type: "string",
+            minLength: 1,
+          },
+          workspaceSlug: {
+            type: "string",
+            minLength: 1,
+          },
+        },
+      },
       dependencyPolicy: {
         type: "object",
         additionalProperties: false,
@@ -204,6 +227,7 @@ export function buildDyknowConfigJsonSchema() {
         approvalRequired: true,
         llmProvider: "local",
         publishTargets: [],
+        cloud: {},
         dependencyPolicy: {
           allow: [],
           deny: [],

@@ -36,11 +36,13 @@ describe("DyKnow config schema helpers", () => {
     const rendered = renderDyknowConfig(createInitialDyknowConfig());
     const parsed = JSON.parse(rendered) as {
       $schema?: string;
+      cloud?: Record<string, unknown>;
       projectName: string;
     };
 
     expect(parsed.$schema).toBe(`./${DYKNOW_CONFIG_SCHEMA_FILE_NAME}`);
     expect(parsed.projectName).toBe("DyKnow");
+    expect(parsed.cloud).toEqual({});
   });
 
   it("renders the JSON schema as parseable JSON text", () => {

@@ -6,6 +6,7 @@ Catalog of every Dynamic Knowledge Page in this wiki. Keep entries to one line. 
 
 - [Product Overview](product-overview.md) — what DyKnow is, the problem it solves, the two product surfaces.
 - [Feature Map](feature-map.md) — inventory of features across Cloud and Local.
+- [Cloud Sprint 1 Control Plane](cloud-sprint-1-control-plane.md) — the first hosted-product slice: orgs, workspaces, source/page records, and a read-only dashboard.
 - [Messaging](messaging.md) — one-liners, positioning, audience-specific pitches.
 - [Roadmap](roadmap.md) — phased build path from internal prototype to commercial pilots.
 - [Implementation Roadmap](implementation-roadmap.md) — task-level checklist for every phase.
@@ -35,6 +36,7 @@ Catalog of every Dynamic Knowledge Page in this wiki. Keep entries to one line. 
 - [Phase 3 Demo Change Script](phase3-demo-change-script.md) — planned feature, route, and setup drift changes that drive the first walkthrough.
 - [Phase 3 Demo Recording Runbook](phase3-demo-recording-runbook.md) — exact recording order, review path, and capture checklist for the first CLI demo.
 - [Phase 3 Codex Takeover Handoff](handoff-phase3-codex.md) — current PR, artifacts, constraints, and next moves for the next Codex operator.
+- [DyKnow Cloud Sprint 1 Plan](superpowers/plans/2026-06-29-dyknow-cloud-sprint-1.md) — implementation-ordered worker checklist for the first Cloud control-plane sprint.
 
 ## Wiki operations
 
