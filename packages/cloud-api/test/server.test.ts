@@ -170,7 +170,10 @@ describe("@dyknow/cloud-api", () => {
       },
     );
     const dashboardPayload = (await dashboardResponse.json()) as {
-      summary: { latestRuns: Record<string, { type: string }>; pendingUpdates: { total: number } };
+      summary: {
+        latestRuns: Record<string, { type: string }>;
+        pendingUpdates: { total: number };
+      };
     };
 
     expect(dashboardPayload.summary.latestRuns.scan?.type).toBe("scan");

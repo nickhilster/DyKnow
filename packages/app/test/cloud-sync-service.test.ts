@@ -85,7 +85,8 @@ describe("@dyknow/app cloud sync", () => {
         if (url.endsWith("/api/session")) {
           return new Response(JSON.stringify({ user: { id: "user_nick" } }), {
             headers: {
-              "set-cookie": "dyknow_cloud_session=test-cookie; Path=/; HttpOnly",
+              "set-cookie":
+                "dyknow_cloud_session=test-cookie; Path=/; HttpOnly",
             },
             status: 200,
           });
@@ -109,11 +110,15 @@ describe("@dyknow/app cloud sync", () => {
       runsRecorded: 4,
       updateBatchesRecorded: 1,
     });
-    expect(requests.some((request) => request.url.endsWith("/runs"))).toBe(true);
+    expect(requests.some((request) => request.url.endsWith("/runs"))).toBe(
+      true,
+    );
     expect(
       requests.some((request) => request.url.endsWith("/update-batches")),
     ).toBe(true);
-    expect(requests.some((request) => request.url.endsWith("/events"))).toBe(true);
+    expect(requests.some((request) => request.url.endsWith("/events"))).toBe(
+      true,
+    );
   });
 
   it("prefers config, then env, then cli values for cloud connection settings", () => {

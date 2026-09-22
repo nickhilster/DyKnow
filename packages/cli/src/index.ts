@@ -20,9 +20,9 @@ import {
 } from "@dyknow/core";
 
 import {
+  type CloudSyncConfig,
   createCloudSyncResult,
   resolveCloudSyncOptions,
-  type CloudSyncConfig,
 } from "@dyknow/app";
 import { createCommitResult, parseCommitOptions } from "./commit.js";
 import { runDemoSmoke } from "./demo-smoke.js";
@@ -876,7 +876,9 @@ async function handleCloudSync(args: readonly string[], context?: CliContext) {
     );
     return 0;
   } catch (error) {
-    stderr(error instanceof Error ? error.message : "Unknown cloud sync error.");
+    stderr(
+      error instanceof Error ? error.message : "Unknown cloud sync error.",
+    );
     return 1;
   }
 }
