@@ -281,7 +281,7 @@ export async function createCloudSyncResult(
 
     await postJson({
       body: {
-        createdAt: syncedAt,
+        startedAt: syncedAt,
         status: "succeeded" satisfies WorkspaceRunStatus,
         summary: `Synced ${parsed.summary.draftedProposals} drafted proposal(s) from Local review output.`,
         type: "update" satisfies WorkspaceRunType,
@@ -295,7 +295,7 @@ export async function createCloudSyncResult(
 
     await postJson({
       body: {
-        createdAt: syncedAt,
+        startedAt: syncedAt,
         status: "succeeded" satisfies WorkspaceRunStatus,
         summary: `Synced review state for ${parsed.drafts.length} proposal(s) from Local.`,
         type: "review-sync" satisfies WorkspaceRunType,

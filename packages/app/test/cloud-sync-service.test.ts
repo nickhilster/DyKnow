@@ -110,9 +110,14 @@ describe("@dyknow/app cloud sync", () => {
       runsRecorded: 4,
       updateBatchesRecorded: 1,
     });
-    expect(requests.some((request) => request.url.endsWith("/runs"))).toBe(
-      true,
+    const runRequests = requests.filter((request) =>
+      request.url.endsWith("/runs"),
     );
+    expect(runRequests).toHaveLength(4);
+    // cloud-api rejects run payloads without startedAt.
+    for (const request of runRequests) {
+      expect(request.body).toMatchObject({ startedAt: expect.any(String) });
+    }
     expect(
       requests.some((request) => request.url.endsWith("/update-batches")),
     ).toBe(true);
