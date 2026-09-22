@@ -738,57 +738,102 @@ export async function handleJsonRpcRequest(
   }
 }
 
-function writeMessage(message: JsonRpcResponse) {
-  const body = Buffer.from(JSON.stringify(message), "utf8");
-  stdout.write(`Content-Length: ${body.byteLength}\r\n\r\n`);
-  stdout.write(body);
+// The MCP stdio transport is newline-delimited JSON. Content-Length framing
+// (LSP style) is still accepted so older DyKnow clients keep working.
+export type StdioFraming = "newline" | "content-length";
+
+export function formatMessage(
+  message: JsonRpcResponse,
+  framing: StdioFraming,
+): string {
+  const body = JSON.stringify(message);
+
+  if (framing === "newline") {
+    return `${body}\n`;
+  }
+
+  return `Content-Length: ${Buffer.byteLength(body, "utf8")}\r\n\r\n${body}`;
 }
 
-function parseMessages(buffer: string) {
-  const messages: Array<{ request: JsonRpcRequest; bytesConsumed: number }> =
+export function parseMessages(buffer: string) {
+  const messages: Array<{ request: JsonRpcRequest; framing: StdioFraming }> =
     [];
   let offset = 0;
 
   while (offset < buffer.length) {
-    const headerEnd = buffer.indexOf("\r\n\r\n", offset);
+    while (offset < buffer.length && /\s/u.test(buffer.charAt(offset))) {
+      offset += 1;
+    }
 
-    if (headerEnd === -1) {
+    if (offset >= buffer.length) {
       break;
     }
 
-    const header = buffer.slice(offset, headerEnd);
-    const lengthMatch = header.match(/Content-Length:\s*(\d+)/iu);
+    if (/^content-length:/iu.test(buffer.slice(offset, offset + 15))) {
+      const headerEnd = buffer.indexOf("\r\n\r\n", offset);
 
-    if (!lengthMatch) {
-      throw new Error("Missing Content-Length header.");
+      if (headerEnd === -1) {
+        break;
+      }
+
+      const header = buffer.slice(offset, headerEnd);
+      const lengthMatch = header.match(/Content-Length:\s*(\d+)/iu);
+
+      if (!lengthMatch) {
+        throw new Error("Missing Content-Length header.");
+      }
+
+      const contentLength = Number.parseInt(lengthMatch[1] ?? "0", 10);
+      const bodyStart = headerEnd + 4;
+      const bodyEnd = bodyStart + contentLength;
+
+      if (buffer.length < bodyEnd) {
+        break;
+      }
+
+      messages.push({
+        request: JSON.parse(buffer.slice(bodyStart, bodyEnd)) as JsonRpcRequest,
+        framing: "content-length",
+      });
+      offset = bodyEnd;
+      continue;
     }
 
-    const contentLength = Number.parseInt(lengthMatch[1] ?? "0", 10);
-    const bodyStart = headerEnd + 4;
-    const bodyEnd = bodyStart + contentLength;
+    const lineEnd = buffer.indexOf("\n", offset);
 
-    if (buffer.length < bodyEnd) {
+    if (lineEnd === -1) {
       break;
     }
 
-    const rawBody = buffer.slice(bodyStart, bodyEnd);
-    const request = JSON.parse(rawBody) as JsonRpcRequest;
+    const line = buffer.slice(offset, lineEnd).trim();
+    offset = lineEnd + 1;
 
-    messages.push({
-      request,
-      bytesConsumed: bodyEnd - offset,
-    });
-    offset = bodyEnd;
+    if (line) {
+      messages.push({
+        request: JSON.parse(line) as JsonRpcRequest,
+        framing: "newline",
+      });
+    }
   }
 
   return { messages, remainder: buffer.slice(offset) };
 }
 
-export function startStdioServer(context: DyknowMcpContext) {
-  stdin.setEncoding("utf8");
+export function startStdioServer(
+  context: DyknowMcpContext,
+  streams: {
+    input?: NodeJS.ReadableStream;
+    output?: NodeJS.WritableStream;
+  } = {},
+) {
+  const input = streams.input ?? stdin;
+  const output = streams.output ?? stdout;
   let buffer = "";
+  // Replies mirror the request's framing; parse errors use the last one seen.
+  let lastFraming: StdioFraming = "newline";
 
-  stdin.on("data", async (chunk: string) => {
+  input.setEncoding("utf8");
+  input.on("data", async (chunk: string) => {
     buffer += chunk;
 
     try {
@@ -796,10 +841,11 @@ export function startStdioServer(context: DyknowMcpContext) {
       buffer = parsed.remainder;
 
       for (const message of parsed.messages) {
+        lastFraming = message.framing;
         const response = await handleJsonRpcRequest(message.request, context);
 
         if (response) {
-          writeMessage(response);
+          output.write(formatMessage(response, message.framing));
         }
       }
     } catch (error) {
@@ -808,7 +854,7 @@ export function startStdioServer(context: DyknowMcpContext) {
         -32700,
         error instanceof Error ? error.message : "Failed to parse request.",
       );
-      writeMessage(response);
+      output.write(formatMessage(response, lastFraming));
       buffer = "";
     }
   });
