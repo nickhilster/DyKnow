@@ -387,17 +387,20 @@
           "type": "string",
           "enum": ["anthropic", "openai", "local-stub"],
           "default": "anthropic",
-          "description": "LLM provider used by dyknow update."
+          "description": "LLM provider used by dyknow update.",
+          "deprecationMessage": "Not used yet. DyKnow reads the provider from llmProvider in dyknow.config.json."
         },
         "dyknow.anthropicModel": {
           "type": "string",
           "default": "claude-sonnet-4-6",
-          "description": "Anthropic model ID (used when dyknow.llmProvider is 'anthropic')."
+          "description": "Anthropic model ID (used when dyknow.llmProvider is 'anthropic').",
+          "deprecationMessage": "Not used yet. DyKnow reads the provider from llmProvider in dyknow.config.json."
         },
         "dyknow.openaiModel": {
           "type": "string",
           "default": "gpt-4o",
-          "description": "OpenAI model ID (used when dyknow.llmProvider is 'openai')."
+          "description": "OpenAI model ID (used when dyknow.llmProvider is 'openai').",
+          "deprecationMessage": "Not used yet. For byo-key drafting set DYKNOW_OPENAI_MODEL."
         },
         "dyknow.allowHighRisk": {
           "type": "boolean",

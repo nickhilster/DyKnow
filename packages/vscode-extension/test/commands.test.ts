@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { parseUpdateOptions } from "../../cli/src/update.js";
 import {
   buildAllPendingReviewArgs,
   buildCommitArgs,
@@ -12,14 +13,11 @@ import {
 } from "../src/commands.js";
 
 describe("vscode extension command helpers", () => {
-  it("builds update args in CLI order", () => {
-    expect(buildUpdateArgs("anthropic", "claude-sonnet-4-6")).toEqual([
-      "update",
-      "--provider",
-      "anthropic",
-      "--model",
-      "claude-sonnet-4-6",
-    ]);
+  it("builds update args the CLI accepts", () => {
+    const [command, ...options] = buildUpdateArgs();
+
+    expect(command).toBe("update");
+    expect(() => parseUpdateOptions(options)).not.toThrow();
   });
 
   it("builds single-page review action args", () => {

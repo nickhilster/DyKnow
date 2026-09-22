@@ -1,7 +1,9 @@
 export type ReviewMutationAction = "approve" | "skip" | "reject" | "regenerate";
 
-export function buildUpdateArgs(provider: string, model: string): string[] {
-  return ["update", "--provider", provider, "--model", model];
+// The drafting provider comes from llmProvider in dyknow.config.json (plus
+// env vars for byo-key); `dyknow update` has no provider or model flags.
+export function buildUpdateArgs(): string[] {
+  return ["update"];
 }
 
 export function buildReviewActionArgs(
