@@ -13,6 +13,7 @@
     "dev:cloud": "npm run dev --workspace=packages/cloud-web",
     "dev:cloud:api": "node packages/cloud-api/dist/bin.js",
     "demo:smoke": "node packages/cli/dist/bin.js demo-smoke",
+    "smoke:quickstart": "node scripts/quickstart-smoke.mjs",
     "format": "biome format . --write",
     "lint": "biome check .",
     "test": "vitest run",
