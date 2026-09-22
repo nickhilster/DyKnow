@@ -86,3 +86,8 @@ jobs:
 
       - name: Run README quick start smoke test
         run: npm run smoke:quickstart
+
+      - name: Check the README global install
+        run: |
+          npm install -g ./packages/cli ./packages/mcp-server
+          dyknow --help
