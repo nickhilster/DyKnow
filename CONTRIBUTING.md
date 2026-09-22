@@ -166,14 +166,15 @@ Eventually this will be the `dyknow lint` command. Today it is human-driven.
 
 The repo is now in Phase 1 with a working TypeScript workspace. For code changes:
 
-1. `npm install` — install workspace dependencies.
-2. `npm run build` — compile `packages/core` and `packages/cli`.
+1. `npm ci` — install workspace dependencies from the lockfile (Node.js 22.12+).
+2. `npm run build` — compile every package.
 3. `npm test` — run all tests (Vitest).
 4. `npm run lint` — run Biome checks.
-5. Make your change in a feature branch.
-6. Write or update tests — all PRs must keep the test suite green.
-7. Follow the commit message format above.
-8. Open a PR; CI runs dependency audit, lint, tests, build, and commit-lint.
+5. `npm run smoke:quickstart` — run the README quick start against a throwaway repo.
+6. Make your change in a feature branch.
+7. Write or update tests — all PRs must keep the test suite green.
+8. Follow the commit message format above.
+9. Open a PR; CI runs the dependency audit, lint, tests, build and quick start smoke test on Linux, macOS and Windows, plus commit-lint.
 
 See [AGENTS.md](AGENTS.md) for the full development command reference and coding standards.
 
