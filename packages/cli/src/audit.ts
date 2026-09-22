@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
-import { appendFile, mkdir } from "node:fs/promises";
+import { appendFile, mkdir, realpath } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import { promisify } from "node:util";
 
@@ -44,14 +44,20 @@ export async function resolveRuntimeAuditPath(rootPath: string) {
         },
       ),
     ]);
-    const gitDir = resolve(rootPath, gitDirResult.stdout.trim());
-    const runtimeAuditPath = resolve(rootPath, gitPathResult.stdout.trim());
+    const gitPath = gitPathResult.stdout.trim();
+    // git reports canonical paths, so compare canonical forms. Otherwise a
+    // symlinked root (macOS /var -> /private/var) or a Windows 8.3 short
+    // name looks like an escape and the runtime log is silently dropped.
+    const [realRootPath, realGitDir] = await Promise.all([
+      realpath(rootPath),
+      realpath(resolve(rootPath, gitDirResult.stdout.trim())),
+    ]);
 
-    if (!isPathInsideDirectory(gitDir, runtimeAuditPath)) {
+    if (!isPathInsideDirectory(realGitDir, resolve(realRootPath, gitPath))) {
       throw new Error("Runtime audit log path escaped the git directory.");
     }
 
-    return runtimeAuditPath;
+    return resolve(rootPath, gitPath);
   } catch {
     return undefined;
   }
