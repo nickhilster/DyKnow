@@ -158,4 +158,14 @@ describe("@dyknow/app cloud sync", () => {
       workspaceSlug: "config-workspace",
     });
   });
+
+  it("defaults to the local cloud-api address", () => {
+    const resolved = resolveCloudSyncOptions({
+      cli: { password: "dyknow-demo", workspaceSlug: "dyknow-marketing" },
+      env: {} as NodeJS.ProcessEnv,
+    });
+
+    // Matches cloud-api's DYKNOW_CLOUD_API_PORT default.
+    expect(resolved.apiBaseUrl).toBe("http://127.0.0.1:4180");
+  });
 });

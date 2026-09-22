@@ -58,7 +58,7 @@ export function resolveCloudSyncOptions(options: {
     config.apiBaseUrl ??
     env.DYKNOW_CLOUD_API_BASE_URL ??
     cli.apiBaseUrl ??
-    "http://127.0.0.1:3000";
+    "http://127.0.0.1:4180";
   const email =
     config.email ?? env.DYKNOW_CLOUD_EMAIL ?? cli.email ?? "nick@example.com";
   const organizationSlug =
