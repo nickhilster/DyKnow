@@ -12,17 +12,17 @@ import {
   PAGE_RISK_LEVELS,
   SOURCE_CONNECTION_STATUSES,
   type User,
-  type WorkspaceEventInput,
   WORKSPACE_EVENT_KINDS,
   WORKSPACE_RUN_STATUSES,
   WORKSPACE_RUN_TYPES,
   WORKSPACE_SOURCE_TYPES,
   WORKSPACE_STATUSES,
   type Workspace,
+  type WorkspaceEventInput,
   type WorkspacePage,
   type WorkspaceRunInput,
-  type WorkspaceUpdateBatchInput,
   type WorkspaceSource,
+  type WorkspaceUpdateBatchInput,
 } from "@dyknow/cloud-shared";
 
 import { CloudStorage } from "./storage.js";
@@ -522,9 +522,7 @@ export function createCloudApiServer(options: CloudApiServerOptions = {}) {
             typeof body.summary === "string" ? body.summary.trim() : undefined;
 
           if (
-            !WORKSPACE_RUN_TYPES.includes(
-              type as WorkspaceRunInput["type"],
-            ) ||
+            !WORKSPACE_RUN_TYPES.includes(type as WorkspaceRunInput["type"]) ||
             !WORKSPACE_RUN_STATUSES.includes(
               status as WorkspaceRunInput["status"],
             ) ||
@@ -590,7 +588,8 @@ export function createCloudApiServer(options: CloudApiServerOptions = {}) {
             workspaceId: workspace.id,
             batch: {
               createdAt,
-              reviewStateCounts: reviewStateCounts as WorkspaceUpdateBatchInput["reviewStateCounts"],
+              reviewStateCounts:
+                reviewStateCounts as WorkspaceUpdateBatchInput["reviewStateCounts"],
               riskCounts: riskCounts as WorkspaceUpdateBatchInput["riskCounts"],
             },
           });
@@ -630,9 +629,7 @@ export function createCloudApiServer(options: CloudApiServerOptions = {}) {
           if (
             !message ||
             !createdAt ||
-            !WORKSPACE_EVENT_KINDS.includes(
-              kind as WorkspaceEventInput["kind"],
-            )
+            !WORKSPACE_EVENT_KINDS.includes(kind as WorkspaceEventInput["kind"])
           ) {
             badRequest(response, "Invalid workspace event payload.");
             return;

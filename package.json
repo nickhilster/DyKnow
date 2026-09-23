@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": ">=20.11.0"
+    "node": ">=22.12.0"
   },
   "workspaces": ["packages/*"],
   "scripts": {
@@ -13,6 +13,7 @@
     "dev:cloud": "npm run dev --workspace=packages/cloud-web",
     "dev:cloud:api": "node packages/cloud-api/dist/bin.js",
     "demo:smoke": "node packages/cli/dist/bin.js demo-smoke",
+    "smoke:quickstart": "node scripts/quickstart-smoke.mjs",
     "format": "biome format . --write",
     "lint": "biome check .",
     "test": "vitest run",

@@ -1,6 +1,13 @@
 import { access, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
+import { PAGE_RISK_LEVELS, UPDATE_REVIEW_STATES } from "@dyknow/cloud-shared";
+import type {
+  PageRiskLevel,
+  UpdateReviewState,
+  WorkspaceRunStatus,
+  WorkspaceRunType,
+} from "@dyknow/cloud-shared";
 import {
   DEFAULT_REPO_DIFF_OUTPUT_PATH,
   DEFAULT_REPO_MAP_OUTPUT_PATH,
@@ -8,16 +15,6 @@ import {
   type UpdateDraftBatch,
   UpdateDraftBatchSchema,
 } from "@dyknow/core";
-import {
-  PAGE_RISK_LEVELS,
-  UPDATE_REVIEW_STATES,
-} from "@dyknow/cloud-shared";
-import type {
-  PageRiskLevel,
-  UpdateReviewState,
-  WorkspaceRunStatus,
-  WorkspaceRunType,
-} from "@dyknow/cloud-shared";
 
 type FetchLike = typeof fetch;
 
@@ -61,7 +58,7 @@ export function resolveCloudSyncOptions(options: {
     config.apiBaseUrl ??
     env.DYKNOW_CLOUD_API_BASE_URL ??
     cli.apiBaseUrl ??
-    "http://127.0.0.1:3000";
+    "http://127.0.0.1:4180";
   const email =
     config.email ?? env.DYKNOW_CLOUD_EMAIL ?? cli.email ?? "nick@example.com";
   const organizationSlug =
@@ -70,9 +67,7 @@ export function resolveCloudSyncOptions(options: {
     cli.organizationSlug ??
     "dyknow";
   const workspaceSlug =
-    config.workspaceSlug ??
-    env.DYKNOW_CLOUD_WORKSPACE ??
-    cli.workspaceSlug;
+    config.workspaceSlug ?? env.DYKNOW_CLOUD_WORKSPACE ?? cli.workspaceSlug;
   const password = env.DYKNOW_CLOUD_PASSWORD ?? cli.password;
 
   if (!workspaceSlug) {
@@ -258,7 +253,7 @@ export async function createCloudSyncResult(
       body: {
         startedAt: syncedAt,
         status: "succeeded" satisfies WorkspaceRunStatus,
-        summary: `Synced repo diff from Local.`,
+        summary: "Synced repo diff from Local.",
         type: "diff" satisfies WorkspaceRunType,
         finishedAt: syncedAt,
       },
@@ -286,7 +281,7 @@ export async function createCloudSyncResult(
 
     await postJson({
       body: {
-        createdAt: syncedAt,
+        startedAt: syncedAt,
         status: "succeeded" satisfies WorkspaceRunStatus,
         summary: `Synced ${parsed.summary.draftedProposals} drafted proposal(s) from Local review output.`,
         type: "update" satisfies WorkspaceRunType,
@@ -300,7 +295,7 @@ export async function createCloudSyncResult(
 
     await postJson({
       body: {
-        createdAt: syncedAt,
+        startedAt: syncedAt,
         status: "succeeded" satisfies WorkspaceRunStatus,
         summary: `Synced review state for ${parsed.drafts.length} proposal(s) from Local.`,
         type: "review-sync" satisfies WorkspaceRunType,

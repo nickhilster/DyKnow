@@ -1311,13 +1311,7 @@ export function activate(context: vscode.ExtensionContext): void {
       }
 
       getOutput().show(true);
-      const config = vscode.workspace.getConfiguration("dyknow");
-      const provider = config.get<string>("llmProvider", "anthropic");
-      const model =
-        provider === "anthropic"
-          ? config.get<string>("anthropicModel", "claude-sonnet-4-6")
-          : config.get<string>("openaiModel", "gpt-4o");
-      const args = buildUpdateArgs(provider, model);
+      const args = buildUpdateArgs();
 
       try {
         await vscode.window.withProgress(

@@ -85,7 +85,8 @@ describe("@dyknow/app cloud sync", () => {
         if (url.endsWith("/api/session")) {
           return new Response(JSON.stringify({ user: { id: "user_nick" } }), {
             headers: {
-              "set-cookie": "dyknow_cloud_session=test-cookie; Path=/; HttpOnly",
+              "set-cookie":
+                "dyknow_cloud_session=test-cookie; Path=/; HttpOnly",
             },
             status: 200,
           });
@@ -109,11 +110,20 @@ describe("@dyknow/app cloud sync", () => {
       runsRecorded: 4,
       updateBatchesRecorded: 1,
     });
-    expect(requests.some((request) => request.url.endsWith("/runs"))).toBe(true);
+    const runRequests = requests.filter((request) =>
+      request.url.endsWith("/runs"),
+    );
+    expect(runRequests).toHaveLength(4);
+    // cloud-api rejects run payloads without startedAt.
+    for (const request of runRequests) {
+      expect(request.body).toMatchObject({ startedAt: expect.any(String) });
+    }
     expect(
       requests.some((request) => request.url.endsWith("/update-batches")),
     ).toBe(true);
-    expect(requests.some((request) => request.url.endsWith("/events"))).toBe(true);
+    expect(requests.some((request) => request.url.endsWith("/events"))).toBe(
+      true,
+    );
   });
 
   it("prefers config, then env, then cli values for cloud connection settings", () => {
@@ -147,5 +157,15 @@ describe("@dyknow/app cloud sync", () => {
       password: "env-password",
       workspaceSlug: "config-workspace",
     });
+  });
+
+  it("defaults to the local cloud-api address", () => {
+    const resolved = resolveCloudSyncOptions({
+      cli: { password: "dyknow-demo", workspaceSlug: "dyknow-marketing" },
+      env: {} as NodeJS.ProcessEnv,
+    });
+
+    // Matches cloud-api's DYKNOW_CLOUD_API_PORT default.
+    expect(resolved.apiBaseUrl).toBe("http://127.0.0.1:4180");
   });
 });

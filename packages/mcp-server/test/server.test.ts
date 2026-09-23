@@ -2,9 +2,10 @@ import { execFile } from "node:child_process";
 import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import { PassThrough } from "node:stream";
 import { promisify } from "node:util";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   DEFAULT_COMMIT_MESSAGE,
@@ -16,6 +17,8 @@ import {
   DEFAULT_UPDATE_OUTPUT_PATH,
   createToolDefinitions,
   handleJsonRpcRequest,
+  parseMessages,
+  startStdioServer,
 } from "../src/server.js";
 
 const execFileAsync = promisify(execFile);
@@ -97,6 +100,103 @@ describe("@dyknow/mcp-server", () => {
         expect.objectContaining({ name: "dyknow_diff" }),
       ]),
     });
+  });
+
+  it("parses newline-delimited messages, the MCP stdio default", () => {
+    const first = parseMessages(
+      '{"jsonrpc":"2.0","id":1,"method":"initialize"}\n\n{"jsonrpc":"2.0","id":2,',
+    );
+
+    expect(first.messages).toEqual([
+      {
+        request: { jsonrpc: "2.0", id: 1, method: "initialize" },
+        framing: "newline",
+      },
+    ]);
+    expect(first.remainder).toBe('{"jsonrpc":"2.0","id":2,');
+
+    const second = parseMessages(`${first.remainder}"method":"tools/list"}\n`);
+
+    expect(second.messages.map((message) => message.request.id)).toEqual([2]);
+    expect(second.remainder).toBe("");
+  });
+
+  it("still parses Content-Length framed messages", () => {
+    const body = '{"jsonrpc":"2.0","id":7,"method":"tools/list"}';
+    const parsed = parseMessages(
+      `Content-Length: ${body.length}\r\n\r\n${body}Content-Len`,
+    );
+
+    expect(parsed.messages).toEqual([
+      {
+        request: { jsonrpc: "2.0", id: 7, method: "tools/list" },
+        framing: "content-length",
+      },
+    ]);
+    expect(parsed.remainder).toBe("Content-Len");
+  });
+
+  it("parses Content-Length frames when another header comes first", () => {
+    const body = '{"jsonrpc":"2.0","id":8,"method":"tools/list"}';
+    const parsed = parseMessages(
+      `Content-Type: application/vscode-jsonrpc; charset=utf-8\r\nContent-Length: ${body.length}\r\n\r\n${body}`,
+    );
+
+    expect(parsed.messages).toEqual([
+      {
+        request: { jsonrpc: "2.0", id: 8, method: "tools/list" },
+        framing: "content-length",
+      },
+    ]);
+    expect(parsed.remainder).toBe("");
+  });
+
+  it("waits for the rest of a header block that has not arrived yet", () => {
+    const parsed = parseMessages("Content-Type: application/json\r\n");
+
+    expect(parsed.messages).toEqual([]);
+    expect(parsed.remainder).toBe("Content-Type: application/json\r\n");
+  });
+
+  it("answers each request over stdio in the framing it arrived in", async () => {
+    const input = new PassThrough();
+    const output = new PassThrough();
+    let written = "";
+
+    output.setEncoding("utf8");
+    output.on("data", (chunk: string) => {
+      written += chunk;
+    });
+    startStdioServer({ cwd: process.cwd() }, { input, output });
+
+    input.write(
+      [
+        '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}',
+        '{"jsonrpc":"2.0","method":"notifications/initialized"}',
+        "",
+      ].join("\n"),
+    );
+
+    await vi.waitFor(() => {
+      expect(written.endsWith("\n")).toBe(true);
+    });
+
+    expect(JSON.parse(written)).toMatchObject({
+      id: 1,
+      result: { serverInfo: { name: "dyknow-mcp" } },
+    });
+
+    const lspBody = '{"jsonrpc":"2.0","id":2,"method":"tools/list"}';
+    written = "";
+    input.write(`Content-Length: ${lspBody.length}\r\n\r\n${lspBody}`);
+
+    await vi.waitFor(() => {
+      expect(written).toContain('"id":2');
+    });
+
+    expect(written).toMatch(
+      /^Content-Length: \d+\r\n\r\n\{"jsonrpc":"2.0","id":2,/u,
+    );
   });
 
   it("runs scan, diff, update, and status through tools/call", async () => {

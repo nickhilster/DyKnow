@@ -35,8 +35,18 @@ Format: each release gets a heading with date and a short list of changes groupe
 - `CHANGELOG.md` — this file.
 - `docs/lint.md` — runnable wiki health checklist (precursor to the future `dyknow lint` command).
 - `docs/implementation-roadmap.md` — task-level build checklist phased 0–5 (foundations, Local CLI, VS Code, public demo, Cloud Lite, pilots).
+- `scripts/quickstart-smoke.mjs` (`npm run smoke:quickstart`) — runs the README quick start, including an MCP handshake, against a throwaway repo.
+- `.gitattributes` — LF line endings in every working tree so Biome passes on Windows.
 
 ### Changed
+- README now has a Status table (stable vs early surfaces) and a quick start that works from a fresh clone on Windows, macOS and Linux.
+- Node.js 22.12 or newer is now required (`engines`), matching what the build tooling already needed.
+- CI runs lint, tests, build and the quick start smoke test on Linux, macOS and Windows; the lockfile is back in sync so `npm ci` works again.
+- Fixed: `dyknow-mcp` now speaks newline-delimited JSON over stdio as the MCP spec requires, so standard MCP clients can connect (Content-Length framing still works).
+- Fixed: the VS Code "Draft Updates" command no longer passes `--provider`/`--model` flags that `dyknow update` rejects. The unused provider settings are marked deprecated.
+- Fixed: `dyknow cloud-sync` sends `startedAt` for update and review-sync runs and defaults to the cloud-api port (4180).
+- Fixed: the runtime audit log is found when the repo path goes through a symlink or a Windows 8.3 short name.
+- Fixed: a fresh clone builds. A committed `tsconfig.tsbuildinfo` had made `tsc -b` skip `cloud-shared`.
 - Public repo metadata now uses MIT licensing and removes private tracker links plus internal-only dogfood names from synthesized docs.
 - CI now runs commit-lint on pull requests in addition to dependency audit, lint, tests, and build.
 - `dyknow diff` now works end to end, comparing the current workspace scan to the saved repo-map snapshot, mapping deltas to affected configured pages, and writing a structured repo-diff artifact.
@@ -48,6 +58,9 @@ Format: each release gets a heading with date and a short list of changes groupe
 - `dyknow init` and `dyknow scan` now work end to end for this repo and are dogfooded against the current workspace.
 - The repo now includes a real TypeScript implementation scaffold for DyKnow Local in addition to the documentation wiki.
 - Relocated `dyknow_local_whitepaper.md` from the repo root into `docs/sources/` so all raw inputs live in one place. Updated every cross-reference (README, CLAUDE, AGENTS, all wiki page frontmatter, log).
+
+### Removed
+- Committed build outputs: `tsconfig.tsbuildinfo` files and the prebuilt `packages/vscode-extension/dyknow-0.1.0.vsix`.
 
 ---
 
