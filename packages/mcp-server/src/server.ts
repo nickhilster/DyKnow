@@ -755,6 +755,15 @@ export function formatMessage(
   return `Content-Length: ${Buffer.byteLength(body, "utf8")}\r\n\r\n${body}`;
 }
 
+function startsWithHeaderLine(buffer: string, offset: number) {
+  const lineEnd = buffer.indexOf("\n", offset);
+  const firstLine = buffer.slice(
+    offset,
+    lineEnd === -1 ? buffer.length : lineEnd,
+  );
+  return /^[A-Za-z][A-Za-z0-9-]*:/u.test(firstLine);
+}
+
 export function parseMessages(buffer: string) {
   const messages: Array<{ request: JsonRpcRequest; framing: StdioFraming }> =
     [];
@@ -769,7 +778,13 @@ export function parseMessages(buffer: string) {
       break;
     }
 
-    if (/^content-length:/iu.test(buffer.slice(offset, offset + 15))) {
+    // A newline-delimited message starts with a JSON value. Anything that opens
+    // with a "Name:" header line is an LSP-style frame, whichever header comes
+    // first (Content-Type may precede Content-Length).
+    if (
+      !/^[[{]/u.test(buffer.charAt(offset)) &&
+      startsWithHeaderLine(buffer, offset)
+    ) {
       const headerEnd = buffer.indexOf("\r\n\r\n", offset);
 
       if (headerEnd === -1) {

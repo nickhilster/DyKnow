@@ -136,6 +136,28 @@ describe("@dyknow/mcp-server", () => {
     expect(parsed.remainder).toBe("Content-Len");
   });
 
+  it("parses Content-Length frames when another header comes first", () => {
+    const body = '{"jsonrpc":"2.0","id":8,"method":"tools/list"}';
+    const parsed = parseMessages(
+      `Content-Type: application/vscode-jsonrpc; charset=utf-8\r\nContent-Length: ${body.length}\r\n\r\n${body}`,
+    );
+
+    expect(parsed.messages).toEqual([
+      {
+        request: { jsonrpc: "2.0", id: 8, method: "tools/list" },
+        framing: "content-length",
+      },
+    ]);
+    expect(parsed.remainder).toBe("");
+  });
+
+  it("waits for the rest of a header block that has not arrived yet", () => {
+    const parsed = parseMessages("Content-Type: application/json\r\n");
+
+    expect(parsed.messages).toEqual([]);
+    expect(parsed.remainder).toBe("Content-Type: application/json\r\n");
+  });
+
   it("answers each request over stdio in the framing it arrived in", async () => {
     const input = new PassThrough();
     const output = new PassThrough();
