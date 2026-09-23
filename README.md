@@ -43,7 +43,7 @@ npm run build
 npm install -g ./packages/cli ./packages/mcp-server
 ```
 
-These commands are the same in PowerShell, Command Prompt and macOS/Linux shells. The last one puts `dyknow` and `dyknow-mcp` on your PATH as links into this checkout, so after a `git pull` you only need `npm ci` and `npm run build` again. To remove them, run `npm uninstall -g @dyknow/cli @dyknow/mcp-server`.
+These commands are the same in PowerShell, Command Prompt and macOS/Linux shells. The last one puts `dyknow` and `dyknow-mcp` on your PATH. npm installs a local folder globally as a symlink into this checkout rather than a copy, so after a `git pull` you only need `npm ci` and `npm run build` again. To remove them, run `npm uninstall -g @dyknow/cli @dyknow/mcp-server`.
 
 If you would rather not install globally (for example because global npm installs need `sudo` on your machine), skip the last command and call the CLI by path: `node /path/to/DyKnow/packages/cli/dist/bin.js <command>`.
 
@@ -108,11 +108,16 @@ This opens an Extension Development Host window with DyKnow loaded. The extensio
 
 ### Try the Cloud prototype (early)
 
-DyKnow Cloud here is an early, local-only prototype of the hosted control plane. It uses seeded demo data, a single hard-coded demo password and a JSON file under `packages/cloud-api/.local/`. Don't expose it to a network. After building:
+DyKnow Cloud here is an early, local-only prototype of the hosted control plane. It uses seeded demo data, a single hard-coded demo password and a JSON file under `packages/cloud-api/.local/`. Don't expose it to a network. After building, start the API and the web UI in two separate terminals, since both keep running:
 
 ```bash
-npm run dev:cloud:api   # API on http://127.0.0.1:4180
-npm run dev:cloud       # web UI through Vite, which proxies /api to the API
+# Terminal 1: API on http://127.0.0.1:4180
+npm run dev:cloud:api
+```
+
+```bash
+# Terminal 2: web UI through Vite, which proxies /api to the API
+npm run dev:cloud
 ```
 
 Sign in as `nick@example.com` with the password `dyknow-demo`. To push Local results from a repository into the prototype, run this from that repository while the API is up:

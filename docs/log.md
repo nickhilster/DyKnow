@@ -324,3 +324,4 @@ Do not edit past entries. If an entry is wrong, add a correction entry below it.
 2026-06-29 | create | docs/cloud-sprint-1-control-plane.md | Added the first hosted-product spec for DyKnow Cloud: control plane, account/workspace model, read-only dashboard, and Local integration boundary.
 2026-06-29 | create | docs/superpowers/plans/2026-06-29-dyknow-cloud-sprint-1.md | Added the implementation-ordered worker checklist for the first DyKnow Cloud sprint.
 2026-06-29 | update | docs/index.md, docs/roadmap.md, docs/implementation-roadmap.md | Linked the new Cloud Sprint 1 docs and marked Phase 4 as kicked off with a narrow control-plane slice.
+2026-09-22 | update | AGENTS.md | Added the Cloud prototype packages (cloud-api, cloud-shared, cloud-web) to the architecture tree and summary, corrected the npm run build description, and listed the Cloud dev commands.

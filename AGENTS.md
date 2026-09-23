@@ -6,6 +6,8 @@ sources:
   - docs/sources/dyknow_local_whitepaper.md
   - CLAUDE.md
   - package.json
+  - tsconfig.json
+  - README.md
   - biome.json
   - dyknow.config.json
   - dyknow.config.schema.json
@@ -34,7 +36,7 @@ sources:
   - packages/cli/src/scan.ts
   - packages/cli/src/status.ts
   - packages/cli/src/update.ts
-last_reviewed: 2026-06-26
+last_reviewed: 2026-09-22
 confidence: high
 ---
 
@@ -73,6 +75,9 @@ Build a knowledge maintenance system that:
 ├── packages/
 │   ├── app/                      Shared DyKnow Local application services.
 │   ├── cli/                      Bootstrap DyKnow Local CLI package.
+│   ├── cloud-api/                Early Cloud prototype: local HTTP API with demo auth.
+│   ├── cloud-shared/             Contracts shared by the Cloud API, web UI, and cloud-sync.
+│   ├── cloud-web/                Early Cloud prototype: React dashboard (Vite).
 │   ├── core/                     Shared engine contracts and config validation.
 │   ├── mcp-server/               Stdio MCP server for agent-native clients.
 │   └── vscode-extension/         Optional VS Code client surface.
@@ -96,13 +101,14 @@ Build a knowledge maintenance system that:
         └── dyknow_local_whitepaper.md   Founding raw source.
 ```
 
-  The implemented code surface is still small, but it is real: `packages/core` defines the shared engine contracts, config validation, repo-map schema, repo-diff schema, default update prompt templates, and a provider-backed update runner with local built-in page generators, local confidence/risk heuristics, BYO OpenAI retry/timeout handling, and per-draft usage telemetry; `packages/app` owns reusable scan, diff, proposal-read, update, review, log, commit, PR, and status orchestration; `packages/cli` implements `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, an interactive and non-interactive `dyknow review` flow with edited proposal text, external-editor handling, skip handling, targeted regenerate handling, and review-action audit logging, a read-only `dyknow log` audit viewer that now merges the committed audit artifact with a git-local runtime audit file, `dyknow status` for generating an HTML progress snapshot, and `dyknow commit` and `dyknow pr` workflow slices with publish-action audit logging where high-risk proposals require an explicit `--allow-high-risk` publish override and PR publication records both a prepared local state and a confirmed external PR-open event in separate persistence boundaries; `packages/mcp-server` exposes stdio MCP tools for `scan`, `diff`, `update`, `list_proposals`, `get_proposal`, `review_proposal`, `log`, `status`, `commit`, and `open_pr`; `packages/vscode-extension` now has focused automated coverage for command and publish-flow argument wiring; and CI runs lint, tests, and build checks.
+  The implemented code surface is still small, but it is real: `packages/core` defines the shared engine contracts, config validation, repo-map schema, repo-diff schema, default update prompt templates, and a provider-backed update runner with local built-in page generators, local confidence/risk heuristics, BYO OpenAI retry/timeout handling, and per-draft usage telemetry; `packages/app` owns reusable scan, diff, proposal-read, update, review, log, commit, PR, and status orchestration; `packages/cli` implements `dyknow init`, `dyknow scan`, `dyknow diff`, `dyknow update`, an interactive and non-interactive `dyknow review` flow with edited proposal text, external-editor handling, skip handling, targeted regenerate handling, and review-action audit logging, a read-only `dyknow log` audit viewer that now merges the committed audit artifact with a git-local runtime audit file, `dyknow status` for generating an HTML progress snapshot, and `dyknow commit` and `dyknow pr` workflow slices with publish-action audit logging where high-risk proposals require an explicit `--allow-high-risk` publish override and PR publication records both a prepared local state and a confirmed external PR-open event in separate persistence boundaries; `packages/mcp-server` exposes stdio MCP tools for `scan`, `diff`, `update`, `list_proposals`, `get_proposal`, `review_proposal`, `log`, `status`, `commit`, and `open_pr`; `packages/vscode-extension` now has focused automated coverage for command and publish-flow argument wiring; and CI runs lint, tests, and build checks. Alongside Local, `packages/cloud-shared`, `packages/cloud-api`, and `packages/cloud-web` hold an early, local-only DyKnow Cloud prototype (seeded demo data, demo auth, a JSON store) that `dyknow cloud-sync` can push Local results into. The README marks Cloud as early; treat it as prototype code.
 
 ## Development commands
 
   - `npm install` — install workspace dependencies.
   - `npm test` — run the shared-contract and config-validation tests.
-  - `npm run build` — compile the TypeScript workspace packages, including `core`, `app`, `cli`, and `mcp-server`.
+  - `npm run build` — run `tsc -b` over the TypeScript project references (`core`, `app`, `cli`, `mcp-server`, `cloud-shared`, and `cloud-api`), then build the `cloud-web` Vite app and the VS Code extension.
+  - `npm run dev:cloud:api` and `npm run dev:cloud` — after a build, start the Cloud prototype API (http://127.0.0.1:4180) and the web UI. Both are long-running, so use two terminals.
   - `npm run lint` — run Biome checks across the scaffolded workspace.
   - `node packages/cli/dist/bin.js init --force --project-name DyKnow` — generate the repo-local config and schema after a build.
   - `node packages/cli/dist/bin.js scan` — build the repo map snapshot at `docs/dyknow/.state/repo-map.json` after a build.
