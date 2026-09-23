@@ -60,8 +60,10 @@ async function checkMcpHandshake() {
     const deadline = Date.now() + 10_000;
 
     while (Date.now() < deadline) {
-      const lines = output.split("\n").filter(Boolean);
-      const toolsList = lines
+      // A data event can end mid-line, so only parse newline-terminated lines;
+      // the trailing fragment is picked up on a later pass once it completes.
+      const completeLines = output.split("\n").slice(0, -1).filter(Boolean);
+      const toolsList = completeLines
         .map((line) => JSON.parse(line))
         .find((response) => response.id === 2);
 
