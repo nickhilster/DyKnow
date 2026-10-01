@@ -1,5 +1,6 @@
 # DyKnow
-nBuilt with ❤️ by [Teambotics](https://www.teambotics.app)
+
+Built with ❤️ by [Teambotics](https://www.teambotics.app)
 
 **Source-aligned knowledge maintenance for humans, teams, and AI agents.**
 
