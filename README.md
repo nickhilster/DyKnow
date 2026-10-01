@@ -1,5 +1,7 @@
 # DyKnow
 
+Built with ❤️ by [Teambotics](https://www.teambotics.app)
+
 **Source-aligned knowledge maintenance for humans, teams, and AI agents.**
 
 DyKnow keeps a company's most important knowledge pages aligned with the latest source material — code, docs, websites, support tickets, product specs. It exists in two complementary forms:
