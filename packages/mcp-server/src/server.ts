@@ -481,6 +481,7 @@ export async function handleToolCall(
           reviewState: draft.proposal.reviewState,
           risk: draft.proposal.risk,
           confidence: draft.proposal.confidence,
+          draftKind: draft.proposal.draftKind,
         })),
       },
     );
@@ -507,6 +508,7 @@ export async function handleToolCall(
           reviewState: draft.proposal.reviewState,
           risk: draft.proposal.risk,
           confidence: draft.proposal.confidence,
+          draftKind: draft.proposal.draftKind,
           sources: draft.proposal.sources,
         })),
       },
@@ -620,6 +622,7 @@ export async function handleToolCall(
         inputPath: result.inputPath,
         commitHash: result.commitHash,
         publishedProposals: result.publishedProposals,
+        publishedStubProposals: result.publishedStubProposals,
       },
     );
   }

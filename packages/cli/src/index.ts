@@ -806,6 +806,11 @@ async function handleCommit(args: readonly string[], context?: CliContext) {
     stdout(
       `Applied ${result.publishedProposals} approved update proposal(s) and created commit ${result.commitHash}.`,
     );
+    if (result.publishedStubProposals > 0) {
+      stdout(
+        `Note: ${result.publishedStubProposals} of these ${result.publishedStubProposals === 1 ? "is a placeholder stub" : "are placeholder stubs"} from the offline provider, with no generated content. Configure a model provider for real drafts.`,
+      );
+    }
     return 0;
   } catch (error) {
     stderr(error instanceof Error ? error.message : "Unknown commit error.");
