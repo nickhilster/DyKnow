@@ -1,0 +1,398 @@
+{
+  "configPath": "dyknow.config.json",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "kind": "markdown",
+      "size": 379,
+      "lineCount": 14,
+      "signals": [
+        "documentation",
+        "agent-context"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "AI Agent Context",
+        "Current source map (stale baseline)",
+        "Working rules"
+      ],
+      "topLevelKeys": []
+    },
+    {
+      "path": "CLAUDE.md",
+      "kind": "markdown",
+      "size": 11,
+      "lineCount": 2,
+      "signals": [
+        "documentation",
+        "agent-context"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "README.md",
+      "kind": "markdown",
+      "size": 271,
+      "lineCount": 20,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "DyKnow Demo App",
+        "Current product surface",
+        "Local setup",
+        "Notes"
+      ],
+      "topLevelKeys": []
+    },
+    {
+      "path": "docs/architecture.md",
+      "kind": "markdown",
+      "size": 204,
+      "lineCount": 13,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Architecture",
+        "Routing overview",
+        "API overview"
+      ],
+      "topLevelKeys": []
+    },
+    {
+      "path": "docs/feature-map.md",
+      "kind": "markdown",
+      "size": 189,
+      "lineCount": 12,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Feature Map",
+        "User-facing routes",
+        "Backend"
+      ],
+      "topLevelKeys": []
+    },
+    {
+      "path": "docs/setup-guide.md",
+      "kind": "markdown",
+      "size": 243,
+      "lineCount": 19,
+      "signals": [
+        "documentation"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [
+        "Setup Guide",
+        "Prerequisites",
+        "Run locally",
+        "Current behavior"
+      ],
+      "topLevelKeys": []
+    },
+    {
+      "path": "next.config.ts",
+      "kind": "typescript",
+      "size": 133,
+      "lineCount": 8,
+      "signals": [
+        "config",
+        "source-code"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "package-lock.json",
+      "kind": "json",
+      "size": 211123,
+      "lineCount": 6094,
+      "signals": [
+        "package-manifest",
+        "config"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": [
+        "lockfileVersion",
+        "name",
+        "packages",
+        "requires",
+        "version"
+      ]
+    },
+    {
+      "path": "package.json",
+      "kind": "json",
+      "size": 479,
+      "lineCount": 25,
+      "signals": [
+        "package-manifest",
+        "config"
+      ],
+      "dependencies": [
+        {
+          "name": "next",
+          "section": "dependencies",
+          "version": "16.2.6"
+        },
+        {
+          "name": "react",
+          "section": "dependencies",
+          "version": "19.2.4"
+        },
+        {
+          "name": "react-dom",
+          "section": "dependencies",
+          "version": "19.2.4"
+        },
+        {
+          "name": "@types/node",
+          "section": "devDependencies",
+          "version": "^20"
+        },
+        {
+          "name": "@types/react",
+          "section": "devDependencies",
+          "version": "^19"
+        },
+        {
+          "name": "@types/react-dom",
+          "section": "devDependencies",
+          "version": "^19"
+        },
+        {
+          "name": "eslint",
+          "section": "devDependencies",
+          "version": "^9"
+        },
+        {
+          "name": "eslint-config-next",
+          "section": "devDependencies",
+          "version": "16.2.6"
+        },
+        {
+          "name": "typescript",
+          "section": "devDependencies",
+          "version": "^5"
+        }
+      ],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": [
+        "dependencies",
+        "devDependencies",
+        "name",
+        "private",
+        "scripts",
+        "version"
+      ]
+    },
+    {
+      "path": "public/file.svg",
+      "kind": "unknown",
+      "size": 391,
+      "lineCount": 0,
+      "signals": [],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "public/globe.svg",
+      "kind": "unknown",
+      "size": 1035,
+      "lineCount": 0,
+      "signals": [],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "public/next.svg",
+      "kind": "unknown",
+      "size": 1375,
+      "lineCount": 0,
+      "signals": [],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "public/vercel.svg",
+      "kind": "unknown",
+      "size": 128,
+      "lineCount": 0,
+      "signals": [],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "public/window.svg",
+      "kind": "unknown",
+      "size": 385,
+      "lineCount": 0,
+      "signals": [],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "src/app/api/feedback/route.ts",
+      "kind": "typescript",
+      "size": 674,
+      "lineCount": 32,
+      "signals": [
+        "route-candidate",
+        "source-code"
+      ],
+      "dependencies": [],
+      "routes": [
+        {
+          "framework": "nextjs-app",
+          "kind": "api",
+          "path": "/api/feedback",
+          "handler": "src/app/api/feedback/route.ts",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        }
+      ],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "src/app/favicon.ico",
+      "kind": "unknown",
+      "size": 25931,
+      "lineCount": 0,
+      "signals": [
+        "route-candidate"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "src/app/globals.css",
+      "kind": "unknown",
+      "size": 697,
+      "lineCount": 0,
+      "signals": [
+        "route-candidate"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "kind": "typescript",
+      "size": 669,
+      "lineCount": 31,
+      "signals": [
+        "route-candidate",
+        "source-code"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "src/app/page.module.css",
+      "kind": "unknown",
+      "size": 2432,
+      "lineCount": 0,
+      "signals": [
+        "route-candidate"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "src/app/page.tsx",
+      "kind": "typescript",
+      "size": 672,
+      "lineCount": 23,
+      "signals": [
+        "route-candidate",
+        "source-code"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "src/app/pricing/page.tsx",
+      "kind": "typescript",
+      "size": 561,
+      "lineCount": 17,
+      "signals": [
+        "route-candidate",
+        "source-code"
+      ],
+      "dependencies": [],
+      "routes": [
+        {
+          "framework": "nextjs-app",
+          "kind": "page",
+          "path": "/pricing",
+          "handler": "src/app/pricing/page.tsx",
+          "methods": []
+        }
+      ],
+      "headings": [],
+      "topLevelKeys": []
+    },
+    {
+      "path": "tsconfig.json",
+      "kind": "json",
+      "size": 670,
+      "lineCount": 35,
+      "signals": [
+        "config"
+      ],
+      "dependencies": [],
+      "routes": [],
+      "headings": [],
+      "topLevelKeys": [
+        "compilerOptions",
+        "exclude",
+        "include"
+      ]
+    }
+  ],
+  "outputPath": "docs/dyknow/.state/repo-map.json",
+  "rootPath": "C:\\DEV\\dyknow-demo-app",
+  "scannedAt": "2026-05-25T18:28:11.000Z",
+  "warnings": []
+}
