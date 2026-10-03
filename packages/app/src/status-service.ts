@@ -13,6 +13,7 @@ import {
   type ReviewState,
   type UpdateDraftBatch,
   UpdateDraftBatchSchema,
+  formatConfidenceLabel,
 } from "@dyknow/core";
 
 import { formatRelativePath, resolveWorkspacePath } from "./security.js";
@@ -570,7 +571,7 @@ function renderStatusReport(options: {
             ${draftProposals
               .map(
                 ({ proposal }) =>
-                  `<tr><td>${escapeHtml(proposal.pageId)}</td><td>${escapeHtml(proposal.reviewState)}</td><td>${escapeHtml(proposal.risk)}</td><td>${escapeHtml(proposal.confidence)}</td><td>${escapeHtml(proposal.sources.join(", "))}</td><td>${escapeHtml(proposal.summary)}</td></tr>`,
+                  `<tr><td>${escapeHtml(proposal.pageId)}</td><td>${escapeHtml(proposal.reviewState)}</td><td>${escapeHtml(proposal.risk)}</td><td>${escapeHtml(formatConfidenceLabel(proposal))}</td><td>${escapeHtml(proposal.sources.join(", "))}</td><td>${escapeHtml(proposal.summary)}</td></tr>`,
               )
               .join("")}
           </tbody>

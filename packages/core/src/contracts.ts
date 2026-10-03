@@ -66,6 +66,14 @@ export const UpdateProposalSchema = z.object({
   proposedText: z.string().min(1, "Update proposals need exact proposed text."),
   confidence: ConfidenceLevelSchema,
   risk: RiskLevelSchema,
+  /**
+   * "stub" for the offline provider's placeholder drafts (affected sources and
+   * a generic review prompt, no synthesized content); "generated" for drafts a
+   * model produced. `confidence` only measures evidence overlap, so this is
+   * what tells a reviewer a draft says nothing yet. Optional so proposal files
+   * written before this field existed still parse.
+   */
+  draftKind: z.enum(["stub", "generated"]).optional(),
   reviewState: ReviewStateSchema,
   requiresHumanReview: z.boolean(),
 });

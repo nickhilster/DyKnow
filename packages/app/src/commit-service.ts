@@ -33,6 +33,8 @@ export type CommitResult = {
   commitHash: string;
   inputPath: string;
   publishedProposals: number;
+  /** How many of the published proposals were offline placeholder stubs. */
+  publishedStubProposals: number;
 };
 
 function getHighRiskPageIds(
@@ -309,5 +311,8 @@ export async function createCommitResult(options: {
     commitHash: await runGit(rootPath, ["rev-parse", "--short", "HEAD"]),
     inputPath: inputPathRelative,
     publishedProposals: approvedDrafts.length,
+    publishedStubProposals: approvedDrafts.filter(
+      (draft) => draft.proposal.draftKind === "stub",
+    ).length,
   };
 }

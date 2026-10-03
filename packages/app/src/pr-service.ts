@@ -8,6 +8,7 @@ import {
   type DraftedPageUpdate,
   type UpdateDraftBatch,
   UpdateDraftBatchSchema,
+  formatConfidenceLabel,
 } from "@dyknow/core";
 
 import { appendAuditEntries, resolveRuntimeAuditPath } from "./audit.js";
@@ -160,7 +161,7 @@ function renderMarkdownTable(drafts: readonly DraftedPageUpdate[]): string {
   const rows = drafts.map((draft) => {
     const sources = draft.proposal.sources.join("<br>");
 
-    return `| ${draft.affectedPage.pageId} | ${draft.affectedPage.outputPath} | ${draft.proposal.risk} | ${draft.proposal.confidence} | ${sources} |`;
+    return `| ${draft.affectedPage.pageId} | ${draft.affectedPage.outputPath} | ${draft.proposal.risk} | ${formatConfidenceLabel(draft.proposal)} | ${sources} |`;
   });
 
   return [

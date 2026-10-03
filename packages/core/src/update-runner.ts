@@ -28,6 +28,7 @@ export const UpdateProviderDraftSchema = z.object({
   proposedText: z.string().min(1),
   confidence: ConfidenceLevelSchema,
   risk: RiskLevelSchema,
+  draftKind: z.enum(["stub", "generated"]).optional(),
 });
 
 export const UpdateProviderUsageSchema = z.object({
@@ -477,6 +478,20 @@ export function buildUpdatePrompt(
   return sections.join("\n");
 }
 
+/**
+ * Confidence as shown to a reviewer. `confidence` measures evidence overlap,
+ * not draft quality, so a placeholder stub is labelled as one: it would
+ * otherwise read like a trustworthy draft.
+ */
+export function formatConfidenceLabel(proposal: {
+  confidence: string;
+  draftKind?: "stub" | "generated" | undefined;
+}): string {
+  return proposal.draftKind === "stub"
+    ? `${proposal.confidence} (stub)`
+    : proposal.confidence;
+}
+
 export function createLocalStubUpdateProvider(): UpdateProvider {
   return {
     id: "local",
@@ -495,6 +510,7 @@ export function createLocalStubUpdateProvider(): UpdateProvider {
           proposedText: renderLocalStubDraftText(request),
           confidence,
           risk,
+          draftKind: "stub",
         }),
         telemetry: UpdateProviderTelemetrySchema.parse({}),
       };
@@ -661,6 +677,7 @@ export async function draftUpdateResult(options: {
       proposedText: providerDraft.proposedText,
       confidence: providerDraft.confidence,
       risk: providerDraft.risk,
+      draftKind: providerDraft.draftKind ?? "generated",
       reviewState: "Needs review",
       requiresHumanReview: true,
     }),

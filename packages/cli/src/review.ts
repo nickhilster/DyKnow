@@ -424,8 +424,12 @@ export async function createInteractiveReviewSession(options: {
           ? "[medium risk] "
           : "";
     const confidenceBadge = `confidence:${nextDraft.proposal.confidence}`;
+    const stubBadge =
+      nextDraft.proposal.draftKind === "stub"
+        ? " [stub: no generated content]"
+        : "";
     stdout(
-      `\n${riskBadge}Reviewing ${nextDraft.proposal.pageId} (${nextDraft.proposal.reviewState}) [${confidenceBadge}]: ${nextDraft.proposal.summary}`,
+      `\n${riskBadge}Reviewing ${nextDraft.proposal.pageId} (${nextDraft.proposal.reviewState}) [${confidenceBadge}]${stubBadge}: ${nextDraft.proposal.summary}`,
     );
     stdout(`  Why: ${nextDraft.proposal.why}`);
     stdout(`  Sources: ${nextDraft.proposal.sources.join(", ")}`);
