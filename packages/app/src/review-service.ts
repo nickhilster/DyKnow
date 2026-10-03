@@ -25,6 +25,7 @@ import {
   parseDyknowConfig,
 } from "@dyknow/core";
 
+import { resolveAuditActor } from "./audit.js";
 import { DEFAULT_REVIEW_AUDIT_LOG_PATH } from "./log-service.js";
 import {
   assertAffectedPageMatchesConfiguredPage,
@@ -50,10 +51,6 @@ export type ReviewResult = {
   totalDrafts: number;
   updatedProposals: number;
 };
-
-function getAuditActor(): string {
-  return process.env.DYKNOW_ACTOR ?? "copilot";
-}
 
 function formatReviewAction(decision: ReviewActionState) {
   switch (decision) {
@@ -85,7 +82,9 @@ async function appendReviewAuditEntries(options: {
     "Review audit log path",
   );
   const timestamp = new Date().toISOString();
-  const actor = getAuditActor();
+  const { actor, source: actorSource } = await resolveAuditActor(
+    options.rootPath,
+  );
   const entries = options.drafts.map((draft) => {
     const outputsAffected = [
       draft.affectedPage.outputPath,
@@ -94,6 +93,7 @@ async function appendReviewAuditEntries(options: {
     const hashInput = JSON.stringify({
       action: formatReviewAction(options.decision),
       actor,
+      actorSource,
       pageId: draft.proposal.pageId,
       reviewState: draft.proposal.reviewState,
       sourcesRead: draft.proposal.sources,
@@ -104,6 +104,7 @@ async function appendReviewAuditEntries(options: {
     return AuditLogEntrySchema.parse({
       action: formatReviewAction(options.decision),
       actor,
+      actorSource,
       sourcesRead: draft.proposal.sources,
       outputsAffected,
       timestamp,

@@ -82,6 +82,18 @@ Every suggested update carries:
 - Public/private sensitivity
 - Suggested reviewer
 
+### Who the audit log names
+
+Every audit entry records an `actor` and how it was determined (`actorSource`):
+
+| `actorSource` | `actor` | When |
+| --- | --- | --- |
+| `env` | the value of `DYKNOW_ACTOR` | the variable is set to a non-blank value |
+| `git` | `Name <email>` | no `DYKNOW_ACTOR`, and the repository has a git `user.name` and/or `user.email` |
+| `default` | `unknown` | neither is available |
+
+DyKnow never invents a name: an entry it cannot attribute says `unknown`. Set `DYKNOW_ACTOR` (for example to a person, a service account, or a CI job name) when a review or publish should be attributed to something other than the local git identity, such as in CI or when an agent runs the commands on someone's behalf. Entries written before `actorSource` existed have no such field and still read normally.
+
 ## High-risk content
 
 High-risk changes **never publish automatically**. They include:
