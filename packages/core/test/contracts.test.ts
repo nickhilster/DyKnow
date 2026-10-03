@@ -60,6 +60,28 @@ describe("shared engine contracts", () => {
 
     expect(proposal.reviewState).toBe("Needs review");
     expect(auditLogEntry.outputsAffected).toEqual(["AGENTS.md"]);
+    // Entries written before `actorSource` existed still parse.
+    expect(auditLogEntry.actorSource).toBeUndefined();
+  });
+
+  it("accepts the known actor sources and rejects anything else", () => {
+    const base = {
+      action: "review:approve",
+      actor: "alice",
+      sourcesRead: [],
+      outputsAffected: [],
+      timestamp: "2026-05-23T12:00:00.000Z",
+      hash: "deadbeefcafebabe",
+    };
+
+    for (const actorSource of ["env", "git", "default"]) {
+      expect(
+        AuditLogEntrySchema.parse({ ...base, actorSource }).actorSource,
+      ).toBe(actorSource);
+    }
+    expect(() =>
+      AuditLogEntrySchema.parse({ ...base, actorSource: "guessed" }),
+    ).toThrow();
   });
 });
 

@@ -17,8 +17,47 @@ export const DEFAULT_RUNTIME_AUDIT_LOG_PATH = "dyknow/runtime-audit-log.jsonl";
 
 const execFileAsync = promisify(execFile);
 
-export function getAuditActor(): string {
-  return process.env.DYKNOW_ACTOR ?? "copilot";
+export type AuditActor = {
+  actor: string;
+  source: "env" | "git" | "default";
+};
+
+async function readGitConfig(rootPath: string, key: string) {
+  try {
+    const { stdout } = await execFileAsync("git", ["config", "--get", key], {
+      cwd: rootPath,
+      encoding: "utf8",
+    });
+    return stdout.trim();
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Identify who is acting, for audit entries. A declared `DYKNOW_ACTOR` wins;
+ * otherwise the repository's git identity; otherwise "unknown". The fallback
+ * is never a made-up name, so an audit entry cannot attribute an action to
+ * someone who did not take it.
+ */
+export async function resolveAuditActor(rootPath: string): Promise<AuditActor> {
+  const declared = process.env.DYKNOW_ACTOR?.trim();
+  if (declared) {
+    return { actor: declared, source: "env" };
+  }
+
+  const [name, email] = await Promise.all([
+    readGitConfig(rootPath, "user.name"),
+    readGitConfig(rootPath, "user.email"),
+  ]);
+  if (name && email) {
+    return { actor: `${name} <${email}>`, source: "git" };
+  }
+  if (name || email) {
+    return { actor: name || email, source: "git" };
+  }
+
+  return { actor: "unknown", source: "default" };
 }
 
 export async function resolveRuntimeAuditPath(rootPath: string) {
@@ -73,13 +112,16 @@ export async function appendAuditEntries(options: {
         "Audit log path",
       );
   const timestamp = new Date().toISOString();
-  const actor = getAuditActor();
+  const { actor, source: actorSource } = await resolveAuditActor(
+    options.rootPath,
+  );
   const auditEntries = options.entries.map((entry) => {
     const sourcesRead = [...new Set(entry.sourcesRead)];
     const outputsAffected = [...new Set(entry.outputsAffected)];
     const hashInput = JSON.stringify({
       action: options.action,
       actor,
+      actorSource,
       outputsAffected,
       sourcesRead,
       timestamp,
@@ -88,6 +130,7 @@ export async function appendAuditEntries(options: {
     return AuditLogEntrySchema.parse({
       action: options.action,
       actor,
+      actorSource,
       sourcesRead,
       outputsAffected,
       timestamp,

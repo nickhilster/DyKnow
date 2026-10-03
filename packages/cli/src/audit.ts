@@ -4,6 +4,7 @@ import { appendFile, mkdir, realpath } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import { promisify } from "node:util";
 
+import { resolveAuditActor } from "@dyknow/app";
 import { AuditLogEntrySchema } from "@dyknow/core";
 
 import { isPathInsideDirectory, resolveWorkspacePath } from "./security.js";
@@ -22,10 +23,6 @@ export function formatRelativePath(
   targetPath: string,
 ): string {
   return toPortablePath(relative(rootPath, targetPath) || targetPath);
-}
-
-export function getAuditActor(): string {
-  return process.env.DYKNOW_ACTOR ?? "copilot";
 }
 
 export async function resolveRuntimeAuditPath(rootPath: string) {
@@ -80,13 +77,16 @@ export async function appendAuditEntries(options: {
         "Audit log path",
       );
   const timestamp = new Date().toISOString();
-  const actor = getAuditActor();
+  const { actor, source: actorSource } = await resolveAuditActor(
+    options.rootPath,
+  );
   const auditEntries = options.entries.map((entry) => {
     const sourcesRead = [...new Set(entry.sourcesRead)];
     const outputsAffected = [...new Set(entry.outputsAffected)];
     const hashInput = JSON.stringify({
       action: options.action,
       actor,
+      actorSource,
       outputsAffected,
       sourcesRead,
       timestamp,
@@ -95,6 +95,7 @@ export async function appendAuditEntries(options: {
     return AuditLogEntrySchema.parse({
       action: options.action,
       actor,
+      actorSource,
       sourcesRead,
       outputsAffected,
       timestamp,

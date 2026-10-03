@@ -281,6 +281,12 @@ export const CONFIDENCE_SCORING_RUBRIC = {
 export const AuditLogEntrySchema = z.object({
   action: z.string().min(1, "Audit entries need an action."),
   actor: z.string().min(1, "Audit entries need an actor."),
+  /**
+   * How the actor was determined: a declared `DYKNOW_ACTOR` ("env"), the
+   * repository's git identity ("git"), or neither ("default", actor
+   * "unknown"). Optional so entries written before this field still parse.
+   */
+  actorSource: z.enum(["env", "git", "default"]).optional(),
   sourcesRead: z.array(z.string().min(1)),
   outputsAffected: z.array(z.string().min(1)),
   timestamp: z.string().datetime({ offset: true }),

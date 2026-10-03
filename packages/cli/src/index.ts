@@ -28,6 +28,10 @@ import { createCommitResult, parseCommitOptions } from "./commit.js";
 import { runDemoSmoke } from "./demo-smoke.js";
 import { createRepoDiff, parseDiffOptions } from "./diff.js";
 import {
+  formatRedirectNotice,
+  redirectExistingPageOutputs,
+} from "./init-safety.js";
+import {
   createAuditLogReport,
   parseLogOptions,
   supportsLogSourceFiltering,
@@ -572,11 +576,16 @@ async function handleInit(args: readonly string[], context?: CliContext) {
         stackProfile: detectedStack.profile,
       };
 
-  const config = createInitialDyknowConfig({
+  const initialConfig = createInitialDyknowConfig({
     mode: initSelection.mode,
     projectName: initSelection.projectName,
     stackProfile: initSelection.stackProfile,
   });
+  const { pages, redirected } = await redirectExistingPageOutputs(
+    initialConfig.pages,
+    (path) => pathExists(resolve(cwd, path)),
+  );
+  const config = { ...initialConfig, pages };
 
   await writeFile(schemaPath, renderDyknowConfigJsonSchema(), "utf8");
   await writeFile(configPath, renderDyknowConfig(config), "utf8");
@@ -584,6 +593,9 @@ async function handleInit(args: readonly string[], context?: CliContext) {
   stdout(
     `Created ${relative(cwd, configPath)} and ${relative(cwd, schemaPath)} for project ${initSelection.projectName} using the ${initSelection.stackProfile} stack profile. ${detectedStack.reason}`,
   );
+  for (const redirect of redirected) {
+    stdout(formatRedirectNotice(redirect));
+  }
   return 0;
 }
 

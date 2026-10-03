@@ -70,6 +70,7 @@ dyknow commit                # apply the approved proposals as one commit
 
 - `dyknow commit` only runs on a clean worktree (apart from the proposals file), which is why the `git commit` comes first. `dyknow pr --branch <name>` publishes to a new branch instead and opens a pull request through `gh`.
 - Drafting works offline by default. With `llmProvider: "local"`, DyKnow uses built-in generators and needs no API key. Those drafts are **placeholder stubs**: they list the affected source paths and a review prompt, with no synthesized content, and are marked `draftKind: "stub"` (shown as `[stub: no generated content]` in `dyknow review`, and as `(stub)` next to the confidence in the status report and PR table). `confidence` measures how many sources matched, not how good a draft is. For real drafts, use a model provider. To draft with your own OpenAI key, see [docs/setup-guide.md](docs/setup-guide.md).
+- `dyknow init` never points a page at a file that already exists. If a page's default output (for example `AGENTS.md` or `docs/architecture.md`) is already in your repository, that page writes to `docs/dyknow/<page-id>.md` instead and `init` says so. To let DyKnow maintain the existing file, set the page's `outputPath` back to it in `dyknow.config.json`; approving that page and running `dyknow commit` then replaces the whole file.
 - `dyknow --help` lists every command and flag.
 
 ### 3. Connect an MCP client
